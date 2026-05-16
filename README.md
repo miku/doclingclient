@@ -150,6 +150,38 @@ optional `raw_text` (with `--include-raw-text`), `num_tokens`, `headings`,
 `captions`, `page_numbers`, and `doc_items` references into the source
 document.
 
+#### Tokenizer choice
+
+The hybrid chunker counts tokens to keep each chunk within a budget. That
+budget is meaningful only relative to a specific tokenizer — and you almost
+always want the tokenizer to match the embedding model you'll feed the chunks
+into downstream, so chunk sizes line up with the embedder's context window.
+
+docling-serve accepts any HuggingFace tokenizer identifier as `--tokenizer`
+(OpenAI/tiktoken tokenizers are not reachable through the server). The default
+is `sentence-transformers/all-MiniLM-L6-v2`. If you don't pass `--max-tokens`,
+the cap is derived from the tokenizer's `model_max_length`.
+
+A few common picks, biased toward what shows up in docling's own examples and
+typical RAG stacks:
+
+| Tokenizer (HuggingFace ID)                  | Max tokens | Notes                                                    |
+|---------------------------------------------|------------|----------------------------------------------------------|
+| `sentence-transformers/all-MiniLM-L6-v2`    | 256        | Default. Tiny, fast, English-only. Good baseline.        |
+| `sentence-transformers/all-mpnet-base-v2`   | 384        | Higher-quality English embeddings, still small.          |
+| `BAAI/bge-small-en-v1.5`                    | 512        | Strong small English model, widely used in RAG.          |
+| `BAAI/bge-m3`                               | 8192       | Multilingual, long-context. Good general-purpose pick.   |
+| `intfloat/multilingual-e5-large`            | 512        | Multilingual, balanced quality/size.                     |
+| `nomic-ai/nomic-embed-text-v1.5`            | 8192       | Long-context English.                                    |
+| `Qwen/Qwen3-Embedding-0.6B`                 | 32768      | Long-context, multilingual, newer.                       |
+
+Rule of thumb: pick the tokenizer that ships with the embedding model you
+plan to call after `docli chunk`. Mixing them silently misaligns the token
+count and leads to chunks that overflow (or underfill) the real embedder.
+
+The server needs to fetch the tokenizer the first time it sees it. In
+air-gapped deployments only models already cached on the server will work.
+
 ### `docli convert` flags
 
 | Flag                  | Default | Description                                                                       |
