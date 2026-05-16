@@ -1,13 +1,12 @@
 # doclingclient
 
-A Go docling client library and CLI. [Docling](https://www.docling.ai/) is a
-document conversion project, which can also be run [as
-service](https://github.com/docling-project/docling-serve). That decouples the
-processing, which may benefit from a GPU, from the client, which may be a lower
-spec machine.
+A Go [docling](https://www.docling.ai/) client library and CLI.
+[Docling](https://www.docling.ai/) is a document conversion project, which can
+also be run [as service](https://github.com/docling-project/docling-serve).
+This helps to decouple the document processing, which may benefit from a GPU,
+from the client, which may be a lower spec machine.
 
 Docling serve supplies an openapi spec, currently using version 3.1.0.
-
 
 ```
 $ jq -rc '.paths | keys[]' openapi.json
@@ -48,6 +47,13 @@ Create a minimal Go library first, then wrap a nice CLI around the library, so
 interacting with the docling service becomes easy to integrate into shell
 scripts or ad-hoc human (and maybe agentic) terminal use.
 
+**Status**: Library and CLI cover synchronous conversion (`/v1/convert/source`
+and `/v1/convert/file`), the `/health`, `/ready`, and `/version` routes. Async
+conversion and the chunking endpoints are not yet wrapped.
+
+**Requirements**: Go 1.22+. A running `docling-serve` instance (defaults to
+`http://localhost:5001`).
+
 
 ## Library
 
@@ -73,6 +79,12 @@ The library covers `/v1/convert/source` (URL or base64 in-body), `/v1/convert/fi
 For full coverage of `ConvertDocumentsOptions`, the struct in `types.go` is a
 deliberate subset — extend it as needed.
 
+Note on output formats: the docling-serve `OutputFormat` enum also defines
+`yaml`, `html_split_page`, and `vtt`, but the `ExportDocumentResponse` object
+does not carry corresponding content fields, so this library and CLI do not
+surface them. The five exposed formats (`md`, `json`, `html`, `text`,
+`doctags`) match what the server actually returns.
+
 ## CLI
 
 A minimal command, `docli`, wraps the library. It is named to avoid collision
@@ -87,6 +99,10 @@ docli convert https://arxiv.org/pdf/2206.01062 > paper.md
 # Convert a local file as JSON.
 docli convert --to json paper.pdf > paper.json
 
+# Produce several formats at once and write them to a directory.
+docli convert --to md,json,html --output ./out paper.pdf
+# => ./out/paper.md, ./out/paper.json, ./out/paper.html
+
 # Talk to a remote docling-serve, with auth.
 DOCLING_SERVER=https://docling.example.org \
 DOCLING_API_KEY=sk-... \
@@ -97,6 +113,33 @@ docli health
 docli ready
 docli version
 ```
+
+### `docli convert` flags
+
+| Flag                  | Default | Description                                                                       |
+|-----------------------|---------|-----------------------------------------------------------------------------------|
+| `--from`              | (auto)  | Input formats, e.g. `pdf,docx`; server autodetects if empty.                      |
+| `--to`, `-t`          | `md`    | Output formats: `md`, `json`, `html`, `text`, `doctags`.                          |
+| `--output`, `-o`      | (none)  | Directory to write all requested formats as `<basename>.<ext>`; stdout is silent. |
+| `--ocr`               | `true`  | Enable OCR.                                                                       |
+| `--force-ocr`         | `false` | Force OCR over existing text.                                                     |
+| `--ocr-lang`          | (auto)  | Comma-separated OCR languages, e.g. `en,de`.                                      |
+| `--table-mode`        | (auto)  | `fast` or `accurate`; server default if empty.                                    |
+| `--tables`            | (auto)  | Extract table structure. Sent only when explicitly set.                           |
+| `--pages`             | (all)   | Page range, e.g. `1-10` or `3`.                                                   |
+| `--image-export-mode` | (auto)  | `placeholder`, `embedded`, or `referenced`. Server default if empty.              |
+| `--include-images`    | (auto)  | Include extracted images. Sent only when explicitly set.                          |
+| `--images-scale`      | (auto)  | Scale factor for extracted images (server default ~2.0).                          |
+| `--abort-on-error`    | `false` | Abort on first error. Sent only when explicitly set.                              |
+| `--document-timeout`  | (none)  | Per-document timeout in seconds.                                                  |
+| `--status`            | `false` | Emit one status line/object to stderr after the conversion.                       |
+| `--status-format`     | `text`  | `text` or `json` (see Caching below).                                             |
+| `--cache-dir`         | (XDG)   | Override the on-disk cache directory. Env: `DOCLING_CACHE_DIR`.                   |
+| `--no-cache`          | `false` | Disable the on-disk result cache.                                                 |
+
+Global flags (any subcommand): `--server`/`-s` (env `DOCLING_SERVER`),
+`--api-key`/`-K` (env `DOCLING_API_KEY`), `--tenant`/`-T` (env
+`DOCLING_TENANT_ID`).
 
 ## Caching
 
@@ -142,4 +185,25 @@ $ docli convert --status --status-format json paper.pdf 2> status.jsonl > paper.
 $ jq -r '.processing_time' < status.jsonl
 12.43
 ```
+
+## Testing
+
+```sh
+go test ./...
+go test -cover ./...
+```
+
+The library exercises its HTTP client against `httptest.Server`; no live
+docling-serve instance is required.
+
+## A random thought on openapi
+
+[OpenAPI](https://en.wikipedia.org/wiki/OpenAPI_Specification) was very helpful
+to get this client started, in that the LLM could inquire the
+[openapi.json](openapi.json) file for the spec. However, we did not need to use
+any of the openapi generators, of which there are [quite a
+few](https://www.speakeasy.com/docs/sdks/languages/golang/oss-comparison-go). A
+more systematic comparison of features of various libraries is still
+outstanding, but you could see an LLM + Prompt + openapi.json based client SDK
+generator.
 

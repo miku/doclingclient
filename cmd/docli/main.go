@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -82,14 +83,30 @@ func newConvertCmd(g *globalOpts) *cobra.Command {
 		includeImages   bool
 		status          bool
 		statusFormat    string
+		outputDir       string
 		cacheDir        string
 		noCache         bool
 	)
 	cmd := &cobra.Command{
-		Use:     "convert <url-or-path>",
-		Short:   "Convert a document from a URL or local file",
+		Use:   "convert <url-or-path>",
+		Short: "Convert a document from a URL or local file",
+		Long: `Convert a document via the docling-serve /v1/convert endpoints.
+
+The argument is either an http(s) URL (sent as a remote source) or a local
+path (streamed as multipart/form-data).
+
+Output destinations:
+  - Without --output: the first format listed in --to is written to stdout.
+    Requesting multiple formats without --output prints a warning, since the
+    extra formats have nowhere to go.
+  - With --output <dir>: every requested format is written as
+    <source-basename>.<ext> into <dir> and stdout stays silent.
+
+Results are cached on disk by default, keyed by source content and every
+option that affects output. Use --status to see whether a run was served
+fresh or from cache, and --status-format json for ad-hoc post-processing.`,
 		Args:    cobra.ExactArgs(1),
-		Example: "  docli convert https://arxiv.org/pdf/2206.01062 > paper.md\n  docli convert --to json paper.pdf > paper.json\n  docli convert --to md,json paper.pdf > paper.md",
+		Example: "  docli convert https://arxiv.org/pdf/2206.01062 > paper.md\n  docli convert --to json paper.pdf > paper.json\n  docli convert --to md,json,html --output ./out paper.pdf",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(toFormats) == 0 {
 				return fmt.Errorf("--to requires at least one format")
@@ -106,15 +123,12 @@ func newConvertCmd(g *globalOpts) *cobra.Command {
 			primary := toFormats[0]
 
 			opts := &doclingclient.Options{
-				FromFormats:      fromFormats,
-				ToFormats:        toFormats,
-				DoOCR:            doclingclient.Ptr(ocr),
-				ForceOCR:         doclingclient.Ptr(forceOCR),
-				TableMode:        tableMode,
-				ImageExportMode:  imageExportMode,
-				AbortOnError:     doclingclient.Ptr(abortOnError),
-				DoTableStructure: doclingclient.Ptr(doTables),
-				IncludeImages:    doclingclient.Ptr(includeImages),
+				FromFormats:     fromFormats,
+				ToFormats:       toFormats,
+				DoOCR:           doclingclient.Ptr(ocr),
+				ForceOCR:        doclingclient.Ptr(forceOCR),
+				TableMode:       tableMode,
+				ImageExportMode: imageExportMode,
 			}
 			if ocrLang != "" {
 				opts.OCRLang = splitComma(ocrLang)
@@ -125,6 +139,15 @@ func newConvertCmd(g *globalOpts) *cobra.Command {
 					return err
 				}
 				opts.PageRange = r
+			}
+			if cmd.Flags().Changed("abort-on-error") {
+				opts.AbortOnError = doclingclient.Ptr(abortOnError)
+			}
+			if cmd.Flags().Changed("tables") {
+				opts.DoTableStructure = doclingclient.Ptr(doTables)
+			}
+			if cmd.Flags().Changed("include-images") {
+				opts.IncludeImages = doclingclient.Ptr(includeImages)
 			}
 			if cmd.Flags().Changed("document-timeout") {
 				opts.DocumentTimeout = doclingclient.Ptr(docTimeout)
@@ -143,11 +166,18 @@ func newConvertCmd(g *globalOpts) *cobra.Command {
 					return err
 				}
 			}
+			if outputDir != "" {
+				return writeOutputs(outputDir, resp.Document, toFormats)
+			}
+			if len(toFormats) > 1 {
+				fmt.Fprintf(os.Stderr, "docli: only %q written to stdout (%d formats requested); pass --output <dir> to write all\n", primary, len(toFormats))
+			}
 			return writeContent(cmd.OutOrStdout(), resp.Document, primary)
 		},
 	}
 	cmd.Flags().StringSliceVar(&fromFormats, "from", nil, "input formats (e.g. pdf,docx); server autodetects if empty")
-	cmd.Flags().StringSliceVarP(&toFormats, "to", "t", []string{"md"}, "output formats: md, json, yaml, html, text, doctags (first is written to stdout, all are cached)")
+	cmd.Flags().StringSliceVarP(&toFormats, "to", "t", []string{"md"}, "output formats: md, json, html, text, doctags")
+	cmd.Flags().StringVarP(&outputDir, "output", "o", "", "directory to write all requested formats as <basename>.<ext>; stdout stays silent when set")
 	cmd.Flags().BoolVar(&ocr, "ocr", true, "enable OCR")
 	cmd.Flags().BoolVar(&forceOCR, "force-ocr", false, "force OCR over existing text")
 	cmd.Flags().StringVar(&ocrLang, "ocr-lang", "", "comma-separated OCR languages, e.g. 'en,de'")
@@ -167,9 +197,16 @@ func newConvertCmd(g *globalOpts) *cobra.Command {
 }
 
 func newHealthCmd(g *globalOpts, name string) *cobra.Command {
+	long := `Call GET /` + name + ` on docling-serve and print the reported status.
+
+/health is a liveness probe (is the process up?); /ready is a readiness probe
+(can the process actually serve requests, e.g. are models loaded?). Both
+return a tiny {"status": "..."} JSON; the exit status reflects success or a
+transport/HTTP error.`
 	return &cobra.Command{
 		Use:   name,
 		Short: "Check the docling-serve /" + name + " endpoint",
+		Long:  long,
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c := newClient(g)
@@ -193,7 +230,12 @@ func newVersionCmd(g *globalOpts) *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "Print the docling-serve /version payload (use --version for the CLI version)",
-		Args:  cobra.NoArgs,
+		Long: `Fetch and print the docling-serve /version response as indented JSON.
+
+This reports the server build (docling-serve, docling-core, model versions,
+etc.) and is independent from the CLI version. For the docli build, use the
+top-level --version flag instead.`,
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			v, err := newClient(g).Version(cmd.Context())
 			if err != nil {
@@ -283,9 +325,65 @@ func sourceForKey(input string) (doclingclient.Source, error) {
 	return doclingclient.SourceForFile(input)
 }
 
+// formatExtension returns the file extension docli uses when writing a given
+// format to disk. Returns "" for unknown formats; validateOutputFormats should
+// have rejected those before we get here.
+func formatExtension(f string) string {
+	switch f {
+	case doclingclient.FormatMD:
+		return ".md"
+	case doclingclient.FormatJSON:
+		return ".json"
+	case doclingclient.FormatHTML:
+		return ".html"
+	case doclingclient.FormatText:
+		return ".txt"
+	case doclingclient.FormatDoctags:
+		return ".doctags"
+	}
+	return ""
+}
+
+// writeOutputs writes one file per requested format into dir, named after the
+// server-reported source filename (extension stripped). Errors out before
+// writing anything if any format's content is empty.
+func writeOutputs(dir string, doc doclingclient.Document, formats []string) error {
+	base := strings.TrimSuffix(doc.Filename, filepath.Ext(doc.Filename))
+	if base == "" {
+		base = "output"
+	}
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+	for _, f := range formats {
+		var content []byte
+		switch f {
+		case doclingclient.FormatJSON:
+			content = doc.JSONContent
+		case doclingclient.FormatMD:
+			content = []byte(doc.MDContent)
+		case doclingclient.FormatHTML:
+			content = []byte(doc.HTMLContent)
+		case doclingclient.FormatText:
+			content = []byte(doc.TextContent)
+		case doclingclient.FormatDoctags:
+			content = []byte(doc.DoctagsContent)
+		default:
+			return fmt.Errorf("unknown output format: %s", f)
+		}
+		if len(content) == 0 {
+			return fmt.Errorf("server returned no %s content", f)
+		}
+		path := filepath.Join(dir, base+formatExtension(f))
+		if err := os.WriteFile(path, content, 0o644); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func writeContent(w io.Writer, doc doclingclient.Document, format string) error {
-	switch format {
-	case doclingclient.FormatJSON, doclingclient.FormatYAML:
+	if format == doclingclient.FormatJSON {
 		if len(doc.JSONContent) == 0 {
 			return fmt.Errorf("server returned no %s content", format)
 		}
@@ -349,12 +447,11 @@ func validateOutputFormats(formats []string) error {
 		switch strings.TrimSpace(f) {
 		case doclingclient.FormatMD,
 			doclingclient.FormatJSON,
-			doclingclient.FormatYAML,
 			doclingclient.FormatHTML,
 			doclingclient.FormatText,
 			doclingclient.FormatDoctags:
 		default:
-			return fmt.Errorf("invalid --to format %q (want md, json, yaml, html, text, or doctags)", f)
+			return fmt.Errorf("invalid --to format %q (want md, json, html, text, or doctags)", f)
 		}
 	}
 	return nil

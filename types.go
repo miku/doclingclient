@@ -2,15 +2,16 @@ package doclingclient
 
 import "encoding/json"
 
-// Output formats accepted by the to_formats option.
+// Output formats accepted by the to_formats option. Only formats whose
+// content the server actually returns on ExportDocumentResponse are listed —
+// the spec also defines "yaml", "html_split_page", and "vtt", but the
+// response object carries no field for them, so docli cannot surface them.
 const (
 	FormatMD      = "md"
 	FormatJSON    = "json"
-	FormatYAML    = "yaml"
 	FormatHTML    = "html"
 	FormatText    = "text"
 	FormatDoctags = "doctags"
-	FormatVTT     = "vtt"
 )
 
 // Image export modes accepted by the image_export_mode option. Only relevant

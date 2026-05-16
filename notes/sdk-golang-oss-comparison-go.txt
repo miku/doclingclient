@@ -1,0 +1,3605 @@
+   Link: canonical
+   Link: msapplication-TileColor
+   Link: msapplication-config
+   Agent view
+
+   Speakeasy Logo
+
+     * Products
+
+       AI Control Plane
+
+       AI Control Plane
+
+       A single control plane to safely scale AI
+
+       ConnectSecureObserve
+
+       API Platform
+
+          * SDKs
+
+            Idiomatic, type-safe SDKs
+
+          * Terraform
+
+            Providers from OpenAPI
+
+          * CLI
+
+            Your API in the terminal
+
+          * Docs MCPBeta
+
+            Docs agents understand
+
+          * Product Changelog
+
+            What's new at Speakeasy
+
+     * Docs
+
+       AI Control Plane
+
+       AI Control Plane
+
+       A single control plane to safely scale AI
+
+       ConnectSecureObserve
+
+       API Platform
+
+          * SDKs
+
+            Idiomatic, type-safe SDKs
+
+          * Terraform
+
+            Providers from OpenAPI
+
+          * CLI
+
+            Your API in the terminal
+
+          * Docs MCP
+
+            Docs agents understand
+
+          * Documentation Home
+
+            Home for all Speakeasy product docs
+
+     * Solutions
+
+       Use Cases
+
+          * Claude Super App
+
+            Connect Claude to everything securely
+
+          * Enterprise OpenClaw
+
+            Secure OpenClaw for the enterprise
+
+          * MCP Gateway
+
+            One gateway for every agent and every MCP
+
+          * Secure AI Usage
+
+            Visibility and control for security teams
+
+     * Customers
+     * Company
+
+       Careers
+
+          * Careers5
+
+            Shape the future with us
+
+          * Account Executive
+          * Forward Deployed Engineer
+          * Product Engineer
+
+       Company
+
+          * About us
+
+            Our story, mission, and vision
+
+          * Contact us
+
+            Get in touch with our team
+
+          * Talk to us
+
+            Unlock the right solution
+
+          * Blog
+
+            Read our latest news and updates
+
+     * Pricing
+   Log in
+   AI Control PlaneAPI Platform
+   Talk to us
+   Skip to Content
+   _____________________ CTRL K
+     * Documentation
+          * __INKEEP_SEARCH_DOCS__
+          * SDKs
+
+          * Introduction
+          * Core Concepts
+          * Generate SDKs
+          * Prepare OpenAPI Spec
+               * Best Practices
+               * Linting
+               * Merge Documents
+               * Overlays
+                    * Apply an overlay
+                    * Create overlays
+               * Transformations
+               * Maintenance
+          * Customize
+               * Customization Basics
+               * Structure
+                    * Customize imports
+                    * Customize namespaces
+               * Data Model
+                    * Types
+                    * Enums
+                    * OneOf
+                    * AllOf
+                    * Complex Numbers
+                    * Additional Properties
+               * Customize methods
+               * Responses & Error Handling
+                    * Customize Responses
+                    * Error Handling
+               * Global Parameters
+               * Configure servers
+               * Deprecations
+               * Security & Authentication
+                    * Overview
+                    * Configuration Options
+                    * Standard security schemes
+                    * OAuth 2.0 Authentication
+                    * Custom Security Schemes
+                    * Security Callbacks
+               * SDK Behavior
+                    * Enable Retries
+                    * Enable Timeouts
+                    * Enable Pagination
+                    * Enable Polling
+                    * Enable Streaming
+                    * Enable Server-Sent Events
+                    * Enable JSON Lines Responses
+                    * Customize HTTP Client
+                    * Override accept headers
+               * Data transforms
+               * Add webhooks to your SDKs
+               * Modify SDK code
+                    * Hooks
+                    * Custom code
+                         * Overview
+                         * Best practices
+                         * Technical reference
+                         * Ignoring files
+                    * Code regions
+                         * Custom code regions
+                         * Python
+                         * TypeScript
+                         * Java
+               * TypeScript
+                    * Additional index exports
+                    * Configuring Module Format
+                    * Disabling Barrel Files
+                    * Model validation and serialization
+                    * Control property casing: snake, camel
+                    * Generating React Hooks from OpenAPI
+               * Java
+                    * Java SDK Async Migration Guide
+                    * Parameter encoding
+                    * Spring Boot Integration for Java SDKs
+               * Python
+                    * Async hooks for Python
+          * Manage
+               * Version Control
+               * SDK Changelogs
+               * Github Setup
+               * Enable Sandbox
+               * Migrate
+                    * Poetry 2.0 and Python 3.10 Updates
+                    * Migrate from the Python v1 SDK
+                    * Migrate from Python poetry to uv
+                    * Migrate to Speakeasy workflows
+               * Forward Compatibility
+               * Handle Breaking Changes
+          * Publish SDK
+          * SDK Contract Testing
+               * SDK Contract Testing
+               * Bootstrapping SDK Tests
+               * Customizing SDK Tests
+               * Testing in Github Actions
+               * OpenAPI data in Tests
+               * Running SDK Tests
+               * Custom Contract Tests
+          * SDK Documentation
+               * Edit README
+               * Integrate with docs provider
+                    * README.com
+                    * Mintlify
+                    * Scalar
+                    * Bump.sh
+                    * Get Public URL Snippet
+               * Code Samples
+                    * Generate Code Samples
+                    * Code Samples API
+                    * Automated Code Sample URLs
+          * Language Design
+               * Design philosophy
+               * Maturity
+               * TypeScript
+                    * TypeScript design
+                    * Speakeasy vs. OSS generators
+                    * Migrating from OpenAPI Generator to Speakeasy
+                    * Feature reference
+                    * Standalone functions
+                    * Dependency management
+               * Python
+                    * Python design
+                    * Speakeasy vs. OSS generators
+                    * Feature reference
+               * Go
+                    * Go design
+                    * Speakeasy vs. OSS generators
+                    * Feature reference
+               * Java
+                    * Java design
+                    * Speakeasy vs. OSS generators
+                    * Feature reference
+               * C#
+                    * C# design
+                    * Speakeasy vs. OSS generators
+               * PHP
+                    * PHP design
+                    * Speakeasy vs. OSS generators
+               * Ruby
+                    * Ruby design
+               * Rust [coming]
+                    * Rust design [coming soon]
+               * C++ [coming]
+                    * C++ design [coming soon]
+               * Unity [beta]
+                    * Unity design [coming soon]
+          * Guides
+               * Overlays
+                    * Creating Internal and External SDKs
+                    * Common JSON Path expressions
+                    * Common Overlays for SDKs
+               * Hooks
+                    * Authentication hook for local environment variables
+                    * Add telemetry to your SDK with SDK hooks and Posthog
+                    * Capture errors with SDK hooks and Sentry
+                    * Setting user agents in browser environments
+               * Populate Code Samples Without GitHub Actions
+               * SDK preview and breaking change detection
+               * Create a monorepo
+               * Generate SDK in a subdirectory
+               * Overriding Compile Commands for SDK Generation
+               * Switching default package manager to pnpm
+               * Manage OpenAPI specs with Speakeasy
+               * Tips for Integrating a TypeScript SDK into a Monorepo
+               * Utilizing user agent strings for telemetry
+          * Terraform
+
+          * Generate Terraform Provider
+          * Publish Terraform Provider
+          * Customize Terraform
+               * Overview
+               * Map API Entities
+               * Provider Configuration
+               * Resource Configuration
+               * Property Customization
+               * Validation and Dependencies
+               * Plan Modification
+               * Advanced Features
+               * Schema Keywords
+               * Common Troubleshooting and Recipes
+          * Guides
+               * Async resource provisioning with polling
+               * CRUD Example
+               * Hoisting
+               * Creating a Merged Terraform entity
+               * Removing non-Terraform endpoints from your OpenAPI document
+          * CLI Generation
+
+          * Generate CLI
+          * Overview
+          * Customize CLI
+          * Distribute CLI
+          * CLI
+
+          * Speakeasy
+               * CLI
+                    * Getting Started
+                    * Using with Docker
+                    * Using with mise toolkit
+                    * agent
+                         * context
+                         * feedback
+                         * setup-skills
+                    * ask
+                    * auth
+                         * login
+                         * logout
+                         * status
+                         * switch
+                    * billing
+                         * activate
+                    * bump
+                    * clean
+                    * configure
+                         * generation
+                              * check
+                         * github
+                         * local-workflow
+                         * publishing
+                         * sources
+                         * targets
+                         * tests
+                    * diff
+                         * files
+                         * from-pr
+                         * registry
+                    * lint
+                         * arazzo
+                         * config
+                         * openapi
+                    * mcp
+                         * deploy
+                    * merge
+                    * openapi
+                         * diff
+                         * lint
+                         * snip
+                         * transform
+                              * cleanup
+                              * convert-swagger
+                              * filter-operations
+                              * format
+                              * normalize
+                              * remove-unused
+                    * overlay
+                         * apply
+                         * compare
+                         * validate
+                    * patches
+                         * restore-pristine
+                              * all
+                              * file
+                         * view-diff
+                              * file
+                              * files
+                         * view-pristine
+                    * pull
+                    * quickstart
+                    * repro
+                    * run
+                    * status
+                    * suggest
+                         * error-types
+                         * operation-ids
+                    * tag
+                         * apply
+                         * promote
+                    * test
+                    * update
+               * Generation Config
+                    * Config File
+                    * CI/CD Pipeline
+                    * TypeScript Configuration
+                    * Python Configuration
+                    * Go Configuration
+                    * Java Configuration
+                    * C# Configuration
+                    * PHP Configuration
+                    * Ruby Configuration
+                    * Terraform Configuration
+                    * MCP Server Configuration
+                    * CLI Configuration
+               * Supported
+                    * OpenAPI Support Matrix
+                    * Speakeasy Terraform provider support matrix
+               * Extensions
+               * Workflow File
+               * Skills for AI Coding Assistants
+          * Standalone MCP
+
+          * Introduction
+          * Generate MCP Servers from OpenAPI Documents
+          * Deploy to Cloudflare Workers
+          * Deploy to Gram
+          * Custom Prompts
+          * Custom Resources
+          * Customize Tools
+          * Adapting Speakeasy MCP Servers for Remote Deployment
+          * Test with the Eval Command
+          * Add OAuth to an MCP Server
+          * Docs home
+          * Why Gram?
+          * Getting started
+               * Use TypeScript (Gram Functions)
+               * Use an OpenAPI spec
+          * Build
+
+          * Creating TypeScript tools
+               * Using the Functions Framework
+               * Tool annotations
+               * Using the MCP SDK
+               * Configuring environments
+               * Build and deploy
+          * Creating toolsets
+               * Curate a custom toolset
+               * Create a default toolset
+               * Advanced tool curation
+               * Configure environments
+               * Attach environments to tool sources
+               * Test toolsets
+               * Dynamic toolsets (experimental)
+               * Response filtering (experimental)
+          * Hosting MCP servers
+               * Deploy an MCP server
+               * Tool call healing
+               * Publish to MCP Registry
+          * Integrate MCP servers
+               * Agent Frameworks
+                    * LangChain
+                    * OpenAI Agents SDK
+                    * OpenAI Apps SDK
+                    * Mastra
+                    * Pydantic AI
+                    * Vellum
+               * Coding assistants & IDEs
+                    * ChatGPT Developer mode
+                    * Claude Code
+                    * Claude Desktop
+                    * Cline
+                    * Cursor
+                    * Gemini CLI
+                    * Mistral
+                    * n8n
+                    * Roo Code
+                    * Vellum Agents
+                    * IDE
+                    * Zapier
+                    * Troubleshooting
+               * Other tools
+                    * Anthropic API
+                    * OpenAI Responses API
+                    * Vercel AI SDK
+               * Export server configuration
+               * MCP Installation Guides
+          * Examples
+               * Add AI chat to an existing app
+               * Build MCP with external OAuth
+               * Deploy from GitHub Actions
+               * Create a Taskmaster MCP server
+               * Connect to external APIs
+               * Build a ChatGPT App
+               * Using environments with the Vercel AI SDK
+          * Catalog
+
+          * Catalog overview
+          * Sub catalogs
+          * Secure
+
+          * Security overview
+          * Add OAuth to MCP servers
+          * Add OAuth to Gram Functions
+          * OAuth proxy for internal servers
+          * Control server visibility
+          * API keys
+          * Environments
+          * Observe
+
+          * Insights (Beta)
+               * Insights
+               * Logs
+               * Metrics
+               * API reference
+          * Gram Agents API (Beta)
+               * Gram Agents API overview
+               * Billing and usage
+               * Usage examples
+          * Technical Reference
+
+          * Concepts
+               * Tool definitions
+               * Toolsets
+               * Tool variations
+               * Tool sources
+               * Deployments
+          * CLI reference
+               * gram install
+               * gram auth
+               * gram whoami
+               * gram stage
+               * gram stage function
+               * gram stage openapi
+               * gram push
+               * gram status
+               * gram update
+          * Elements
+
+          * Introduction
+          * Quickstart
+          * Plugins
+          * API Reference
+               * Functions
+                    * Calendar
+                    * Chat
+                    * ChatHistory
+                    * defineFrontendTool
+                    * getPresetRange
+                    * GramElementsProvider
+                    * Replay
+                    * ShareButton
+                    * TimeRangePicker
+                    * trackError
+                    * useChatId
+                    * useRecordCassette
+                    * useThreadId
+               * Interfaces
+                    * AttachmentsConfig
+                    * CalendarProps
+                    * Cassette
+                    * CassetteMessage
+                    * ComponentOverrides
+                    * ComposerConfig
+                    * Dimension
+                    * Dimensions
+                    * ElementsConfig
+                    * ErrorContext
+                    * ErrorTrackingConfigOption
+                    * HistoryConfig
+                    * ModalConfig
+                    * ModelConfig
+                    * Plugin
+                    * ReplayOptions
+                    * ShareButtonProps
+                    * SidecarConfig
+                    * Suggestion
+                    * ThemeConfig
+                    * TimeRange
+                    * TimeRangePickerProps
+                    * TimeRangePreset
+                    * ToolMentionsConfig
+                    * ToolsConfig
+                    * WelcomeConfig
+               * Type Aliases
+                    * CassettePart
+                    * ColorScheme
+                    * COLOR_SCHEMES
+                    * DangerousApiKeyAuthConfig
+                    * DateRangePreset
+                    * DENSITIES
+                    * Density
+                    * FrontendTool
+                    * GetSessionFn
+                    * ModalTriggerPosition
+                    * Model
+                    * RADII
+                    * Radius
+                    * ToolsFilter
+                    * UnifiedSessionAuthConfig
+                    * Variant
+                    * VARIANTS
+               * Variables
+                    * MODELS
+                    * PRESETS
+     * OpenAPI Hub
+          * __INKEEP_SEARCH__
+          * Introduction
+          * Info
+          * Servers
+               * Server Variables
+          * Security
+               * Security Schemes
+                    * Security Schemes in OpenAPI
+                    * API Key
+                    * HTTP Authentication
+                    * Mutual TLS
+                    * OAuth 2.0
+                    * OpenID Connect
+               * Custom Authentication
+          * Paths
+          * Operations
+          * Content & Media
+               * File Uploads
+               * Server-Sent Events
+               * JSONL
+          * Data Types
+               * Strings
+               * Numbers
+               * Booleans
+               * Null
+               * Arrays
+               * Objects
+                    * Polymorphism
+                    * XML
+               * Enums
+               * Composition
+          * Requests
+               * Parameters
+                    * Path Parameters
+                    * Query Parameters
+                    * Header Parameters
+                    * Cookie Parameters
+          * Responses
+               * Errors
+               * Rate Limiting
+               * Headers
+               * Links
+               * Retries
+          * Components
+          * Tags
+          * External Documentation
+          * References ($ref)
+          * Examples
+          * Extensions
+          * Overlays
+          * Webhooks
+               * Callbacks
+          * Arazzo
+          * Frameworks
+               * JavaScript/TypeScript
+
+               * NestJS
+               * Fastify
+               * Hono
+               * tRPC
+               * tsoa
+               * TypeSpec
+               * Elysia
+               * Zod
+               * Python
+
+               * FastAPI
+               * Django
+               * Flask
+               * Pydantic
+               * Go
+
+               * Goa
+               * gRPC-Gateway
+               * Gnostic
+               * Java
+
+               * Spring Boot
+               * PHP
+
+               * Laravel
+               * Ruby
+
+               * Ruby on Rails
+               * How To Generate an OpenAPI Document With Zod v3
+          * Pagination
+          * Guides
+               * Solving Equivalent Path Signatures
+               * What is the code samples extension?
+          * Release Notes
+
+          * OpenAPI Release Notes
+     * API Design
+          * __INKEEP_SEARCH__
+          * Introduction
+          * API Design Basics
+
+          * Picking an architecture
+          * Structuring URLs
+          * HTTP Methods
+          * Request parameters
+          * Data Formats
+          * Request Body
+          * Status Codes
+          * Response Body
+          * Advanced Considerations
+
+          * File uploads
+          * Pagination
+          * Filtering responses
+          * Caching
+          * Returning Errors
+          * Rate limiting
+          * Versioning
+          * Productizing APIs
+
+          * Expose APIs publicly
+          * Monetizing APIs
+          * Developer experience
+          * Documentation
+          * Enforcing consistency
+          * Security
+          * API Compliance
+          * Testing
+          * Collections
+     * MCP Hub
+          * __INKEEP_SEARCH__
+          * MCP Hub
+          * Intro to MCP
+
+          * An overview of MCP
+          * Core Concepts
+               * Tools
+               * Resources
+               * Transports
+               * Prompts
+               * Completables
+               * Roots
+               * Sampling
+               * What are MCP apps?
+          * MCP for Skeptics
+               * Common Criticisms Addressed
+               * When to Use MCP
+          * The OpenAI ecosystem
+          * Building MCP servers
+
+          * Design MCP tools
+               * Why less is more for MCP
+               * Dynamic Tool Discovery
+               * Response Filtering with JQ
+               * Build tools from OpenAPI
+               * Designing RAG tools for LLMs
+          * Deploying your MCP server
+          * Secure your MCP server
+               * State of OAuth in MCP
+               * Authorizing MCP servers
+          * Distribute your MCP server
+          * Monitor your MCP server
+          * Framework Guides
+               * Building an MCP server for FastAPI
+          * Using MCP servers
+
+          * Release Notes
+
+          * MCP Release Notes
+     * Blog
+          * Blog | Speakeasy
+          * Comparing Progressive Discovery and Semantic Search for Powering
+            Dynamic MCP
+          * 5 potential use cases for Arazzo
+          * A Copilot for your API spec and Pagination
+          * A Dev Portal on Demand
+          * A MonoRepo For Your SDKs
+          * Add prompts to your MCP server
+          * Designing agent experience: A practical guide for the era of AX
+          * AI transformation is the new digital transformation. Your vendor
+            stack isn't ready.
+          * Choosing an agent framework: LangChain vs LangGraph vs CrewAI vs
+            PydanticAI vs Mastra vs Vercel AI SDK
+          * Security first, capability second: Building virtual employees
+            enterprises can actually trust
+          * AI gateway vs MCP gateway vs AI control plane
+          * Announcing: EasySDK Generator
+          * Guide to API Auth & A Novel Approach
+          * API Change Detection & Open Enums
+          * Designing your API: Find the RESTful sweet spot
+          * API Experts - APIs That Build APIs
+          * API Experts - APIs to Fight Fraud
+          * API Experts - APIs that Move Money
+          * API Experts - APIs to Support your Customers
+          * API Key Management
+          * The Speakeasy API Landscape
+          * API Linting & Postman Generation
+          * API Ops - The Difficulties In Monitoring API Usage
+          * API Experts - Shipping APIs for Global Shipping
+          * APIs vs. SDKs: Key Differences, Use Cases, and Best Practices
+          * How to Handle Auth for Embedded React Components
+          * Automate your OAuth flows and streamline publishing
+          * Automated Code Samples & Overlay Management in Speakeasy Studio!
+          * Building a Model Context Protocol (MCP) server for Discord
+          * Build Custom Workflows - Sneak Peak!
+          * Building a SaaS API? Don't Forget Your Terraform Provider
+          * Building APIs (and SDKs) that never break
+          * How to Build an SDK in PHP
+          * Under the Hood: Building a High-Performance OpenAPI Parser in Go
+          * C# General Availability & our AI-enhanced CLI
+          * Choosing a docs vendor: Mintlify vs Scalar vs Bump vs ReadMe vs
+            Redocly
+          * Choosing an MCP gateway: Gram vs Composio vs Arcade vs Docker vs
+            TrueFoundry
+          * Choosing an SDK vendor: Speakeasy vs Fern vs Stainless vs
+            openapi-codegen
+          * Choosing your Python REST API framework
+          * Speakeasy vs. Stainless vs. Postman: MCP server generation
+            showdown
+          * Choosing an SDK generator: Speakeasy vs Stainless vs Fern vs
+            APIMatic vs OpenAPI Generator
+          * Contract testing with OpenAPI
+          * Choosing an AI chat builder kit: CopilotKit vs OpenAI ChatKit vs
+            Gram Elements
+          * How to factor cost into agentic tool design
+          * How To Create a Terraform Provider — a Guide for Absolute
+            Beginners
+          * Custom code regions & an Overlay playground!
+          * Custom type support in Terraform
+          * Customisable Imports, OpenAPI Overlays, and Terraform generation
+            improvements!
+          * Definitive Guide to API DevEx Portals
+          * Designing REST APIs: Responses Your Users Expect
+          * DevEx portals as a service
+          * Dynamic Dev Portals with Speakeasy Components
+          * End-to-end API testing with Arazzo, TypeScript, and Deno
+          * Early Access for Universal Typescript SDK and SDK Docs
+          * Easy Validation For OpenAPI
+          * EasyTemplate OSS Release: Templating Superpowers for Go
+          * Enforcing API consistency
+          * Making your CLI agent-friendly
+          * Faster / Better speakeasy run CLI commands
+          * Forward compatible SDKs: strict in development, lax in production
+          * Speakeasy's $15M Series A
+          * Generate MCP servers from OpenAPI documents
+          * Generating MCP servers from OpenAPI: Lessons from building 50+
+            production MCP servers
+          * In Depth: Gram vs FastMCP
+          * Game Dev & The Rise of Developer Experience
+          * A New Approach to Hiring A Founding Team
+          * How to Build SDKs for Your API: Handwritten, OpenAPI Generator,
+            or Speakeasy?
+          * How to Generate Terraform Providers
+          * How To Build A Best In Class Python SDK
+          * How to generate a mock server to test SDKs
+          * OpenAPI Tips - How to set operationId
+          * Why and How we invested in building a best in class CLI
+          * How We Built It - Universal Typescript
+          * Reducing MCP token usage by 100x — you don't need code mode
+          * Improved DevEX with Flattened SDKs
+          * Integrate with Your Favorite Docs Provider!
+          * Building SDKs for internal APIs: How to Boost developer velocity
+          * Speakeasy's $11M Raise
+          * Making sense of the AI control plane
+          * Introducing Universal TypeScript: A TS SDK your users will love
+          * Java General Availability and managed OAuth support
+          * Open Enums in Java: Why Classes Beat Native Enums for API
+            Evolution
+          * Java SDKs & Telemetry
+          * Java Unions with Jackson: Discriminated, Non-Discriminated, and
+            Primitives
+          * Label-Based Versioning, OpenAPI Transformations, and Overlay
+            Insights
+          * Building an AI agent with OpenAPI: LangChain vs. Haystack
+          * Last changelog of the year, looking ahead, and a thank you!
+          * Launch week 0 round up: webhooks, react query support & more!
+          * Lean TypeScript SDKs for the browser
+          * Using Loom for Remote Collaboration
+          * Preparing your repo for AI development: Lessons from Gram
+          * MCP vs CLI: a framework for choosing the right tool interface for
+            AI
+          * Mintlify Integration, Plan Validators, and Python Async Beta
+          * More APIs, Less Complexity
+          * Nivo vs Recharts - Which should you use?
+          * Securing Your NPM Publishing: Transitioning to Trusted Publishing
+          * On Demand Publishing & Pre-Releases
+          * One-click Request Sharing
+          * Evolving enums for evolving APIs
+          * $40,000 for OSS maintainers
+          * Designing Forward-Compatible Unions in TypeScript SDKs
+          * Speakeasy OpenAPI Editor vs Swagger Editor vs Postman
+          * OpenAPI has flaws, so what?
+          * Everything You Need to Know About OpenAPI
+          * Defining OpenAPI Servers - The Where To Your API's How
+          * OpenAPI Spec Drift Detection
+          * OpenAPI Studio, Laravel Integration, and 'what in Zod's name?'
+          * OpenAPI Tips - How to Handle Auth
+          * OpenAPI tips - Data types and formats
+          * OneOf, AllOf, AnyOf Oh my! How to define union types in OpenAPI
+          * OpenAPI Tips - Query Parameters & Serialization
+          * Webhooks & Callbacks in OpenAPI/Swagger
+          * OpenAPI Webhook Support
+          * Our Series A fundraise
+          * Pact vs OpenAPI: Choosing the right foundation for your API
+            testing strategy
+          * PHP Beta & SSO for Enterprises
+          * PHP General Availability, improved FastAPI Support, and a new
+            billing page experience
+          * PHP SDKs Now Available!
+          * Choosing the right JavaScript API framework
+          * Why less is more: The Playwright proliferation problem with MCP
+          * Preparing your website for LLMs.
+          * Prompting agents: What works and why
+          * How To Wrap Your Terraform Provider for Pulumi
+          * Type Safety in Python: Pydantic vs. Data Classes vs. Annotations
+            vs. TypedDicts
+          * Secure your Python SDK publishing with PyPI trusted publishing
+          * Python Alpha Release: Pydantic & Async
+          * Python HTTP Clients: Requests vs. HTTPX vs. AIOHTTP
+          * Python SDK Lazy Loading: 7.5x Faster Initialization, 80% Less
+            Memory Use
+          * MCP vs RAG
+          * React Embeds
+          * Rebranding Speakeasy
+          * Agent skills for OpenAPI and SDK generation
+          * Persistent edits: Add custom code anywhere in your generated SDKs
+          * Introducing CLI generation: the agent interface your API is
+            missing
+          * Introducing: API contract test generation
+          * Custom code regions: SDK customization without limits
+          * Introducing Gram: Build MCP servers that perform
+          * Gram Functions: A TypeScript-native framework for building agent
+            tools
+          * Private server OAuth on Gram: Safe and simple MCP access for your
+            team
+          * OSS Release: Granary
+          * Java async support: Native non-blocking SDKs with reactive
+            streaming
+          * Generally Available: Java
+          * Native JSONL support in your SDKs
+          * MCP authorization: Roll out AI to every team, safely
+          * Managed Hosting for Generated MCP Servers
+          * Model Context Protocol: TypeScript SDKs for the Agentic AI
+            ecosystem
+          * OSS Release: Arazzo Parser
+          * OSS Release: OpenAPI Parser
+          * Type-Safe PHP Generation
+          * PHP is now generally available
+          * Alpha Release: Postman Generator
+          * Python Generation with Async & Pydantic Support
+          * Cleaner async Python SDKs with constructor-based approach
+          * React Hooks: TypeScript SDKs with TanStack React Query Support
+          * Code as Docs Integration: SDKs embedded in your API reference
+          * SDK Hooks: Safely add custom logic to your SDKs
+          * Detailed commit messages, PR messages & release notes for SDKs
+          * Speakeasy Ruby SDKs now support Ruby 4.0
+          * One-Click SDK Testing & Experimentation with SDK Sandboxes
+          * Introducing comprehensive SDK Testing
+          * Speakeasy Docs: the documentation your API deserves
+          * Announcing the Speakeasy MCP Gateway: one entry point between
+            every AI agent and every MCP server
+          * Introducing Speakeasy Suggest - Automatic OpenAPI Spec
+            Maintenance
+          * Enhanced Server-Sent Events support
+          * Self-hostable MCP servers — generate with the Speakeasy CLI
+          * Terraform provider generation now supports ephemeral resources
+            and actions
+          * Terraform provider generation feature bonanza
+          * Migrate any Terraform provider with data transformations
+          * Per-resource security and server URLs in Terraform providers
+          * Automatic polling support for Terraform providers
+          * Release: Terraform v2
+          * Python SDKs now use UV for 10x faster package management
+          * Speakeasy SDK generation now supports webhooks
+          * TypeScript SDKs now with Zod v4 Mini
+          * Replay Requests
+          * Request // Response: AI's Impact on API Integration Patterns and
+            Building Frictionless Developer Experiences
+          * Request // Response Episode 1: Separating Deployment from Release
+          * Request // Response Episode 3: Anthropic MCP, GraphQL vs REST,
+            and LLM API strategies
+          * Request // Response Episode 2: coding on airplanes, and the true
+            signal of good DevEx
+          * Request // Response Episode 4: API Security, LLMs, and Internal
+            Developer Tools
+          * The Rise of Developer Infrastructure
+          * Rss.xml
+          * Ruby SDK generation is now generally available
+          * Open enums and smart unions in Ruby SDKs
+          * Ruby SDK Generation in Beta
+          * Rust, AWS & API Usage Visualization
+          * SASS vs CSS Modules vs CSS-in-JS: How to Choose?
+          * SDK and Terraform Generation Improvements
+          * SDK Best Practices
+          * SDK Docs in Beta & a 2024 Sneak Peek
+          * SDK hooks, OpenAPI Reference & more!
+          * SDKs and Our March of Progress
+          * Seamlessly Managed SDK Versions
+          * Self-Serve SDK Creation Pipeline [Alpha]
+          * Sensitive Data Masking
+          * Ship types, not docs
+          * Skills vs MCP, a false dichotomy
+          * Speakeasy is SOC 2 Type II and ISO 27001 certified
+          * Speakeasy Branding Process: How We Decided on Look, Feel, Logo, &
+            a Mascot
+          * Speakeasy is now officially SOC 2 compliant
+          * In Depth: Speakeasy vs APIMatic
+          * In depth: Speakeasy vs Fern
+          * In depth: Speakeasy vs liblab
+          * Speakeasy vs OpenAPI/Swagger Generator
+          * In Depth: Speakeasy vs Stainless
+          * Lean SDKs with Standalone Functions
+          * Streamlined SDK Testing & AI-Ready APIs with MCP Server
+            Generation
+          * Tags Best Practices in OpenAPI
+          * Enhancing Terraform Providers with Configuration Validation
+          * Terraform Generation Alpha
+          * Terraform Provider Generation: 22% Faster, 32% Less Memory
+          * Terraform v2 & CLI Upgrade
+          * Test Suite Generation Early Access
+          * The REST Template Project
+          * Type Faith vs Type Safe
+          * Upgrade guide: TypeScript forward compatibility and fault
+            tolerance
+          * UI Enhancements & deepObject Query Support for Terraform
+          * Unity and C# now available as generation targets!
+          * MCP: An in-depth introduction
+          * Vitest vs Jest
+          * We were wrong about the hard problem
+          * The double standard of webhook security and API security
+          * What is an MCP gateway and do I need one?
+          * Where Claude Code falls short in AI security
+          * API Experts - Why an API Platform is important
+          * Why API Producers Should Care About JSONL
+          * Why We Built Our Own OpenAPI Linter (And How It Compares)
+          * Why work on API developer experience?
+          * Why we list Zod as a dependency and not as a peer dependency
+          * Windows Support, Quickstart, and a V1 Sunset
+          * Writing Zod code that minifies
+     * Customers
+          * Customer showcase | Speakeasy
+          * Offering a Terraform Provider and SDKs Accelerates Adoption and
+            Improves Customer Experience
+          * How a fintech with $123B of assets powers modern financial
+            experiences through Speakeasy
+          * Why Apiture Switched from OSS Generators to Speakeasy for
+            High-Quality SDKs
+          * How Autobound built production-ready MCP servers to power
+            intelligent sales outreach
+          * How Codat Delivered Three Production-Ready SDKs in Two Weeks
+          * ConductorOne Saves 650+ Hours of Development Time with Speakeasy
+          * Automating Terraform Provider Creation Cuts Costs by 8X and
+            Accelerates Go-to-Market
+          * How Fermat made Claude the company's super app with Speakeasy
+          * How Fivetran scaled enterprise data integration with AI-powered
+            workflows
+          * Formance Builds Open Source Fintech Infrastructure Supported by
+            Speakeasy SDKs
+          * A Terraform Provider for Kong in 120 Hours
+          * How Mistral AI Scaled to Millions of SDK Downloads with Speakeasy
+          * How Polar reinvented product onboarding with AI agents
+          * How Prove Accelerated Integration Speed with Automated SDKs
+          * SolarWinds Accelerates API Integration with Speakeasy-Generated
+            SDKs
+          * Unified.to Builds Six SDKs in One Week — While Saving $450K
+          * How Unstructured Makes Its Enterprise API More Accessible With
+            Speakeasy
+     * Legal
+          * Privacy policy
+          * Security and data privacy
+          * Vulnerability Disclosure Policy
+          * Terms of Service
+     * Support
+          * Enterprise support
+   Light
+   API PlatformMCP Platform
+   Speakeasy vs. OSS generators
+   _____________________ CTRL K
+   API platformMCP Platform
+     * Documentation
+          * * SDKs
+
+          * Introduction
+          * Core Concepts
+          * Generate SDKs
+          * Prepare OpenAPI Spec
+               * Best Practices
+               * Linting
+               * Merge Documents
+               * Overlays
+                    * Apply an overlay
+                    * Create overlays
+               * Transformations
+               * Maintenance
+          * Customize
+               * Customization Basics
+               * Structure
+                    * Customize imports
+                    * Customize namespaces
+               * Data Model
+                    * Types
+                    * Enums
+                    * OneOf
+                    * AllOf
+                    * Complex Numbers
+                    * Additional Properties
+               * Customize methods
+               * Responses & Error Handling
+                    * Customize Responses
+                    * Error Handling
+               * Global Parameters
+               * Configure servers
+               * Deprecations
+               * Security & Authentication
+                    * Overview
+                    * Configuration Options
+                    * Standard security schemes
+                    * OAuth 2.0 Authentication
+                    * Custom Security Schemes
+                    * Security Callbacks
+               * SDK Behavior
+                    * Enable Retries
+                    * Enable Timeouts
+                    * Enable Pagination
+                    * Enable Polling
+                    * Enable Streaming
+                    * Enable Server-Sent Events
+                    * Enable JSON Lines Responses
+                    * Customize HTTP Client
+                    * Override accept headers
+               * Data transforms
+               * Add webhooks to your SDKs
+               * Modify SDK code
+                    * Hooks
+                    * Custom code
+                         * Overview
+                         * Best practices
+                         * Technical reference
+                         * Ignoring files
+                    * Code regions
+                         * Custom code regions
+                         * Python
+                         * TypeScript
+                         * Java
+               * TypeScript
+                    * Additional index exports
+                    * Configuring Module Format
+                    * Disabling Barrel Files
+                    * Model validation and serialization
+                    * Control property casing: snake, camel
+                    * Generating React Hooks from OpenAPI
+               * Java
+                    * Java SDK Async Migration Guide
+                    * Parameter encoding
+                    * Spring Boot Integration for Java SDKs
+               * Python
+                    * Async hooks for Python
+          * Manage
+               * Version Control
+               * SDK Changelogs
+               * Github Setup
+               * Enable Sandbox
+               * Migrate
+                    * Poetry 2.0 and Python 3.10 Updates
+                    * Migrate from the Python v1 SDK
+                    * Migrate from Python poetry to uv
+                    * Migrate to Speakeasy workflows
+               * Forward Compatibility
+               * Handle Breaking Changes
+          * Publish SDK
+          * SDK Contract Testing
+               * SDK Contract Testing
+               * Bootstrapping SDK Tests
+               * Customizing SDK Tests
+               * Testing in Github Actions
+               * OpenAPI data in Tests
+               * Running SDK Tests
+               * Custom Contract Tests
+          * SDK Documentation
+               * Edit README
+               * Integrate with docs provider
+                    * README.com
+                    * Mintlify
+                    * Scalar
+                    * Bump.sh
+                    * Get Public URL Snippet
+               * Code Samples
+                    * Generate Code Samples
+                    * Code Samples API
+                    * Automated Code Sample URLs
+          * Language Design
+               * Design philosophy
+               * Maturity
+               * TypeScript
+                    * TypeScript design
+                    * Speakeasy vs. OSS generators
+                    * Migrating from OpenAPI Generator to Speakeasy
+                    * Feature reference
+                    * Standalone functions
+                    * Dependency management
+               * Python
+                    * Python design
+                    * Speakeasy vs. OSS generators
+                    * Feature reference
+               * Go
+                    * Go design
+                    * Speakeasy vs. OSS generators
+                         * Go SDK generator options
+                         * Installing SDK generators
+                         * Downloading the Swagger Petstore specification
+                         * Validating the Spec
+                         * Generating an SDK
+                         * SDK code compared: Package structure
+                         * Models
+                         * Nullable fields
+                         * SDK dependencies
+                         * Retries
+                         * Generated documentation
+                         * Automation
+                         * Summary
+                    * Feature reference
+               * Java
+                    * Java design
+                    * Speakeasy vs. OSS generators
+                    * Feature reference
+               * C#
+                    * C# design
+                    * Speakeasy vs. OSS generators
+               * PHP
+                    * PHP design
+                    * Speakeasy vs. OSS generators
+               * Ruby
+                    * Ruby design
+               * Rust [coming]
+                    * Rust design [coming soon]
+               * C++ [coming]
+                    * C++ design [coming soon]
+               * Unity [beta]
+                    * Unity design [coming soon]
+          * Guides
+               * Overlays
+                    * Creating Internal and External SDKs
+                    * Common JSON Path expressions
+                    * Common Overlays for SDKs
+               * Hooks
+                    * Authentication hook for local environment variables
+                    * Add telemetry to your SDK with SDK hooks and Posthog
+                    * Capture errors with SDK hooks and Sentry
+                    * Setting user agents in browser environments
+               * Populate Code Samples Without GitHub Actions
+               * SDK preview and breaking change detection
+               * Create a monorepo
+               * Generate SDK in a subdirectory
+               * Overriding Compile Commands for SDK Generation
+               * Switching default package manager to pnpm
+               * Manage OpenAPI specs with Speakeasy
+               * Tips for Integrating a TypeScript SDK into a Monorepo
+               * Utilizing user agent strings for telemetry
+          * Terraform
+
+          * Generate Terraform Provider
+          * Publish Terraform Provider
+          * Customize Terraform
+               * Overview
+               * Map API Entities
+               * Provider Configuration
+               * Resource Configuration
+               * Property Customization
+               * Validation and Dependencies
+               * Plan Modification
+               * Advanced Features
+               * Schema Keywords
+               * Common Troubleshooting and Recipes
+          * Guides
+               * Async resource provisioning with polling
+               * CRUD Example
+               * Hoisting
+               * Creating a Merged Terraform entity
+               * Removing non-Terraform endpoints from your OpenAPI document
+          * CLI Generation
+
+          * Generate CLI
+          * Overview
+          * Customize CLI
+          * Distribute CLI
+          * CLI
+
+          * Speakeasy
+               * CLI
+                    * Getting Started
+                    * Using with Docker
+                    * Using with mise toolkit
+                    * agent
+                         * context
+                         * feedback
+                         * setup-skills
+                    * ask
+                    * auth
+                         * login
+                         * logout
+                         * status
+                         * switch
+                    * billing
+                         * activate
+                    * bump
+                    * clean
+                    * configure
+                         * generation
+                              * check
+                         * github
+                         * local-workflow
+                         * publishing
+                         * sources
+                         * targets
+                         * tests
+                    * diff
+                         * files
+                         * from-pr
+                         * registry
+                    * lint
+                         * arazzo
+                         * config
+                         * openapi
+                    * MCP
+                         * deploy
+                    * merge
+                    * openapi
+                         * diff
+                         * lint
+                         * snip
+                         * transform
+                              * cleanup
+                              * convert-swagger
+                              * filter-operations
+                              * format
+                              * normalize
+                              * remove-unused
+                    * overlay
+                         * apply
+                         * compare
+                         * validate
+                    * patches
+                         * restore-pristine
+                              * all
+                              * file
+                         * view-diff
+                              * file
+                              * files
+                         * view-pristine
+                    * pull
+                    * quickstart
+                    * repro
+                    * run
+                    * status
+                    * suggest
+                         * error-types
+                         * operation-ids
+                    * tag
+                         * apply
+                         * promote
+                    * test
+                    * update
+               * Generation Config
+                    * Config File
+                    * CI/CD Pipeline
+                    * TypeScript Configuration
+                    * Python Configuration
+                    * Go Configuration
+                    * Java Configuration
+                    * C# Configuration
+                    * PHP Configuration
+                    * Ruby Configuration
+                    * Terraform Configuration
+                    * MCP Server Configuration
+                    * CLI Configuration
+               * Supported
+                    * OpenAPI Support Matrix
+                    * Speakeasy Terraform provider support matrix
+               * Extensions
+               * Workflow File
+               * Skills for AI Coding Assistants
+          * Standalone MCP
+
+          * Introduction
+          * Generate MCP Servers from OpenAPI Documents
+          * Deploy to Cloudflare Workers
+          * Deploy to Gram
+          * Custom Prompts
+          * Custom Resources
+          * Customize Tools
+          * Adapting Speakeasy MCP Servers for Remote Deployment
+          * Test with the Eval Command
+          * Add OAuth to an MCP Server
+          * Docs home
+          * Why Gram?
+          * Getting started
+               * Use TypeScript (Gram Functions)
+               * Use an OpenAPI spec
+          * Build
+
+          * Creating TypeScript tools
+               * Using the Functions Framework
+               * Tool annotations
+               * Using the MCP SDK
+               * Configuring environments
+               * Build and deploy
+          * Creating toolsets
+               * Curate a custom toolset
+               * Create a default toolset
+               * Advanced tool curation
+               * Configure environments
+               * Attach environments to tool sources
+               * Test toolsets
+               * Dynamic toolsets (experimental)
+               * Response filtering (experimental)
+          * Hosting MCP servers
+               * Deploy an MCP server
+               * Tool call healing
+               * Publish to MCP Registry
+          * Integrate MCP servers
+               * Agent Frameworks
+                    * LangChain
+                    * OpenAI Agents SDK
+                    * OpenAI Apps SDK
+                    * Mastra
+                    * Pydantic AI
+                    * Vellum
+               * Coding assistants & IDEs
+                    * ChatGPT Developer mode
+                    * Claude Code
+                    * Claude Desktop
+                    * Cline
+                    * Cursor
+                    * Gemini CLI
+                    * Mistral
+                    * n8n
+                    * Roo Code
+                    * Vellum Agents
+                    * IDE
+                    * Zapier
+                    * Troubleshooting
+               * Other tools
+                    * Anthropic API
+                    * OpenAI Responses API
+                    * Vercel AI SDK
+               * Export server configuration
+               * MCP Installation Guides
+          * Examples
+               * Add AI chat to an existing app
+               * Build MCP with external OAuth
+               * Deploy from GitHub Actions
+               * Create a Taskmaster MCP server
+               * Connect to external APIs
+               * Build a ChatGPT App
+               * Using environments with the Vercel AI SDK
+          * Catalog
+
+          * Catalog overview
+          * Sub catalogs
+          * Secure
+
+          * Security overview
+          * Add OAuth to MCP servers
+          * Add OAuth to Gram Functions
+          * OAuth proxy for internal servers
+          * Control server visibility
+          * API keys
+          * Environments
+          * Observe
+
+          * Insights (Beta)
+               * Insights
+               * Logs
+               * Metrics
+               * API reference
+          * Gram Agents API (Beta)
+               * Gram Agents API overview
+               * Billing and usage
+               * Usage examples
+          * Technical Reference
+
+          * Concepts
+               * Tool definitions
+               * Toolsets
+               * Tool variations
+               * Tool sources
+               * Deployments
+          * CLI reference
+               * gram install
+               * gram auth
+               * gram whoami
+               * gram stage
+               * gram stage function
+               * gram stage openapi
+               * gram push
+               * gram status
+               * gram update
+          * Elements
+
+          * Introduction
+          * Quickstart
+          * Plugins
+          * API Reference
+               * Functions
+                    * Calendar
+                    * Chat
+                    * ChatHistory
+                    * defineFrontendTool
+                    * getPresetRange
+                    * GramElementsProvider
+                    * Replay
+                    * ShareButton
+                    * TimeRangePicker
+                    * trackError
+                    * useChatId
+                    * useRecordCassette
+                    * useThreadId
+               * Interfaces
+                    * AttachmentsConfig
+                    * CalendarProps
+                    * Cassette
+                    * CassetteMessage
+                    * ComponentOverrides
+                    * ComposerConfig
+                    * Dimension
+                    * Dimensions
+                    * ElementsConfig
+                    * ErrorContext
+                    * ErrorTrackingConfigOption
+                    * HistoryConfig
+                    * ModalConfig
+                    * ModelConfig
+                    * Plugin
+                    * ReplayOptions
+                    * ShareButtonProps
+                    * SidecarConfig
+                    * Suggestion
+                    * ThemeConfig
+                    * TimeRange
+                    * TimeRangePickerProps
+                    * TimeRangePreset
+                    * ToolMentionsConfig
+                    * ToolsConfig
+                    * WelcomeConfig
+               * Type Aliases
+                    * CassettePart
+                    * ColorScheme
+                    * COLOR_SCHEMES
+                    * DangerousApiKeyAuthConfig
+                    * DateRangePreset
+                    * DENSITIES
+                    * Density
+                    * FrontendTool
+                    * GetSessionFn
+                    * ModalTriggerPosition
+                    * Model
+                    * RADII
+                    * Radius
+                    * ToolsFilter
+                    * UnifiedSessionAuthConfig
+                    * Variant
+                    * VARIANTS
+               * Variables
+                    * MODELS
+                    * PRESETS
+     * OpenAPI Hub
+          * * Introduction
+          * Info
+          * Servers
+               * Server Variables
+          * Security
+               * Security Schemes
+                    * Security Schemes in OpenAPI
+                    * API Key
+                    * HTTP Authentication
+                    * Mutual TLS
+                    * OAuth 2.0
+                    * OpenID Connect
+               * Custom Authentication
+          * Paths
+          * Operations
+          * Content & Media
+               * File Uploads
+               * Server-Sent Events
+               * JSONL
+          * Data Types
+               * Strings
+               * Numbers
+               * Booleans
+               * Null
+               * Arrays
+               * Objects
+                    * Polymorphism
+                    * XML
+               * Enums
+               * Composition
+          * Requests
+               * Parameters
+                    * Path Parameters
+                    * Query Parameters
+                    * Header Parameters
+                    * Cookie Parameters
+          * Responses
+               * Errors
+               * Rate Limiting
+               * Headers
+               * Links
+               * Retries
+          * Components
+          * Tags
+          * External Documentation
+          * References ($ref)
+          * Examples
+          * Extensions
+          * Overlays
+          * Webhooks
+               * Callbacks
+          * Arazzo
+          * Frameworks
+               * JavaScript/TypeScript
+
+               * NestJS
+               * Fastify
+               * Hono
+               * tRPC
+               * tsoa
+               * TypeSpec
+               * Elysia
+               * Zod
+               * Python
+
+               * FastAPI
+               * Django
+               * Flask
+               * Pydantic
+               * Go
+
+               * Goa
+               * gRPC-Gateway
+               * Gnostic
+               * Java
+
+               * Spring Boot
+               * PHP
+
+               * Laravel
+               * Ruby
+
+               * Ruby on Rails
+               * How To Generate an OpenAPI Document With Zod v3
+          * Pagination
+          * Guides
+               * Solving Equivalent Path Signatures
+               * What is the code samples extension?
+          * Release Notes
+
+          * OpenAPI Release Notes
+     * API Design
+          * * Introduction
+          * API Design Basics
+
+          * Picking an architecture
+          * Structuring URLs
+          * HTTP Methods
+          * Request parameters
+          * Data Formats
+          * Request Body
+          * Status Codes
+          * Response Body
+          * Advanced Considerations
+
+          * File uploads
+          * Pagination
+          * Filtering responses
+          * Caching
+          * Returning Errors
+          * Rate limiting
+          * Versioning
+          * Productizing APIs
+
+          * Expose APIs publicly
+          * Monetizing APIs
+          * Developer experience
+          * Documentation
+          * Enforcing consistency
+          * Security
+          * API Compliance
+          * Testing
+          * Collections
+     * MCP Hub
+          * * MCP Hub
+          * Intro to MCP
+
+          * An overview of MCP
+          * Core Concepts
+               * Tools
+               * Resources
+               * Transports
+               * Prompts
+               * Completables
+               * Roots
+               * Sampling
+               * What are MCP apps?
+          * MCP for Skeptics
+               * Common Criticisms Addressed
+               * When to Use MCP
+          * The OpenAI ecosystem
+          * Building MCP servers
+
+          * Design MCP tools
+               * Why less is more for MCP
+               * Dynamic Tool Discovery
+               * Response Filtering with JQ
+               * Build tools from OpenAPI
+               * Designing RAG tools for LLMs
+          * Deploying your MCP server
+          * Secure your MCP server
+               * State of OAuth in MCP
+               * Authorizing MCP servers
+          * Distribute your MCP server
+          * Monitor your MCP server
+          * Framework Guides
+               * Building an MCP server for FastAPI
+          * Using MCP servers
+
+          * Release Notes
+
+          * MCP Release Notes
+     * Blog
+          * Blog | Speakeasy
+          * Comparing Progressive Discovery and Semantic Search for Powering
+            Dynamic MCP
+          * 5 potential use cases for Arazzo
+          * A Copilot for your API spec and Pagination
+          * A Dev Portal on Demand
+          * A MonoRepo For Your SDKs
+          * Add prompts to your MCP server
+          * Designing agent experience: A practical guide for the era of AX
+          * AI transformation is the new digital transformation. Your vendor
+            stack isn't ready.
+          * Choosing an agent framework: LangChain vs LangGraph vs CrewAI vs
+            PydanticAI vs Mastra vs Vercel AI SDK
+          * Security first, capability second: Building virtual employees
+            enterprises can actually trust
+          * AI gateway vs MCP gateway vs AI control plane
+          * Announcing: EasySDK Generator
+          * Guide to API Auth & A Novel Approach
+          * API Change Detection & Open Enums
+          * Designing your API: Find the RESTful sweet spot
+          * API Experts - APIs That Build APIs
+          * API Experts - APIs to Fight Fraud
+          * API Experts - APIs that Move Money
+          * API Experts - APIs to Support your Customers
+          * API Key Management
+          * The Speakeasy API Landscape
+          * API Linting & Postman Generation
+          * API Ops - The Difficulties In Monitoring API Usage
+          * API Experts - Shipping APIs for Global Shipping
+          * APIs vs. SDKs: Key Differences, Use Cases, and Best Practices
+          * How to Handle Auth for Embedded React Components
+          * Automate your OAuth flows and streamline publishing
+          * Automated Code Samples & Overlay Management in Speakeasy Studio!
+          * Building a Model Context Protocol (MCP) server for Discord
+          * Build Custom Workflows - Sneak Peak!
+          * Building a SaaS API? Don't Forget Your Terraform Provider
+          * Building APIs (and SDKs) that never break
+          * How to Build an SDK in PHP
+          * Under the Hood: Building a High-Performance OpenAPI Parser in Go
+          * C# General Availability & our AI-enhanced CLI
+          * Choosing a docs vendor: Mintlify vs Scalar vs Bump vs ReadMe vs
+            Redocly
+          * Choosing an MCP gateway: Gram vs Composio vs Arcade vs Docker vs
+            TrueFoundry
+          * Choosing an SDK vendor: Speakeasy vs Fern vs Stainless vs
+            openapi-codegen
+          * Choosing your Python REST API framework
+          * Speakeasy vs. Stainless vs. Postman: MCP server generation
+            showdown
+          * Choosing an SDK generator: Speakeasy vs Stainless vs Fern vs
+            APIMatic vs OpenAPI Generator
+          * Contract testing with OpenAPI
+          * Choosing an AI chat builder kit: CopilotKit vs OpenAI ChatKit vs
+            Gram Elements
+          * How to factor cost into agentic tool design
+          * How To Create a Terraform Provider — a Guide for Absolute
+            Beginners
+          * Custom code regions & an Overlay playground!
+          * Custom type support in Terraform
+          * Customisable Imports, OpenAPI Overlays, and Terraform generation
+            improvements!
+          * Definitive Guide to API DevEx Portals
+          * Designing REST APIs: Responses Your Users Expect
+          * DevEx portals as a service
+          * Dynamic Dev Portals with Speakeasy Components
+          * End-to-end API testing with Arazzo, TypeScript, and Deno
+          * Early Access for Universal Typescript SDK and SDK Docs
+          * Easy Validation For OpenAPI
+          * EasyTemplate OSS Release: Templating Superpowers for Go
+          * Enforcing API consistency
+          * Making your CLI agent-friendly
+          * Faster / Better speakeasy run CLI commands
+          * Forward compatible SDKs: strict in development, lax in production
+          * Speakeasy's $15M Series A
+          * Generate MCP servers from OpenAPI documents
+          * Generating MCP servers from OpenAPI: Lessons from building 50+
+            production MCP servers
+          * In Depth: Gram vs FastMCP
+          * Game Dev & The Rise of Developer Experience
+          * A New Approach to Hiring A Founding Team
+          * How to Build SDKs for Your API: Handwritten, OpenAPI Generator,
+            or Speakeasy?
+          * How to Generate Terraform Providers
+          * How To Build A Best In Class Python SDK
+          * How to generate a mock server to test SDKs
+          * OpenAPI Tips - How to set operationId
+          * Why and How we invested in building a best in class CLI
+          * How We Built It - Universal Typescript
+          * Reducing MCP token usage by 100x — you don't need code mode
+          * Improved DevEX with Flattened SDKs
+          * Integrate with Your Favorite Docs Provider!
+          * Building SDKs for internal APIs: How to Boost developer velocity
+          * Speakeasy's $11M Raise
+          * Making sense of the AI control plane
+          * Introducing Universal TypeScript: A TS SDK your users will love
+          * Java General Availability and managed OAuth support
+          * Open Enums in Java: Why Classes Beat Native Enums for API
+            Evolution
+          * Java SDKs & Telemetry
+          * Java Unions with Jackson: Discriminated, Non-Discriminated, and
+            Primitives
+          * Label-Based Versioning, OpenAPI Transformations, and Overlay
+            Insights
+          * Building an AI agent with OpenAPI: LangChain vs. Haystack
+          * Last changelog of the year, looking ahead, and a thank you!
+          * Launch week 0 round up: webhooks, react query support & more!
+          * Lean TypeScript SDKs for the browser
+          * Using Loom for Remote Collaboration
+          * Preparing your repo for AI development: Lessons from Gram
+          * MCP vs CLI: a framework for choosing the right tool interface for
+            AI
+          * Mintlify Integration, Plan Validators, and Python Async Beta
+          * More APIs, Less Complexity
+          * Nivo vs Recharts - Which should you use?
+          * Securing Your NPM Publishing: Transitioning to Trusted Publishing
+          * On Demand Publishing & Pre-Releases
+          * One-click Request Sharing
+          * Evolving enums for evolving APIs
+          * $40,000 for OSS maintainers
+          * Designing Forward-Compatible Unions in TypeScript SDKs
+          * Speakeasy OpenAPI Editor vs Swagger Editor vs Postman
+          * OpenAPI has flaws, so what?
+          * Everything You Need to Know About OpenAPI
+          * Defining OpenAPI Servers - The Where To Your API's How
+          * OpenAPI Spec Drift Detection
+          * OpenAPI Studio, Laravel Integration, and 'what in Zod's name?'
+          * OpenAPI Tips - How to Handle Auth
+          * OpenAPI tips - Data types and formats
+          * OneOf, AllOf, AnyOf Oh my! How to define union types in OpenAPI
+          * OpenAPI Tips - Query Parameters & Serialization
+          * Webhooks & Callbacks in OpenAPI/Swagger
+          * OpenAPI Webhook Support
+          * Our Series A fundraise
+          * Pact vs OpenAPI: Choosing the right foundation for your API
+            testing strategy
+          * PHP Beta & SSO for Enterprises
+          * PHP General Availability, improved FastAPI Support, and a new
+            billing page experience
+          * PHP SDKs Now Available!
+          * Choosing the right JavaScript API framework
+          * Why less is more: The Playwright proliferation problem with MCP
+          * Preparing your website for LLMs.
+          * Prompting agents: What works and why
+          * How To Wrap Your Terraform Provider for Pulumi
+          * Type Safety in Python: Pydantic vs. Data Classes vs. Annotations
+            vs. TypedDicts
+          * Secure your Python SDK publishing with PyPI trusted publishing
+          * Python Alpha Release: Pydantic & Async
+          * Python HTTP Clients: Requests vs. HTTPX vs. AIOHTTP
+          * Python SDK Lazy Loading: 7.5x Faster Initialization, 80% Less
+            Memory Use
+          * MCP vs RAG
+          * React Embeds
+          * Rebranding Speakeasy
+          * Agent skills for OpenAPI and SDK generation
+          * Persistent edits: Add custom code anywhere in your generated SDKs
+          * Introducing CLI generation: the agent interface your API is
+            missing
+          * Introducing: API contract test generation
+          * Custom code regions: SDK customization without limits
+          * Introducing Gram: Build MCP servers that perform
+          * Gram Functions: A TypeScript-native framework for building agent
+            tools
+          * Private server OAuth on Gram: Safe and simple MCP access for your
+            team
+          * OSS Release: Granary
+          * Java async support: Native non-blocking SDKs with reactive
+            streaming
+          * Generally Available: Java
+          * Native JSONL support in your SDKs
+          * MCP authorization: Roll out AI to every team, safely
+          * Managed Hosting for Generated MCP Servers
+          * Model Context Protocol: TypeScript SDKs for the Agentic AI
+            ecosystem
+          * OSS Release: Arazzo Parser
+          * OSS Release: OpenAPI Parser
+          * Type-Safe PHP Generation
+          * PHP is now generally available
+          * Alpha Release: Postman Generator
+          * Python Generation with Async & Pydantic Support
+          * Cleaner async Python SDKs with constructor-based approach
+          * React Hooks: TypeScript SDKs with TanStack React Query Support
+          * Code as Docs Integration: SDKs embedded in your API reference
+          * SDK Hooks: Safely add custom logic to your SDKs
+          * Detailed commit messages, PR messages & release notes for SDKs
+          * Speakeasy Ruby SDKs now support Ruby 4.0
+          * One-Click SDK Testing & Experimentation with SDK Sandboxes
+          * Introducing comprehensive SDK Testing
+          * Speakeasy Docs: the documentation your API deserves
+          * Announcing the Speakeasy MCP Gateway: one entry point between
+            every AI agent and every MCP server
+          * Introducing Speakeasy Suggest - Automatic OpenAPI Spec
+            Maintenance
+          * Enhanced Server-Sent Events support
+          * Self-hostable MCP servers — generate with the Speakeasy CLI
+          * Terraform provider generation now supports ephemeral resources
+            and actions
+          * Terraform provider generation feature bonanza
+          * Migrate any Terraform provider with data transformations
+          * Per-resource security and server URLs in Terraform providers
+          * Automatic polling support for Terraform providers
+          * Release: Terraform v2
+          * Python SDKs now use UV for 10x faster package management
+          * Speakeasy SDK generation now supports webhooks
+          * TypeScript SDKs now with Zod v4 Mini
+          * Replay Requests
+          * Request // Response: AI's Impact on API Integration Patterns and
+            Building Frictionless Developer Experiences
+          * Request // Response Episode 1: Separating Deployment from Release
+          * Request // Response Episode 3: Anthropic MCP, GraphQL vs REST,
+            and LLM API strategies
+          * Request // Response Episode 2: coding on airplanes, and the true
+            signal of good DevEx
+          * Request // Response Episode 4: API Security, LLMs, and Internal
+            Developer Tools
+          * The Rise of Developer Infrastructure
+          * Rss.xml
+          * Ruby SDK generation is now generally available
+          * Open enums and smart unions in Ruby SDKs
+          * Ruby SDK Generation in Beta
+          * Rust, AWS & API Usage Visualization
+          * SASS vs CSS Modules vs CSS-in-JS: How to Choose?
+          * SDK and Terraform Generation Improvements
+          * SDK Best Practices
+          * SDK Docs in Beta & a 2024 Sneak Peek
+          * SDK hooks, OpenAPI Reference & more!
+          * SDKs and Our March of Progress
+          * Seamlessly Managed SDK Versions
+          * Self-Serve SDK Creation Pipeline [Alpha]
+          * Sensitive Data Masking
+          * Ship types, not docs
+          * Skills vs MCP, a false dichotomy
+          * Speakeasy is SOC 2 Type II and ISO 27001 certified
+          * Speakeasy Branding Process: How We Decided on Look, Feel, Logo, &
+            a Mascot
+          * Speakeasy is now officially SOC 2 compliant
+          * In Depth: Speakeasy vs APIMatic
+          * In depth: Speakeasy vs Fern
+          * In depth: Speakeasy vs liblab
+          * Speakeasy vs OpenAPI/Swagger Generator
+          * In Depth: Speakeasy vs Stainless
+          * Lean SDKs with Standalone Functions
+          * Streamlined SDK Testing & AI-Ready APIs with MCP Server
+            Generation
+          * Tags Best Practices in OpenAPI
+          * Enhancing Terraform Providers with Configuration Validation
+          * Terraform Generation Alpha
+          * Terraform Provider Generation: 22% Faster, 32% Less Memory
+          * Terraform v2 & CLI Upgrade
+          * Test Suite Generation Early Access
+          * The REST Template Project
+          * Type Faith vs Type Safe
+          * Upgrade guide: TypeScript forward compatibility and fault
+            tolerance
+          * UI Enhancements & deepObject Query Support for Terraform
+          * Unity and C# now available as generation targets!
+          * MCP: An in-depth introduction
+          * Vitest vs Jest
+          * We were wrong about the hard problem
+          * The double standard of webhook security and API security
+          * What is an MCP gateway and do I need one?
+          * Where Claude Code falls short in AI security
+          * API Experts - Why an API Platform is important
+          * Why API Producers Should Care About JSONL
+          * Why We Built Our Own OpenAPI Linter (And How It Compares)
+          * Why work on API developer experience?
+          * Why we list Zod as a dependency and not as a peer dependency
+          * Windows Support, Quickstart, and a V1 Sunset
+          * Writing Zod code that minifies
+     * Customers
+          * Customer showcase | Speakeasy
+          * Offering a Terraform Provider and SDKs Accelerates Adoption and
+            Improves Customer Experience
+          * How a fintech with $123B of assets powers modern financial
+            experiences through Speakeasy
+          * Why Apiture Switched from OSS Generators to Speakeasy for
+            High-Quality SDKs
+          * How Autobound built production-ready MCP servers to power
+            intelligent sales outreach
+          * How Codat Delivered Three Production-Ready SDKs in Two Weeks
+          * ConductorOne Saves 650+ Hours of Development Time with Speakeasy
+          * Automating Terraform Provider Creation Cuts Costs by 8X and
+            Accelerates Go-to-Market
+          * How Fermat made Claude the company's super app with Speakeasy
+          * How Fivetran scaled enterprise data integration with AI-powered
+            workflows
+          * Formance Builds Open Source Fintech Infrastructure Supported by
+            Speakeasy SDKs
+          * A Terraform Provider for Kong in 120 Hours
+          * How Mistral AI Scaled to Millions of SDK Downloads with Speakeasy
+          * How Polar reinvented product onboarding with AI agents
+          * How Prove Accelerated Integration Speed with Automated SDKs
+          * SolarWinds Accelerates API Integration with Speakeasy-Generated
+            SDKs
+          * Unified.to Builds Six SDKs in One Week — While Saving $450K
+          * How Unstructured Makes Its Enterprise API More Accessible With
+            Speakeasy
+     * Legal
+          * Privacy policy
+          * Security and data privacy
+          * Vulnerability Disclosure Policy
+          * Terms of Service
+     * Support
+          * Enterprise support
+
+   Docs
+
+   API platform
+   API platformMCP Platform
+     * * Docs home
+     * Introduction
+     * Core Concepts
+     * SDKs
+
+     * Generate SDKs
+     * Prepare OpenAPI Spec
+          * Best Practices
+          * Linting
+          * Merge Documents
+          * Overlays
+               * Apply an overlay
+               * Create overlays
+          * Transformations
+          * Maintenance
+     * Customize
+          * Customization Basics
+          * Structure
+               * Customize imports
+               * Customize namespaces
+          * Data Model
+               * Types
+               * Enums
+               * OneOf
+               * AllOf
+               * Complex Numbers
+               * Additional Properties
+          * Customize methods
+          * Responses & Error Handling
+               * Customize Responses
+               * Error Handling
+          * Global Parameters
+          * Configure servers
+          * Deprecations
+          * Security & Authentication
+               * Overview
+               * Configuration Options
+               * Standard security schemes
+               * OAuth 2.0 Authentication
+               * Custom Security Schemes
+               * Security Callbacks
+          * SDK Behavior
+               * Enable Retries
+               * Enable Timeouts
+               * Enable Pagination
+               * Enable Polling
+               * Enable Streaming
+               * Enable Server-Sent Events
+               * Enable JSON Lines Responses
+               * Customize HTTP Client
+               * Override accept headers
+          * Data transforms
+          * Add webhooks to your SDKs
+          * Modify SDK code
+               * Hooks
+               * Custom code
+                    * Overview
+                    * Best practices
+                    * Technical reference
+                    * Ignoring files
+               * Code regions
+                    * Custom code regions
+                    * Python
+                    * TypeScript
+                    * Java
+          * TypeScript
+               * Additional index exports
+               * Configuring Module Format
+               * Disabling Barrel Files
+               * Model validation and serialization
+               * Control property casing: snake, camel
+               * Generating React Hooks from OpenAPI
+          * Java
+               * Java SDK Async Migration Guide
+               * Parameter encoding
+               * Spring Boot Integration for Java SDKs
+          * Python
+               * Async hooks for Python
+     * Manage
+          * Version Control
+          * SDK Changelogs
+          * Github Setup
+          * Enable Sandbox
+          * Migrate
+               * Poetry 2.0 and Python 3.10 Updates
+               * Migrate from the Python v1 SDK
+               * Migrate from Python poetry to uv
+               * Migrate to Speakeasy workflows
+          * Forward Compatibility
+          * Handle Breaking Changes
+     * Publish SDK
+     * SDK Contract Testing
+          * SDK Contract Testing
+          * Bootstrapping SDK Tests
+          * Customizing SDK Tests
+          * Testing in Github Actions
+          * OpenAPI data in Tests
+          * Running SDK Tests
+          * Custom Contract Tests
+     * SDK Documentation
+          * Edit README
+          * Integrate with docs provider
+               * README.com
+               * Mintlify
+               * Scalar
+               * Bump.sh
+               * Get Public URL Snippet
+          * Code Samples
+               * Generate Code Samples
+               * Code Samples API
+               * Automated Code Sample URLs
+     * Language Design
+          * Design philosophy
+          * Maturity
+          * TypeScript
+               * TypeScript design
+               * Speakeasy vs. OSS generators
+               * Migrating from OpenAPI Generator to Speakeasy
+               * Feature reference
+               * Standalone functions
+               * Dependency management
+          * Python
+               * Python design
+               * Speakeasy vs. OSS generators
+               * Feature reference
+          * Go
+               * Go design
+               * Speakeasy vs. OSS generators
+               * Feature reference
+          * Java
+               * Java design
+               * Speakeasy vs. OSS generators
+               * Feature reference
+          * C#
+               * C# design
+               * Speakeasy vs. OSS generators
+          * PHP
+               * PHP design
+               * Speakeasy vs. OSS generators
+          * Ruby
+               * Ruby design
+          * Rust [coming]
+               * Rust design [coming soon]
+          * C++ [coming]
+               * C++ design [coming soon]
+          * Unity [beta]
+               * Unity design [coming soon]
+     * Guides
+          * Overlays
+               * Creating Internal and External SDKs
+               * Common JSON Path expressions
+               * Common Overlays for SDKs
+          * Hooks
+               * Authentication hook for local environment variables
+               * Add telemetry to your SDK with SDK hooks and Posthog
+               * Capture errors with SDK hooks and Sentry
+               * Setting user agents in browser environments
+          * Populate Code Samples Without GitHub Actions
+          * SDK preview and breaking change detection
+          * Create a monorepo
+          * Generate SDK in a subdirectory
+          * Overriding Compile Commands for SDK Generation
+          * Switching default package manager to pnpm
+          * Manage OpenAPI specs with Speakeasy
+          * Tips for Integrating a TypeScript SDK into a Monorepo
+          * Utilizing user agent strings for telemetry
+     * Terraform
+
+     * Generate Terraform Provider
+     * Publish Terraform Provider
+     * Customize Terraform
+          * Overview
+          * Map API Entities
+          * Provider Configuration
+          * Resource Configuration
+          * Property Customization
+          * Validation and Dependencies
+          * Plan Modification
+          * Advanced Features
+          * Schema Keywords
+          * Common Troubleshooting and Recipes
+     * Guides
+          * Async resource provisioning with polling
+          * CRUD Example
+          * Hoisting
+          * Creating a Merged Terraform entity
+          * Removing non-Terraform endpoints from your OpenAPI document
+     * CLI Generation
+
+     * Generate CLI
+     * Customize CLI
+     * Distribute CLI
+     * CLI
+
+     * Speakeasy
+          * CLI
+               * Getting Started
+               * Using with Docker
+               * Using with mise toolkit
+               * agent
+                    * context
+                    * feedback
+                    * setup-skills
+               * ask
+               * auth
+                    * login
+                    * logout
+                    * status
+                    * switch
+               * billing
+                    * activate
+               * bump
+               * clean
+               * configure
+                    * generation
+                         * check
+                    * github
+                    * local-workflow
+                    * publishing
+                    * sources
+                    * targets
+                    * tests
+               * diff
+                    * files
+                    * from-pr
+                    * registry
+               * lint
+                    * arazzo
+                    * config
+                    * openapi
+               * MCP
+                    * deploy
+               * merge
+               * openapi
+                    * diff
+                    * lint
+                    * snip
+                    * transform
+                         * cleanup
+                         * convert-swagger
+                         * filter-operations
+                         * format
+                         * normalize
+                         * remove-unused
+               * overlay
+                    * apply
+                    * compare
+                    * validate
+               * patches
+                    * restore-pristine
+                         * all
+                         * file
+                    * view-diff
+                         * file
+                         * files
+                    * view-pristine
+               * pull
+               * quickstart
+               * repro
+               * run
+               * status
+               * suggest
+                    * error-types
+                    * operation-ids
+               * tag
+                    * apply
+                    * promote
+               * test
+               * update
+          * Generation Config
+               * Config File
+               * CI/CD Pipeline
+               * TypeScript Configuration
+               * Python Configuration
+               * Go Configuration
+               * Java Configuration
+               * C# Configuration
+               * PHP Configuration
+               * Ruby Configuration
+               * Terraform Configuration
+               * MCP Server Configuration
+               * CLI Configuration
+          * Supported
+               * OpenAPI Support Matrix
+               * Speakeasy Terraform provider support matrix
+          * Extensions
+          * Workflow File
+          * Skills for AI Coding Assistants
+     * Standalone MCP
+
+     * Introduction
+     * Generate MCP Servers from OpenAPI Documents
+     * Deploy to Cloudflare Workers
+     * Deploy to Gram
+     * Custom Prompts
+     * Custom Resources
+     * Customize Tools
+     * Adapting Speakeasy MCP Servers for Remote Deployment
+     * Test with the Eval Command
+     * Add OAuth to an MCP Server
+     * Why Gram?
+     * Getting started
+          * Use TypeScript (Gram Functions)
+          * Use an OpenAPI spec
+     * Build
+
+     * Creating TypeScript tools
+          * Using the Functions Framework
+          * Tool annotations
+          * Using the MCP SDK
+          * Configuring environments
+          * Build and deploy
+     * Creating toolsets
+          * Curate a custom toolset
+          * Create a default toolset
+          * Advanced tool curation
+          * Configure environments
+          * Attach environments to tool sources
+          * Test toolsets
+          * Dynamic toolsets (experimental)
+          * Response filtering (experimental)
+     * Hosting MCP servers
+          * Deploy an MCP server
+          * Tool call healing
+          * Publish to MCP Registry
+     * Integrate MCP servers
+          * Agent Frameworks
+               * LangChain
+               * OpenAI Agents SDK
+               * OpenAI Apps SDK
+               * Mastra
+               * Pydantic AI
+               * Vellum
+          * Coding assistants & IDEs
+               * ChatGPT Developer mode
+               * Claude Code
+               * Claude Desktop
+               * Cline
+               * Cursor
+               * Gemini CLI
+               * Mistral
+               * n8n
+               * Roo Code
+               * Vellum Agents
+               * IDE
+               * Zapier
+               * Troubleshooting
+          * Other tools
+               * Anthropic API
+               * OpenAI Responses API
+               * Vercel AI SDK
+          * Export server configuration
+          * MCP Installation Guides
+     * Examples
+          * Add AI chat to an existing app
+          * Build MCP with external OAuth
+          * Deploy from GitHub Actions
+          * Create a Taskmaster MCP server
+          * Connect to external APIs
+          * Build a ChatGPT App
+          * Using environments with the Vercel AI SDK
+     * Catalog
+
+     * Catalog overview
+     * Sub catalogs
+     * Secure
+
+     * Security overview
+     * Add OAuth to MCP servers
+     * Add OAuth to Gram Functions
+     * OAuth proxy for internal servers
+     * Control server visibility
+     * API keys
+     * Environments
+     * Observe
+
+     * Insights (Beta)
+          * Insights
+          * Logs
+          * Metrics
+          * API reference
+     * Gram Agents API (Beta)
+          * Gram Agents API overview
+          * Billing and usage
+          * Usage examples
+     * Technical Reference
+
+     * Concepts
+          * Tool definitions
+          * Toolsets
+          * Tool variations
+          * Tool sources
+          * Deployments
+     * CLI reference
+          * gram install
+          * gram auth
+          * gram whoami
+          * gram stage
+          * gram stage function
+          * gram stage openapi
+          * gram push
+          * gram status
+          * gram update
+     * Elements
+
+     * Introduction
+     * Quickstart
+     * Plugins
+     * API Reference
+          * Functions
+               * Calendar
+               * Chat
+               * ChatHistory
+               * defineFrontendTool
+               * getPresetRange
+               * GramElementsProvider
+               * Replay
+               * ShareButton
+               * TimeRangePicker
+               * trackError
+               * useChatId
+               * useRecordCassette
+               * useThreadId
+          * Interfaces
+               * AttachmentsConfig
+               * CalendarProps
+               * Cassette
+               * CassetteMessage
+               * ComponentOverrides
+               * ComposerConfig
+               * Dimension
+               * Dimensions
+               * ElementsConfig
+               * ErrorContext
+               * ErrorTrackingConfigOption
+               * HistoryConfig
+               * ModalConfig
+               * ModelConfig
+               * Plugin
+               * ReplayOptions
+               * ShareButtonProps
+               * SidecarConfig
+               * Suggestion
+               * ThemeConfig
+               * TimeRange
+               * TimeRangePickerProps
+               * TimeRangePreset
+               * ToolMentionsConfig
+               * ToolsConfig
+               * WelcomeConfig
+          * Type Aliases
+               * CassettePart
+               * ColorScheme
+               * COLOR_SCHEMES
+               * DangerousApiKeyAuthConfig
+               * DateRangePreset
+               * DENSITIES
+               * Density
+               * FrontendTool
+               * GetSessionFn
+               * ModalTriggerPosition
+               * Model
+               * RADII
+               * Radius
+               * ToolsFilter
+               * UnifiedSessionAuthConfig
+               * Variant
+               * VARIANTS
+          * Variables
+               * MODELS
+               * PRESETS
+     * Changelog
+     * Slack Community
+   DocumentationLanguage DesignGoSpeakeasy vs. OSS generators
+   Copy markdown
+
+             Comparison guide: OpenAPI/Swagger Go client generation
+
+   Speakeasy generates idiomatic Go SDKs based on OpenAPI specifications.
+
+   In this post, we’ll take a look at why many of our users choose to switch
+   from OpenAPI Generate and other open-source generators to Speakeasy to
+   generate their Go SDKs.
+
+   Open-source SDK generators play an important role in experimentation and
+   smaller custom integrations but teams should publish high-quality SDKs for
+   their APIs that offer the best developer experience. Usable SDKs drive
+   adoption by making it easier for developers to switch to the API.
+
+   At Speakeasy, we generate idiomatic client SDKs in a variety of languages.
+   Our generators follow principles that ensure we generate SDKs that offer
+   the best developer experience so that you can focus on building your API,
+   and your developer-users can focus on delighting their users.
+
+Go SDK generator options
+
+   We’ll compare four Go SDK generators:
+
+    1. The Go generator  from the OpenAPI Generator  project.
+    2. oapi-codegen , an open-source OpenAPI Client and Server Code
+       Generator.
+    3. ogen , an open-source OpenAPI v3 code generator for Go.
+    4. The Speakeasy SDK generator.
+
+   Below is the summary of how the four evaluated generators compare. Our
+   recommendation is to use Speakeasy for generating Go SDKs for your APIs
+   (1st SDK free). If you are committed to using an open source generator, we
+   strongly recommend that you use oapi-codegen 
+
+   Feature
+   Version Support
+   Speakeasy
+   ✅ Go 1.14+
+   oapi-codegen
+   ✅ Good compatibility
+   OpenAPI Generator
+   ⚠️ Variable support
+   ogen
+   ⚠️ Newer Go versions
+   Dependencies
+   Speakeasy
+   ✅ 3 deps
+   oapi-codegen
+   ✅ No external deps
+   OpenAPI Generator
+   ❌ 1500+ deps, requires Java
+   ogen
+   ✅ No external deps
+   Go Idiomaticity
+   Speakeasy
+   ✅ Native Go patterns
+   oapi-codegen
+   ✅ Simple patterns
+   OpenAPI Generator
+   ❌ Non-idiomatic
+   ogen
+   ⚠️ Custom patterns
+   Nil-safe Getters
+   Speakeasy
+   ✅ Built-in safety
+   oapi-codegen
+   ❌ No safety
+   OpenAPI Generator
+   ❌ No safety
+   ogen
+   ❌ Custom optionals
+   Union Types
+   Speakeasy
+   ✅ Full support
+   oapi-codegen
+   ⚠️ Limited support
+   OpenAPI Generator
+   ❌ No support
+   ogen
+   ✅ Full support
+   Enums
+   Speakeasy
+   ✅ Type-safe
+   oapi-codegen
+   ✅ Type-safe
+   OpenAPI Generator
+   ❌ Strings only
+   ogen
+   ✅ Type-safe
+   Complex Numbers
+   Speakeasy
+   ✅ Big decimal
+   oapi-codegen
+   ❌ Basic types
+   OpenAPI Generator
+   ❌ Basic types
+   ogen
+   ❌ Basic types
+   Error Handling
+   Speakeasy
+   ✅ Custom types
+   oapi-codegen
+   ⚠️ Basic errors
+   OpenAPI Generator
+   ⚠️ Generic errors
+   ogen
+   ✅ Good errors
+   Retries
+   Speakeasy
+   ✅ Built-in
+   oapi-codegen
+   ❌ No support
+   OpenAPI Generator
+   ❌ No support
+   ogen
+   ❌ No support
+   Pagination
+   Speakeasy
+   ✅ Built-in
+   oapi-codegen
+   ⚠️ Manual only
+   OpenAPI Generator
+   ⚠️ Manual only
+   ogen
+   ⚠️ Manual only
+   Documentation
+   Speakeasy
+   ✅ Complete docs
+   oapi-codegen
+   ❌ Minimal docs
+   OpenAPI Generator
+   ⚠️ Basic docs
+   ogen
+   ⚠️ Basic docs
+   CI/CD Integration
+   Speakeasy
+   ✅ GitHub Actions
+   oapi-codegen
+   ❌ Manual only
+   OpenAPI Generator
+   ❌ Manual only
+   ogen
+   ❌ Manual only
+
+   Feature          Speakeasy   OpenAPI Generator oapi-codegen    ogen        
+   Version Support  ✅ Go 1.14+  ⚠️ Variable       ✅ Good          ⚠️ Newer Go 
+                                support           compatibility   versions    
+                                ❌ 1500+ deps,     ✅ No external   ✅ No        
+   Dependencies     ✅ 3 deps    requires Java     deps            external    
+                                                                  deps        
+   Go Idiomaticity  ✅ Native Go ❌ Non-idiomatic   ✅ Simple        ⚠️ Custom   
+                    patterns                      patterns        patterns    
+   Nil-safe Getters ✅ Built-in  ❌ No safety       ❌ No safety     ❌ Custom    
+                    safety                                        optionals   
+   Union Types      ✅ Full      ❌ No support      ⚠️ Limited      ✅ Full      
+                    support                       support         support     
+   Enums            ✅ Type-safe ❌ Strings only    ✅ Type-safe     ✅ Type-safe 
+   Complex Numbers  ✅ Big       ❌ Basic types     ❌ Basic types   ❌ Basic     
+                    decimal                                       types       
+   Error Handling   ✅ Custom    ⚠️ Generic errors ⚠️ Basic errors ✅ Good      
+                    types                                         errors      
+   Retries          ✅ Built-in  ❌ No support      ❌ No support    ❌ No        
+                                                                  support     
+   Pagination       ✅ Built-in  ⚠️ Manual only    ⚠️ Manual only  ⚠️ Manual   
+                                                                  only        
+   Documentation    ✅ Complete  ⚠️ Basic docs     ❌ Minimal docs  ⚠️ Basic    
+                    docs                                          docs        
+   CI/CD            ✅ GitHub    ❌ Manual only     ❌ Manual only   ❌ Manual    
+   Integration      Actions                                       only        
+
+   If you want the detailed technical breakdown, full of code comparisons,
+   read on!
+
+Installing SDK generators
+
+   To start our comparison, we installed all four generators on a local
+   machine running macOS.
+
+  Installing the OpenAPI Generator CLI
+
+   OpenAPI Generator depends on Java, which we covered at length previously.
+   We concluded that managing the OpenAPI Generator Java dependencies
+   manually just wasn’t worth the effort.
+
+   Installing openapi-generator using Homebrew installs openjdk@11 and its
+   many dependencies:
+
+ brew install openapi-generator
+
+   This adds the openapi-generator CLI to our path.
+
+  Installing oapi-codegen
+
+   We install oapi-codegen using the Go package manager:
+
+ go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
+
+   This command installs the oapi-codegen Go module and its dependencies .
+
+  Installing ogen
+
+   We followed the ogen quick start  to install ogen:
+
+ go install -v github.com/ogen-go/ogen/cmd/ogen@latest
+
+   This installs the ogen Go module with its dependencies .
+
+  How to install the Speakeasy CLI
+
+   To install the Speakeasy CLI, follow the steps in the Speakeasy Getting
+   Started guide.
+
+   In the terminal, run:
+
+ brew install speakeasy-api/tap/speakeasy
+
+   Next, authenticate with Speakeasy by running the following:
+
+ speakeasy auth login
+
+   This installs the Speakeasy CLI as a single binary without any
+   dependencies.
+
+Downloading the Swagger Petstore specification
+
+   Before we run our generators, we’ll need an OpenAPI specification to
+   generate a Go SDK for. The standard specification for testing OpenAPI SDK
+   generators and Swagger UI generators is the Swagger Petstore .
+
+   We’ll download the YAML specification at
+   https://petstore3.swagger.io/api/v3/openapi.yaml  to our working directory
+   and name it petstore.yaml:
+
+ curl https://petstore3.swagger.io/api/v3/openapi.yaml --output petstore.yaml
+
+Validating the Spec
+
+   Both the OpenAPI Generator and Speakeasy CLI can validate an OpenAPI spec.
+   We’ll run both and compare the output.
+
+  Validation using OpenAPI Generator
+
+   To validate petstore.yaml using OpenAPI Generator, run the following in
+   the terminal:
+
+ openapi-generator validate -i petstore.yaml
+
+   The OpenAPI Generator returns two warnings:
+
+ Warnings:
+         - Unused model: Address
+         - Unused model: Customer
+ [info] Spec has 2 recommendation(s).
+
+  Validation using Speakeasy
+
+   We’ll validate the spec with Speakeasy by running the following in the
+   terminal:
+
+ speakeasy validate openapi -s petstore.yaml
+
+   The Speakeasy validator returns ten warnings, seven hints that some
+   methods don’t specify any return values and three unused components. Each
+   warning includes a detailed JSON-formatted error with line numbers.
+
+   Since both validators validated the spec with only warnings, we can assume
+   that both will generate SDKs without issues.
+
+Generating an SDK
+
+   Now that we know our OpenAPI spec is valid, we can start generating SDKs.
+
+   We’ll generate each SDK in a unique subdirectory, relative to where we
+   saved the petstore.yaml spec file.
+
+  OpenAPI generate
+
+   OpenAPI Generator features SDK generators for multiple languages, often
+   with multiple options per language. We’ll test the Go generator in this
+   post.
+
+   We’ll generate an SDK by running the following in the terminal:
+
+ # Generate Petstore SDK using go generator
+ openapi-generator generate \
+   --input-spec petstore.yaml \
+   --generator-name go \
+   --output ./petstore-sdk-go-openapi
+
+   This command will print a list of files generated and populate the new
+   petstore-sdk-go-openapi directory.
+
+  Generating an SDK using oapi-codegen
+
+   Before we generate an SDK using oapi-codegen, we’ll need to create a new
+   directory for this SDK.
+
+   Run the following in the terminal:
+
+ mkdir petstore-sdk-go-oapi-codegen && cd petstore-sdk-go-oapi-codegen
+
+   Create a Go module in the new directory:
+
+ go mod init petstore-sdk-go-oapi-codegen
+
+   Then run the oapi-codegen Go module:
+
+ go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest -package petstore ../petstore.yaml > petstore.gen.go
+
+  Generating an SDK using ogen
+
+   We followed the ogen quick start documentation.
+
+   Create a new directory for our ogen SDK and navigate to it in the
+   terminal:
+
+ mkdir petstore-sdk-go-ogen && cd petstore-sdk-go-ogen
+
+   Create a new Go module in this directory:
+
+ go mod init petstore-sdk-go-ogen
+
+   Copy the petstore.yaml spec into this directory:
+
+ cp ../petstore.yaml .
+
+   Create a new file called generate.go with the following contents:
+
+ package project
+ 
+ //go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --target petstore --clean --no-server petstore.yaml
+
+   Then run the following from our new directory:
+
+ go generate ./...
+
+   In our testing, this resulted in a stack trace and returned an error
+   status:
+
+ INFO    convenient      Convenient errors are not available     {"reason": "operation has no \"default\" response", "at": "petstore.yaml:59:9"}
+ generate:
+     main.run
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/cmd/ogen/main.go:304
+   - build IR:
+     main.generate
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/cmd/ogen/main.go:64
+   - make ir:
+     github.com/ogen-go/ogen/gen.NewGenerator
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/gen/generator.go:112
+   - operations:
+     github.com/ogen-go/ogen/gen.(*Generator).makeIR
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/gen/generator.go:130
+   - path "/pet": put:
+     github.com/ogen-go/ogen/gen.(*Generator).makeOps
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/gen/generator.go:171
+   - requestBody:
+     github.com/ogen-go/ogen/gen.(*Generator).generateOperation
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/gen/gen_operation.go:49
+   - contents:
+     github.com/ogen-go/ogen/gen.(*Generator).generateRequest
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/gen/gen_request_body.go:27
+   - media: "application/x-www-form-urlencoded":
+     github.com/ogen-go/ogen/gen.(*Generator).generateContents
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/gen/gen_contents.go:330
+   - form parameter "tags":
+     github.com/ogen-go/ogen/gen.(*Generator).generateFormContent
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/gen/gen_contents.go:206
+   - nested objects not allowed:
+     github.com/ogen-go/ogen/gen.isParamAllowed
+         /Users/ritza/go/pkg/mod/github.com/ogen-go/ogen@v0.69.1/gen/gen_parameters.go:184
+ exit status 1
+ generate.go:3: running "go": exit status 1
+
+   The function isParamAllowed in gen/gen_parameters.go on line 184 throws
+   the error that nested objects are not allowed in form parameters. This
+   seems to indicate that ogen does not yet support generating an SDK for a
+   form request that takes nested objects as parameters, such as a pet’s
+   tags, when updating a pet in our schema.
+
+   The ogen documentation references a spec to download, so we’ll replace
+   petstore.yaml with their spec by running the following:
+
+ curl https://raw.githubusercontent.com/ogen-go/web/main/examples/petstore.yml --output petstore.yaml
+
+   With this new simplified spec, we’ll try the generator again:
+
+ go generate ./...
+
+   The generator runs without errors and prints a log line:
+
+ INFO    convenient      Convenient errors are not available     {"reason": "operation has no \"default\" response", "at": "petstore.yaml:19:9"}
+
+   This log line seems to indicate that some operations don’t return a
+   default response.
+
+  Speakeasy generate
+
+   Finally, we’ll generate an SDK using the Speakeasy CLI.
+
+ # Generate Petstore SDK using Speakeasy go generator
+ speakeasy quickstart
+
+   This command prints a log of warnings and information, then completes
+   successfully.
+
+SDK code compared: Package structure
+
+   We now have four different Go SDKs for the Petstore API:
+
+     * ./petstore-sdk-go-openapi/, generated by OpenAPI Generator.
+     * ./petstore-sdk-go-oapi-codegen/, generated by oapi-codegen.
+     * ./petstore-sdk-go-ogen/, generated by ogen.
+     * ./petstore-sdk-go-speakeasy/, generated by Speakeasy.
+
+   We’ll start our comparison by looking at the structure of each generated
+   SDK.
+
+   Let’s print a tree structure for each SDK’s directory. Run tree in the
+   terminal from our root directory:
+
+ tree -L 3 -F petstore-sdk-go-*
+
+   We’ll split the output by directory for each SDK below.
+
+  OpenAPI Generator SDK structure
+
+ petstore-sdk-go-openapi/
+ ├── README.md
+ ├── api/
+ │   └── openapi.yaml
+ ├── api_pet.go
+ ├── api_store.go
+ ├── api_user.go
+ ├── client.go
+ ├── configuration.go
+ ├── docs/
+ │   ├── Address.md
+ │   ├── APIResponse.md
+ │   ├── Category.md
+ │   ├── Customer.md
+ │   ├── Order.md
+ │   ├── Pet.md
+ │   ├── PetApi.md
+ │   ├── StoreApi.md
+ │   ├── Tag.md
+ │   ├── User.md
+ │   └── UserApi.md
+ ├── git_push.sh
+ ├── go.mod
+ ├── go.sum
+ ├── model_address.go
+ ├── model_api_response.go
+ ├── model_category.go
+ ├── model_customer.go
+ ├── model_order.go
+ ├── model_pet.go
+ ├── model_tag.go
+ ├── model_user.go
+ ├── response.go
+ ├── test/
+ │   ├── api_pet_test.go
+ │   ├── api_store_test.go
+ │   └── api_user_test.go
+ └── utils.go
+ 
+ OpenAPI Generator creates a relatively flat directory structure, with dedicated directories only for a copy of the spec (`api/openapi.yaml`), documentation (`docs/`), and tests (`test/`).
+ 
+ ### oapi-codegen SDK structure
+ 
+ ```bash
+ petstore-sdk-go-oapi-codegen/
+ ├── go.mod
+ └── petstore.gen.go
+
+   oapi-codegen creates only one file for all generated code, with no tests
+   or documentation outside this file. This generator appears to be better
+   suited to generating a small and specific client or server as part of a
+   larger project, rather than generating a usable SDK that can be packaged
+   for users.
+
+  ogen SDK structure
+
+ petstore-sdk-go-ogen/
+ ├── generate.go
+ ├── go.mod
+ ├── petstore/
+ │   ├── oas_cfg_gen.go
+ │   ├── oas_client_gen.go
+ │   ├── oas_interfaces_gen.go
+ │   ├── oas_json_gen.go
+ │   ├── oas_parameters_gen.go
+ │   ├── oas_request_encoders_gen.go
+ │   ├── oas_response_decoders_gen.go
+ │   ├── oas_schemas_gen.go
+ │   └── oas_validators_gen.go
+ └── petstore.yaml
+
+   ogen also generates relatively few files, which does not seem to be
+   because this generation was based on a simpler spec. This generator does
+   not seem to split schemas into different files and does not create any
+   tests or documentation.
+
+  Speakeasy SDK structure
+
+ petstore-sdk-go-speakeasy/
+ ├── README.md*
+ ├── USAGE.md*
+ ├── docs/
+ │   ├── models/
+ │   │   ├── operations/
+ │   │   └── shared/
+ │   └── sdks/
+ │       ├── pet/
+ │       ├── sdk/
+ │       ├── store/
+ │       └── user/
+ ├── files.gen*
+ ├── gen.yaml*
+ ├── go.mod*
+ ├── go.sum*
+ ├── pet.go*
+ ├── pkg/
+ │   ├── models/
+ │   │   ├── operations/
+ │   │   └── shared/
+ │   ├── types/
+ │   │   ├── bigint.go*
+ │   │   ├── date.go*
+ │   │   └── datetime.go*
+ │   └── utils/
+ │       ├── contenttype.go*
+ │       ├── form.go*
+ │       ├── headers.go*
+ │       ├── pathparams.go*
+ │       ├── queryparams.go*
+ │       ├── requestbody.go*
+ │       ├── retries.go*
+ │       ├── security.go*
+ │       └── utils.go*
+ ├── sdk.go*
+ ├── store.go*
+ └── user.go*
+
+   Speakeasy generates a clear file structure, split into directories for
+   models, types, and other utils. It also creates documentation, split by
+   models and endpoints.
+
+Models
+
+   Let’s compare how a pet is represented in each of the four SDKs:
+
+  OpenAPI Generator pet model
+
+ // OpenAPI Generator pet model
+ type Pet struct {
+         Id *int64 `json:"id,omitempty"`
+         Name string `json:"name"`
+         Category *Category `json:"category,omitempty"`
+         PhotoUrls []string `json:"photoUrls"`
+         Tags []Tag `json:"tags,omitempty"`
+         // pet status in the store
+         Status *string `json:"status,omitempty"`
+ }
+
+   OpenAPI Generator does not seem to take the spec’s enum for pet status
+   when generating the pet model. Status in this model is a pointer to a
+   string, while other generators create a type to validate the status field.
+   This model includes struct tags for JSON only.
+
+  oapi-codegen pet model
+
+ // oapi-codegen pet model
+ type Pet struct {
+         Category  *Category `json:"category,omitempty"`
+         Id        *int64    `json:"id,omitempty"`
+         Name      string    `json:"name"`
+         PhotoUrls []string  `json:"photoUrls"`
+         Status *PetStatus `json:"status,omitempty"`
+         Tags   *[]Tag     `json:"tags,omitempty"`
+ }
+
+   The oapi-codegen pet model is similar to the OpenAPI Generator version,
+   but it makes the Tags field a pointer to a slice of Tag, making it
+   possible for this field to be nil (which would be omitted from the JSON
+   due to omitempty).
+
+   The Status field is not a simple string pointer, but a pointer to
+   PetStatus, which provides better type safety, since PetStatus is a type
+   alias for string with specific allowable values.
+
+  ogen pet model
+
+ // ogen pet model
+ type Pet struct {
+         ID        OptInt64     `json:"id"`
+         Name      string       `json:"name"`
+         PhotoUrls []string     `json:"photoUrls"`
+         Status    OptPetStatus `json:"status"`
+ }
+
+   The pet model generated by ogen lacks the Tags and Category fields because
+   these fields are not present in the simplified spec used.
+
+   This struct uses a different approach to optional fields. It uses OptInt64
+   and OptPetStatus types. We’ll look at how ogen differs from Speakeasy in
+   terms of nullable fields below.
+
+  Speakeasy pet model
+
+ // Speakeasy pet model
+ type Pet struct {
+         Category  *Category `json:"category,omitempty" form:"name=category,json"`
+         ID        *int64    `json:"id,omitempty" form:"name=id"`
+         Name      string    `json:"name" form:"name=name"`
+         PhotoUrls []string  `json:"photoUrls" form:"name=photoUrls"`
+         // pet status in the store
+         Status *PetStatus `json:"status,omitempty" form:"name=status"`
+         Tags   []Tag      `json:"tags,omitempty" form:"name=tags,json"`
+ }
+
+   This struct is similar to the OpenAPI Generator version but includes
+   additional form struct tags, which are likely used to specify how these
+   fields should be encoded and decoded when used in form data (such as in an
+   HTTP POST request).
+
+   Like the oapi-codegen version, Status is a *PetStatus rather than a
+   *string.
+
+Nullable fields
+
+   Let’s focus on the difference between how ogen and Speakeasy handle the
+   nullable Status field.
+
+   Here’s the relevant code generated by ogen:
+
+ type PetStatus string
+ 
+ const (
+         PetStatusAvailable PetStatus = "available"
+         PetStatusPending   PetStatus = "pending"
+         PetStatusSold      PetStatus = "sold"
+ )
+ 
+ // OptPetStatus is optional PetStatus.
+ type OptPetStatus struct {
+         Value PetStatus
+         Set   bool
+ }
+
+   While much safer than the OpenAPI Generator’s pointer to a string type,
+   the ogen OptPetStatus is not idiomatic and provides no benefit over using
+   pointers, as Speakeasy does:
+
+ type PetStatus string
+ 
+ const (
+         PetStatusAvailable PetStatus = "available"
+         PetStatusPending   PetStatus = "pending"
+         PetStatusSold      PetStatus = "sold"
+ )
+ 
+ func (e PetStatus) ToPointer() *PetStatus {
+         return &e
+ }
+
+   The Speakeasy approach provides the same strong typing as the ogen
+   version. It defines PetStatus as a custom string type and defines
+   allowable values as constants. This practice ensures that you can’t
+   accidentally set a PetStatus to an invalid value.
+
+   The way Speakeasy handles the PetStatus type is more idiomatic to Go,
+   which generally favors simplicity and readability. Instead of defining a
+   new struct like OptPetStatus, Speakeasy uses a built-in language feature
+   (pointers) to achieve the same effect. This approach is simpler, more
+   consistent with the rest of the language, and easier to understand and
+   use.
+
+SDK dependencies
+
+   The ogen and oapi-codegen SDKs don’t add any dependencies to the generated
+   modules, so we’ll compare dependencies between OpenAPI Generator and
+   Speakeasy SDKs.
+
+   We’ll run the following for each of these two SDKs:
+
+ go mod graph
+
+   For Speakeasy, this command prints the following:
+
+ openapi github.com/cenkalti/backoff/v4@v4.2.0
+ openapi github.com/spyzhov/ajson@v0.8.0
+
+   The output for the OpenAPI Generator version is too long to show here, so
+   we’ll do a count instead:
+
+ go mod graph | wc -l
+ #> 1538
+
+   Speakeasy purposefully generates SDKs with fewer dependencies, which leads
+   to faster installs, reduced build times, and less exposure to potential
+   security vulnerabilities.
+
+   To see why the Speakeasy SDK depends on an exponential backoff module,
+   let’s discuss retries.
+
+Retries
+
+   The SDK generated by Speakeasy can automatically retry failed network
+   requests or retry requests based on specific error responses, providing a
+   straightforward developer experience for error handling.
+
+   To enable this feature, we need to use the Speakeasy x-speakeasy-retries
+   extension to the OpenAPI spec. We’ll update the OpenAPI spec to add
+   retries to the addPet operation as a test.
+
+   Edit petstore.yaml and add the following to the addPet operation:
+
+ x-speakeasy-retries:
+   strategy: backoff
+   backoff:
+     initialInterval: 500 # 500 milliseconds
+     maxInterval: 60000 # 60 seconds
+     maxElapsedTime: 3600000 # 5 minutes
+     exponent: 1.5
+
+   Add this snippet to the operation:
+
+ #...
+ paths:
+   /pet:
+     # ...
+     post:
+       #...
+       operationId: addPet
+       x-speakeasy-retries:
+         strategy: backoff
+         backoff:
+           initialInterval: 500 # 500 milliseconds
+           maxInterval: 60000 # 60 seconds
+           maxElapsedTime: 3600000 # 5 minutes
+           exponent: 1.5
+
+   Now we’ll rerun the Speakeasy generator to enable retries for failed
+   network requests when creating a new pet. It is also possible to enable
+   retries for the SDK as a whole by adding global x-speakeasy-retries at the
+   root of the OpenAPI spec.
+
+Generated documentation
+
+   Both Speakeasy and OpenAPI generate documentation for the generated code.
+
+   Each generator creates a README.md file at the base directory of the
+   generated SDK. This file serves as a primary source of documentation for
+   the SDK users. You have the option to customize this README using
+   Speakeasy to suit your needs better. For example, you could add your
+   brand’s logo, provide links for support, outline a code of conduct, or
+   include any other information that could be useful to the developers using
+   the SDK.
+
+   The Speakeasy-generated documentation really shines when it comes to usage
+   examples, which include working usage examples for all operations,
+   complete with imports and appropriately formatted string examples. For
+   instance, if a string is formatted as email in our OpenAPI spec, Speakeasy
+   generates usage examples with strings that look like email addresses.
+   Types formatted as uri will generate examples that look like URLs. This
+   makes example code clear and scannable.
+
+   We’ll test this by adding format: uri to the items in the photoUrls array.
+   Let’s compare the generated example code for the addPet endpoint after
+   adding this string format.
+
+  Usage example generated by OpenAPI
+
+   Here’s the example from the OpenAPI-generated documentation:
+
+ package main
+ 
+ import (
+     "context"
+     "fmt"
+     "os"
+     openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+ )
+ 
+ func main() {
+     pet := *openapiclient.NewPet("doggie", []string{"PhotoUrls_example"}) // Pet | Create a new pet in the store
+ 
+     configuration := openapiclient.NewConfiguration()
+     apiClient := openapiclient.NewAPIClient(configuration)
+     resp, r, err := apiClient.PetApi.AddPet(context.Background()).Pet(pet).Execute()
+     if err != nil {
+         fmt.Fprintf(os.Stderr, "Error when calling `PetApi.AddPet``: %v\n", err)
+         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+     }
+     // response from `AddPet`: Pet
+     fmt.Fprintf(os.Stdout, "Response from `PetApi.AddPet`: %v\n", resp)
+ }
+
+   Note how the OpenAPI example only includes required fields and ignores the
+   URI string format from our spec.
+
+  Usage example generated by Speakeasy
+
+   This is what Speakeasy generates as a usage example:
+
+ package main
+ 
+ import(
+         "context"
+         "log"
+         "openapi"
+         "openapi/pkg/models/shared"
+         "openapi/pkg/models/operations"
+ )
+ 
+ func main() {
+     s := sdk.New()
+ 
+     ctx := context.Background()
+     res, err := s.Pet.AddPetJSON(ctx, shared.Pet{
+         Category: &shared.Category{
+             ID: sdk.Int64(1),
+             Name: sdk.String("Dogs"),
+         },
+         ID: sdk.Int64(10),
+         Name: "doggie",
+         PhotoUrls: []string{
+             "https://ecstatic-original.info",
+         },
+         Status: shared.PetStatusSold.ToPointer(),
+         Tags: []shared.Tag{
+             shared.Tag{
+                 ID: sdk.Int64(681820),
+                 Name: sdk.String("Stacy Moore"),
+             },
+             shared.Tag{
+                 ID: sdk.Int64(697631),
+                 Name: sdk.String("Brenda Wisozk"),
+             },
+             shared.Tag{
+                 ID: sdk.Int64(670638),
+                 Name: sdk.String("Connie Herzog"),
+             },
+             shared.Tag{
+                 ID: sdk.Int64(315428),
+                 Name: sdk.String("Corey Hane III"),
+             },
+         },
+     }, operations.AddPetJSONSecurity{
+         PetstoreAuth: "",
+     })
+     if err != nil {
+         log.Fatal(err)
+     }
+ 
+     if res.Pet != nil {
+         // handle response
+     }
+ }
+
+   The example generated by Speakeasy includes all available fields and
+   correctly formats the example string in the PhotoUrls field.
+
+   We’ll also compare how OpenAPI and Speakeasy generate documentation for
+   the Status field in our pet model.
+
+  OpenAPI generate does not document enums
+
+   The OpenAPI-generated documentation reflects the generated code’s omission
+   of valid options for the Status field. Here’s the pet model documentation
+   generated by OpenAPI:
+
+    Pet properties generated by OpenAPI
+
+   Name
+   Id
+   Type
+   Pointer to int64
+   Notes
+   [optional]
+   Description
+   Name
+   Type
+   string
+   Notes
+   Description
+   Category
+   Type
+   Pointer to Category
+   Notes
+   [optional]
+   Description
+   PhotoUrls
+   Type
+   []string
+   Notes
+   Description
+   Tags
+   Type
+   Pointer to []Tag
+   Notes
+   [optional]
+   Description
+   Status
+   Type
+   Pointer to string
+   Notes
+   [optional]
+   Description
+   pet status in the store
+
+   Name      Type                Description             Notes      
+   Id        Pointer to int64                            [optional] 
+   Name      string              
+   Category  Pointer to Category                         [optional] 
+   PhotoUrls []string            
+   Tags      Pointer to []Tag                            [optional] 
+   Status    Pointer to string   pet status in the store [optional] 
+
+  Speakeasy generates documentation showing valid values
+
+   Here’s how Speakeasy documents the pet model:
+
+    Pet fields generated by Speakeasy
+
+   Field
+   Type
+   *Category
+   Description
+   N/A
+   Required
+   :heavy_minus_sign:
+   Example
+   Type
+   *int64
+   Description
+   N/A
+   Required
+   :heavy_minus_sign:
+   Example
+   10
+   Type
+   string
+   Description
+   N/A
+   Required
+   :heavy_check_mark:
+   Example
+   doggie
+   Type
+   []string
+   Description
+   N/A
+   Required
+   :heavy_check_mark:
+   Example
+   Type
+   *PetStatus
+   Description
+   pet status in the store
+   Required
+   :heavy_minus_sign:
+   Example
+   Type
+   []Tag
+   Description
+   N/A
+   Required
+   :heavy_minus_sign:
+   Example
+
+   Field Type       Required           Description             Example 
+         *Category  :heavy_minus_sign: N/A                     
+         *int64     :heavy_minus_sign: N/A                     10      
+         string     :heavy_check_mark: N/A                     doggie  
+         []string   :heavy_check_mark: N/A                     
+         *PetStatus :heavy_minus_sign: pet status in the store 
+         []Tag      :heavy_minus_sign: N/A                     
+
+   In the example above, PetStatus links to the following documentation:
+
+    PetStatus values generated by Speakeasy
+
+   Name
+   Value
+   available
+   Value
+   pending
+   Value
+   sold
+
+   Name Value     
+        available 
+        pending   
+        sold      
+
+Automation
+
+   This comparison focuses on the installation and usage of command line
+   generators, but the Speakeasy generator can also run as part of a CI
+   workflow, for instance as a GitHub Action , to make sure your SDK is
+   always up to date when your API spec changes.
+
+Summary
+
+   We’ve seen how Speakeasy generates lightweight, idiomatic SDKs for Go.
+
+   If you’re building an API that developers rely on and would like to
+   publish full-featured Go SDKs that follow best practices, we strongly
+   recommend giving the Speakeasy SDK generator a try.
+
+   Join our Slack community  to let us know how we can improve our Go SDK
+   generator or to suggest features.
+
+   Last updated on May 13, 2026
+
+   Copy markdown
+
+   On This Page
+
+     * Go SDK generator options
+     * Installing SDK generators
+     * Installing the OpenAPI Generator CLI
+     * Installing oapi-codegen
+     * Installing ogen
+     * How to install the Speakeasy CLI
+     * Downloading the Swagger Petstore specification
+     * Validating the Spec
+     * Validation using OpenAPI Generator
+     * Validation using Speakeasy
+     * Generating an SDK
+     * OpenAPI generate
+     * Generating an SDK using oapi-codegen
+     * Generating an SDK using ogen
+     * Speakeasy generate
+     * SDK code compared: Package structure
+     * OpenAPI Generator SDK structure
+     * ogen SDK structure
+     * Speakeasy SDK structure
+     * Models
+     * OpenAPI Generator pet model
+     * oapi-codegen pet model
+     * ogen pet model
+     * Speakeasy pet model
+     * Nullable fields
+     * SDK dependencies
+     * Retries
+     * Generated documentation
+     * Usage example generated by OpenAPI
+     * Usage example generated by Speakeasy
+     * OpenAPI generate does not document enums
+     * Pet properties generated by OpenAPI
+     * Speakeasy generates documentation showing valid values
+     * Pet fields generated by Speakeasy
+     * PetStatus values generated by Speakeasy
+     * Automation
+     * Summary
+   Edit this page Back to top
+
+   Speakeasy Logo
+
+   Follow us on:
+
+   TwitterLinkedInGitHubSlack
+
+   All Systems Normal
+
+  Products
+
+   AI Control PlaneGenerate SDKsGenerate Terraform ProvidersGenerate
+   CLIsGenerate MCP ServersDocs MCP
+
+  Resources
+
+   Resource LibraryDocsAI Control Plane GuideMCP HubChangelogEnterpriseAPI
+   Design GuideOpenAPI HubOur Blog
+
+  Company
+
+   About SpeakeasyCustomersContact UsBook A DemoWe Are HiringRoadmapTrust
+   Center
+
+  Legal
+
+   Privacy PolicyTerms of ServiceSecurityVulnerability Disclosure
+
+   All Systems Normal
+
+   Copyright © 2026.
+
+   Speakeasy. All rights reserved.
+
+   SDKsTerraformCLI GenerationCLIStandalone MCP
