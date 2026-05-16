@@ -146,11 +146,11 @@ func writeOptionsForm(mw *multipart.Writer, o *Options) error {
 	if err := writeList("from_formats", o.FromFormats); err != nil {
 		return err
 	}
-	if err := writeList("to_formats", o.ToFormats); err != nil {
+	if err := writeList("to_formats", castStrings(o.ToFormats)); err != nil {
 		return err
 	}
 	if o.ImageExportMode != "" {
-		if err := write("image_export_mode", o.ImageExportMode); err != nil {
+		if err := write("image_export_mode", string(o.ImageExportMode)); err != nil {
 			return err
 		}
 	}
@@ -174,17 +174,17 @@ func writeOptionsForm(mw *multipart.Writer, o *Options) error {
 		}
 	}
 	if o.PDFBackend != "" {
-		if err := write("pdf_backend", o.PDFBackend); err != nil {
+		if err := write("pdf_backend", string(o.PDFBackend)); err != nil {
 			return err
 		}
 	}
 	if o.TableMode != "" {
-		if err := write("table_mode", o.TableMode); err != nil {
+		if err := write("table_mode", string(o.TableMode)); err != nil {
 			return err
 		}
 	}
 	if o.Pipeline != "" {
-		if err := write("pipeline", o.Pipeline); err != nil {
+		if err := write("pipeline", string(o.Pipeline)); err != nil {
 			return err
 		}
 	}

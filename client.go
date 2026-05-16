@@ -33,17 +33,47 @@ type Client struct {
 	UserAgent string
 }
 
+// Option configures a Client at construction time. Pass options to New.
+type Option func(*Client)
+
+// WithAPIKey sets the X-Api-Key header sent on every request.
+func WithAPIKey(key string) Option { return func(c *Client) { c.APIKey = key } }
+
+// WithTenantID sets the X-Tenant-Id header sent on every request.
+func WithTenantID(id string) Option { return func(c *Client) { c.TenantID = id } }
+
+// WithUserAgent overrides the default User-Agent header.
+func WithUserAgent(ua string) Option { return func(c *Client) { c.UserAgent = ua } }
+
+// WithHTTPClient replaces the http.Client used for all requests. Useful for
+// tests, custom transports, or a non-default timeout.
+func WithHTTPClient(h *http.Client) Option { return func(c *Client) { c.HTTPClient = h } }
+
+// WithTimeout sets a request timeout on the default http.Client. Has no
+// effect if a custom client is provided via WithHTTPClient.
+func WithTimeout(d time.Duration) Option {
+	return func(c *Client) {
+		if c.HTTPClient != nil {
+			c.HTTPClient.Timeout = d
+		}
+	}
+}
+
 // New returns a Client targeting baseURL. An empty baseURL falls back to
-// DefaultBaseURL.
-func New(baseURL string) *Client {
+// DefaultBaseURL. Pass options to set credentials, a custom HTTP client, etc.
+func New(baseURL string, opts ...Option) *Client {
 	if baseURL == "" {
 		baseURL = DefaultBaseURL
 	}
-	return &Client{
+	c := &Client{
 		BaseURL:    strings.TrimRight(baseURL, "/"),
 		HTTPClient: &http.Client{Timeout: 5 * time.Minute},
 		UserAgent:  "doclingclient-go",
 	}
+	for _, opt := range opts {
+		opt(c)
+	}
+	return c
 }
 
 // APIError is returned for non-2xx responses from the docling-serve API.

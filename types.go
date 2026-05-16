@@ -1,41 +1,149 @@
 package doclingclient
 
-import "encoding/json"
-
-// Output formats accepted by the to_formats option. Only formats whose
-// content the server actually returns on ExportDocumentResponse are listed —
-// the spec also defines "yaml", "html_split_page", and "vtt", but the
-// response object carries no field for them, so docli cannot surface them.
-const (
-	FormatMD      = "md"
-	FormatJSON    = "json"
-	FormatHTML    = "html"
-	FormatText    = "text"
-	FormatDoctags = "doctags"
+import (
+	"encoding/json"
+	"fmt"
+	"strings"
 )
 
-// Image export modes accepted by the image_export_mode option. Only relevant
-// for image-capable outputs (json, yaml, html, html_split_page, md).
+// OutputFormat enumerates the to_formats values whose content this client
+// actually surfaces. The docling-serve OutputFormat enum also defines "yaml",
+// "html_split_page", and "vtt", but ExportDocumentResponse carries no field
+// for them, so this client does not list them.
+type OutputFormat string
+
 const (
-	ImageExportPlaceholder = "placeholder"
-	ImageExportEmbedded    = "embedded"
-	ImageExportReferenced  = "referenced"
+	FormatMD      OutputFormat = "md"
+	FormatJSON    OutputFormat = "json"
+	FormatHTML    OutputFormat = "html"
+	FormatText    OutputFormat = "text"
+	FormatDoctags OutputFormat = "doctags"
 )
 
-// ConversionStatus values reported by docling-serve.
+// ParseOutputFormat validates s and returns it as a typed OutputFormat.
+// Surrounding whitespace is trimmed.
+func ParseOutputFormat(s string) (OutputFormat, error) {
+	f := OutputFormat(strings.TrimSpace(s))
+	switch f {
+	case FormatMD, FormatJSON, FormatHTML, FormatText, FormatDoctags:
+		return f, nil
+	}
+	return "", fmt.Errorf("invalid output format %q (want md, json, html, text, or doctags)", s)
+}
+
+// ImageExportMode controls how images extracted from a document are placed in
+// the output. Relevant for image-capable outputs (json, html, md). The empty
+// value means "use server default".
+type ImageExportMode string
+
 const (
-	StatusPending        = "pending"
-	StatusStarted        = "started"
-	StatusFailure        = "failure"
-	StatusSuccess        = "success"
-	StatusPartialSuccess = "partial_success"
-	StatusSkipped        = "skipped"
+	ImageExportPlaceholder ImageExportMode = "placeholder"
+	ImageExportEmbedded    ImageExportMode = "embedded"
+	ImageExportReferenced  ImageExportMode = "referenced"
+)
+
+// ParseImageExportMode validates s. An empty string is accepted and returned
+// as the zero value, meaning "use server default".
+func ParseImageExportMode(s string) (ImageExportMode, error) {
+	if s == "" {
+		return "", nil
+	}
+	m := ImageExportMode(s)
+	switch m {
+	case ImageExportPlaceholder, ImageExportEmbedded, ImageExportReferenced:
+		return m, nil
+	}
+	return "", fmt.Errorf("invalid image export mode %q (want placeholder, embedded, or referenced)", s)
+}
+
+// Pipeline selects the docling processing pipeline.
+type Pipeline string
+
+const (
+	PipelineLegacy   Pipeline = "legacy"
+	PipelineStandard Pipeline = "standard"
+	PipelineVLM      Pipeline = "vlm"
+	PipelineASR      Pipeline = "asr"
+)
+
+// ParsePipeline validates s. An empty string is accepted and returned as the
+// zero value, meaning "use server default".
+func ParsePipeline(s string) (Pipeline, error) {
+	if s == "" {
+		return "", nil
+	}
+	p := Pipeline(s)
+	switch p {
+	case PipelineLegacy, PipelineStandard, PipelineVLM, PipelineASR:
+		return p, nil
+	}
+	return "", fmt.Errorf("invalid pipeline %q (want legacy, standard, vlm, or asr)", s)
+}
+
+// PDFBackend selects the PDF parsing backend used by docling-serve.
+type PDFBackend string
+
+const (
+	PDFBackendPyPDFium2    PDFBackend = "pypdfium2"
+	PDFBackendDoclingParse PDFBackend = "docling_parse"
+	PDFBackendDLParseV1    PDFBackend = "dlparse_v1"
+	PDFBackendDLParseV2    PDFBackend = "dlparse_v2"
+	PDFBackendDLParseV4    PDFBackend = "dlparse_v4"
+)
+
+// ParsePDFBackend validates s. An empty string is accepted and returned as the
+// zero value, meaning "use server default".
+func ParsePDFBackend(s string) (PDFBackend, error) {
+	if s == "" {
+		return "", nil
+	}
+	b := PDFBackend(s)
+	switch b {
+	case PDFBackendPyPDFium2, PDFBackendDoclingParse, PDFBackendDLParseV1, PDFBackendDLParseV2, PDFBackendDLParseV4:
+		return b, nil
+	}
+	return "", fmt.Errorf("invalid pdf backend %q (want pypdfium2, docling_parse, dlparse_v1, dlparse_v2, or dlparse_v4)", s)
+}
+
+// TableMode selects the table-structure extraction mode.
+type TableMode string
+
+const (
+	TableModeFast     TableMode = "fast"
+	TableModeAccurate TableMode = "accurate"
+)
+
+// ParseTableMode validates s. An empty string is accepted and returned as the
+// zero value, meaning "use server default".
+func ParseTableMode(s string) (TableMode, error) {
+	if s == "" {
+		return "", nil
+	}
+	m := TableMode(s)
+	switch m {
+	case TableModeFast, TableModeAccurate:
+		return m, nil
+	}
+	return "", fmt.Errorf("invalid table mode %q (want fast or accurate)", s)
+}
+
+// ConversionStatus values reported by docling-serve on ConvertResponse.Status.
+type ConversionStatus string
+
+const (
+	StatusPending        ConversionStatus = "pending"
+	StatusStarted        ConversionStatus = "started"
+	StatusFailure        ConversionStatus = "failure"
+	StatusSuccess        ConversionStatus = "success"
+	StatusPartialSuccess ConversionStatus = "partial_success"
+	StatusSkipped        ConversionStatus = "skipped"
 )
 
 // Source describes one input document. Use NewHTTPSource, NewFileSource or
 // build the struct manually.
 type Source struct {
-	// Kind is "http", "file" or "s3".
+	// Kind is "http" or "file". (The server also accepts "s3" but this client
+	// has no helper for it yet.)
 	Kind string `json:"kind"`
 
 	// http
@@ -63,23 +171,23 @@ func NewFileSource(filename, base64String string) Source {
 //
 // Pointer fields distinguish "unset" from "explicitly false/zero".
 type Options struct {
-	FromFormats      []string `json:"from_formats,omitempty"`
-	ToFormats        []string `json:"to_formats,omitempty"`
-	ImageExportMode  string   `json:"image_export_mode,omitempty"`
-	DoOCR            *bool    `json:"do_ocr,omitempty"`
-	ForceOCR         *bool    `json:"force_ocr,omitempty"`
-	OCREngine        string   `json:"ocr_engine,omitempty"`
-	OCRLang          []string `json:"ocr_lang,omitempty"`
-	OCRPreset        string   `json:"ocr_preset,omitempty"`
-	PDFBackend       string   `json:"pdf_backend,omitempty"`
-	TableMode        string   `json:"table_mode,omitempty"`
-	Pipeline         string   `json:"pipeline,omitempty"`
-	PageRange        []int    `json:"page_range,omitempty"`
-	AbortOnError     *bool    `json:"abort_on_error,omitempty"`
-	DoTableStructure *bool    `json:"do_table_structure,omitempty"`
-	IncludeImages    *bool    `json:"include_images,omitempty"`
-	ImagesScale      *float64 `json:"images_scale,omitempty"`
-	DocumentTimeout  *float64 `json:"document_timeout,omitempty"`
+	FromFormats      []string        `json:"from_formats,omitempty"`
+	ToFormats        []OutputFormat  `json:"to_formats,omitempty"`
+	ImageExportMode  ImageExportMode `json:"image_export_mode,omitempty"`
+	DoOCR            *bool           `json:"do_ocr,omitempty"`
+	ForceOCR         *bool           `json:"force_ocr,omitempty"`
+	OCREngine        string          `json:"ocr_engine,omitempty"`
+	OCRLang          []string        `json:"ocr_lang,omitempty"`
+	OCRPreset        string          `json:"ocr_preset,omitempty"`
+	PDFBackend       PDFBackend      `json:"pdf_backend,omitempty"`
+	TableMode        TableMode       `json:"table_mode,omitempty"`
+	Pipeline         Pipeline        `json:"pipeline,omitempty"`
+	PageRange        []int           `json:"page_range,omitempty"`
+	AbortOnError     *bool           `json:"abort_on_error,omitempty"`
+	DoTableStructure *bool           `json:"do_table_structure,omitempty"`
+	IncludeImages    *bool           `json:"include_images,omitempty"`
+	ImagesScale      *float64        `json:"images_scale,omitempty"`
+	DocumentTimeout  *float64        `json:"document_timeout,omitempty"`
 }
 
 // convertRequest is the JSON payload for /v1/convert/source.
@@ -91,10 +199,10 @@ type convertRequest struct {
 // ConvertResponse is the synchronous response from /v1/convert/{source,file}
 // when a single in-body document is requested.
 type ConvertResponse struct {
-	Document       Document    `json:"document"`
-	Status         string      `json:"status"`
-	Errors         []ErrorItem `json:"errors,omitempty"`
-	ProcessingTime float64     `json:"processing_time"`
+	Document       Document         `json:"document"`
+	Status         ConversionStatus `json:"status"`
+	Errors         []ErrorItem      `json:"errors,omitempty"`
+	ProcessingTime float64          `json:"processing_time"`
 }
 
 // Document holds the converted representations the server produced. Only the
@@ -115,5 +223,51 @@ type ErrorItem struct {
 	ErrorMessage  string `json:"error_message"`
 }
 
+// ConvertError is returned by ConvertResponse.Err when the server reports a
+// non-success status. It carries the conversion status and any per-component
+// errors the server attached.
+type ConvertError struct {
+	Status ConversionStatus
+	Errors []ErrorItem
+}
+
+func (e *ConvertError) Error() string {
+	if len(e.Errors) == 0 {
+		return fmt.Sprintf("docling: conversion %s with no error details", e.Status)
+	}
+	parts := make([]string, 0, len(e.Errors))
+	for _, ei := range e.Errors {
+		parts = append(parts, fmt.Sprintf("[%s/%s] %s", ei.ComponentType, ei.ModuleName, ei.ErrorMessage))
+	}
+	return fmt.Sprintf("docling: conversion %s: %s", e.Status, strings.Join(parts, "; "))
+}
+
+// Err returns a non-nil error when the server reports a failure status or
+// when partialIsError is true and the status is partial_success. The HTTP
+// call itself can succeed while the conversion fails — callers that don't
+// check Status by hand should call this.
+func (r *ConvertResponse) Err(partialIsError bool) error {
+	switch r.Status {
+	case StatusFailure:
+		return &ConvertError{Status: r.Status, Errors: r.Errors}
+	case StatusPartialSuccess:
+		if partialIsError {
+			return &ConvertError{Status: r.Status, Errors: r.Errors}
+		}
+	}
+	return nil
+}
+
 // Ptr returns a pointer to v. Handy for Options fields like DoOCR.
 func Ptr[T any](v T) *T { return &v }
+
+// castStrings widens a slice of any underlying-string type to []string. Used
+// internally to feed typed enum slices (e.g. []OutputFormat) into helpers
+// that accept []string.
+func castStrings[T ~string](vs []T) []string {
+	out := make([]string, len(vs))
+	for i, v := range vs {
+		out[i] = string(v)
+	}
+	return out
+}

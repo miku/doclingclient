@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestClient_New_TrimsTrailingSlash(t *testing.T) {
@@ -27,6 +28,36 @@ func TestClient_New_EmptyDefaults(t *testing.T) {
 	if c.HTTPClient == nil {
 		t.Error("HTTPClient nil")
 	}
+}
+
+func TestClient_New_WithOptions(t *testing.T) {
+	custom := &http.Client{}
+	c := New("http://example.org",
+		WithAPIKey("sk-1"),
+		WithTenantID("t-2"),
+		WithUserAgent("ua-3"),
+		WithHTTPClient(custom),
+	)
+	if c.APIKey != "sk-1" || c.TenantID != "t-2" || c.UserAgent != "ua-3" {
+		t.Errorf("options not applied: %+v", c)
+	}
+	if c.HTTPClient != custom {
+		t.Error("WithHTTPClient did not replace client")
+	}
+}
+
+func TestClient_WithTimeout(t *testing.T) {
+	c := New("", WithTimeout(7*time.Second))
+	if c.HTTPClient.Timeout != 7*time.Second {
+		t.Errorf("Timeout = %v", c.HTTPClient.Timeout)
+	}
+	// WithTimeout after WithHTTPClient mutates the supplied client.
+	custom := &http.Client{}
+	c2 := New("", WithHTTPClient(custom), WithTimeout(3*time.Second))
+	if custom.Timeout != 3*time.Second {
+		t.Errorf("custom.Timeout = %v", custom.Timeout)
+	}
+	_ = c2
 }
 
 func TestHealth(t *testing.T) {
@@ -141,7 +172,7 @@ func TestConvert_JSONSource(t *testing.T) {
 		if len(got.Sources) != 1 || got.Sources[0].URL != "https://example.org/x.pdf" {
 			t.Errorf("sources = %+v", got.Sources)
 		}
-		if got.Options == nil || got.Options.ToFormats[0] != "md" {
+		if got.Options == nil || got.Options.ToFormats[0] != FormatMD {
 			t.Errorf("options = %+v", got.Options)
 		}
 		_, _ = w.Write([]byte(`{"status":"success","processing_time":1.0,"document":{"filename":"x.pdf","md_content":"# hi"}}`))
@@ -151,7 +182,7 @@ func TestConvert_JSONSource(t *testing.T) {
 	resp, err := New(srv.URL).ConvertURL(
 		context.Background(),
 		"https://example.org/x.pdf",
-		&Options{ToFormats: []string{"md"}},
+		&Options{ToFormats: []OutputFormat{FormatMD}},
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -214,12 +245,12 @@ func TestConvertFile_Multipart(t *testing.T) {
 		context.Background(),
 		bytes.NewReader([]byte("fake-pdf-bytes")),
 		"paper.pdf",
-		&Options{ToFormats: []string{"md", "json"}},
+		&Options{ToFormats: []OutputFormat{FormatMD, FormatJSON}},
 	)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp.Status != "success" {
+	if resp.Status != StatusSuccess {
 		t.Errorf("status = %q", resp.Status)
 	}
 }

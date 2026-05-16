@@ -60,17 +60,25 @@ conversion and the chunking endpoints are not yet wrapped.
 ```go
 import "github.com/miku/doclingclient"
 
-c := doclingclient.New("http://localhost:5001")
+c := doclingclient.New("http://localhost:5001",
+    doclingclient.WithAPIKey("sk-..."),
+    doclingclient.WithTimeout(10*time.Minute),
+)
 
 // Convert a URL.
 resp, err := c.ConvertURL(ctx, "https://arxiv.org/pdf/2206.01062", nil)
 
 // Convert a local file (streamed multipart upload).
 resp, err := c.ConvertPath(ctx, "paper.pdf", &doclingclient.Options{
-    ToFormats: []string{doclingclient.FormatMD, doclingclient.FormatJSON},
+    ToFormats: []doclingclient.OutputFormat{doclingclient.FormatMD, doclingclient.FormatJSON},
     DoOCR:     doclingclient.Ptr(true),
+    Pipeline:  doclingclient.PipelineStandard,
 })
 
+// A 200 response can still describe a conversion failure — check it.
+if err := resp.Err(false); err != nil {
+    log.Fatal(err)
+}
 fmt.Println(resp.Document.MDContent)
 ```
 

@@ -9,7 +9,7 @@ import (
 
 func TestCacheKey_Deterministic(t *testing.T) {
 	src := []Source{NewHTTPSource("https://example.org/a.pdf")}
-	opts := &Options{ToFormats: []string{"md", "json"}, DoOCR: Ptr(true)}
+	opts := &Options{ToFormats: []OutputFormat{FormatMD, FormatJSON}, DoOCR: Ptr(true)}
 
 	a := CacheKey(src, opts)
 	b := CacheKey(src, opts)
@@ -23,7 +23,7 @@ func TestCacheKey_Deterministic(t *testing.T) {
 
 func TestCacheKey_SensitiveToInputs(t *testing.T) {
 	base := []Source{NewHTTPSource("https://example.org/a.pdf")}
-	baseOpts := &Options{ToFormats: []string{"md"}}
+	baseOpts := &Options{ToFormats: []OutputFormat{FormatMD}}
 	baseKey := CacheKey(base, baseOpts)
 
 	cases := []struct {
@@ -32,10 +32,10 @@ func TestCacheKey_SensitiveToInputs(t *testing.T) {
 		opts *Options
 	}{
 		{"different url", []Source{NewHTTPSource("https://example.org/b.pdf")}, baseOpts},
-		{"different to_formats", base, &Options{ToFormats: []string{"json"}}},
-		{"extra to_format", base, &Options{ToFormats: []string{"md", "json"}}},
-		{"toggle ocr", base, &Options{ToFormats: []string{"md"}, DoOCR: Ptr(true)}},
-		{"different page range", base, &Options{ToFormats: []string{"md"}, PageRange: []int{1, 5}}},
+		{"different to_formats", base, &Options{ToFormats: []OutputFormat{FormatJSON}}},
+		{"extra to_format", base, &Options{ToFormats: []OutputFormat{FormatMD, FormatJSON}}},
+		{"toggle ocr", base, &Options{ToFormats: []OutputFormat{FormatMD}, DoOCR: Ptr(true)}},
+		{"different page range", base, &Options{ToFormats: []OutputFormat{FormatMD}, PageRange: []int{1, 5}}},
 		{"nil opts", base, nil},
 	}
 	seen := map[string]string{baseKey: "base"}

@@ -11,7 +11,7 @@ import (
 	"github.com/miku/doclingclient"
 )
 
-func TestValidateOutputFormats(t *testing.T) {
+func TestParseOutputFormats(t *testing.T) {
 	cases := []struct {
 		name    string
 		in      []string
@@ -27,31 +27,12 @@ func TestValidateOutputFormats(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := validateOutputFormats(tc.in)
+			got, err := parseOutputFormats(tc.in)
 			if (err != nil) != tc.wantErr {
 				t.Errorf("err=%v, wantErr=%v", err, tc.wantErr)
 			}
-		})
-	}
-}
-
-func TestValidateImageExportMode(t *testing.T) {
-	cases := []struct {
-		in      string
-		wantErr bool
-	}{
-		{"", false},
-		{"placeholder", false},
-		{"embedded", false},
-		{"referenced", false},
-		{"PLACEHOLDER", true},
-		{"bogus", true},
-	}
-	for _, tc := range cases {
-		t.Run(tc.in, func(t *testing.T) {
-			err := validateImageExportMode(tc.in)
-			if (err != nil) != tc.wantErr {
-				t.Errorf("err=%v, wantErr=%v", err, tc.wantErr)
+			if err == nil && len(got) != len(tc.in) {
+				t.Errorf("len(got)=%d, want %d", len(got), len(tc.in))
 			}
 		})
 	}
@@ -172,17 +153,17 @@ func TestWriteContent(t *testing.T) {
 		DoctagsContent: "<doc/>",
 	}
 	cases := []struct {
-		format string
+		format doclingclient.OutputFormat
 		want   string
 	}{
-		{"md", "# hi"},
-		{"json", `{"a":1}`},
-		{"html", "<p>hi</p>"},
-		{"text", "hi"},
-		{"doctags", "<doc/>"},
+		{doclingclient.FormatMD, "# hi"},
+		{doclingclient.FormatJSON, `{"a":1}`},
+		{doclingclient.FormatHTML, "<p>hi</p>"},
+		{doclingclient.FormatText, "hi"},
+		{doclingclient.FormatDoctags, "<doc/>"},
 	}
 	for _, tc := range cases {
-		t.Run(tc.format, func(t *testing.T) {
+		t.Run(string(tc.format), func(t *testing.T) {
 			var buf bytes.Buffer
 			if err := writeContent(&buf, doc, tc.format); err != nil {
 				t.Fatal(err)
@@ -196,8 +177,11 @@ func TestWriteContent(t *testing.T) {
 
 func TestWriteContent_EmptyContent(t *testing.T) {
 	empty := doclingclient.Document{Filename: "x.pdf"}
-	for _, f := range []string{"md", "json", "html", "text", "doctags"} {
-		t.Run(f, func(t *testing.T) {
+	for _, f := range []doclingclient.OutputFormat{
+		doclingclient.FormatMD, doclingclient.FormatJSON, doclingclient.FormatHTML,
+		doclingclient.FormatText, doclingclient.FormatDoctags,
+	} {
+		t.Run(string(f), func(t *testing.T) {
 			var buf bytes.Buffer
 			if err := writeContent(&buf, empty, f); err == nil {
 				t.Errorf("%s: expected error for empty content", f)
@@ -208,7 +192,7 @@ func TestWriteContent_EmptyContent(t *testing.T) {
 
 func TestWriteContent_UnknownFormat(t *testing.T) {
 	var buf bytes.Buffer
-	err := writeContent(&buf, doclingclient.Document{MDContent: "x"}, "bogus")
+	err := writeContent(&buf, doclingclient.Document{MDContent: "x"}, doclingclient.OutputFormat("bogus"))
 	if err == nil {
 		t.Error("expected error for unknown format")
 	}
@@ -237,16 +221,16 @@ func TestWriteStatus_Text(t *testing.T) {
 }
 
 func TestFormatExtension(t *testing.T) {
-	cases := map[string]string{
-		"md":      ".md",
-		"json":    ".json",
-		"html":    ".html",
-		"text":    ".txt",
-		"doctags": ".doctags",
-		"bogus":   "",
+	cases := map[doclingclient.OutputFormat]string{
+		doclingclient.FormatMD:                ".md",
+		doclingclient.FormatJSON:              ".json",
+		doclingclient.FormatHTML:              ".html",
+		doclingclient.FormatText:              ".txt",
+		doclingclient.FormatDoctags:           ".doctags",
+		doclingclient.OutputFormat("bogus"):   "",
 	}
 	for in, want := range cases {
-		t.Run(in, func(t *testing.T) {
+		t.Run(string(in), func(t *testing.T) {
 			if got := formatExtension(in); got != want {
 				t.Errorf("got %q, want %q", got, want)
 			}
@@ -262,7 +246,7 @@ func TestWriteOutputs(t *testing.T) {
 		JSONContent: json.RawMessage(`{"a":1}`),
 		HTMLContent: "<p>hi</p>",
 	}
-	if err := writeOutputs(dir, doc, []string{"md", "json", "html"}); err != nil {
+	if err := writeOutputs(dir, doc, []doclingclient.OutputFormat{doclingclient.FormatMD, doclingclient.FormatJSON, doclingclient.FormatHTML}); err != nil {
 		t.Fatal(err)
 	}
 	want := map[string]string{
@@ -285,7 +269,7 @@ func TestWriteOutputs(t *testing.T) {
 func TestWriteOutputs_EmptyContent(t *testing.T) {
 	dir := t.TempDir()
 	doc := doclingclient.Document{Filename: "x.pdf"}
-	if err := writeOutputs(dir, doc, []string{"md"}); err == nil {
+	if err := writeOutputs(dir, doc, []doclingclient.OutputFormat{doclingclient.FormatMD}); err == nil {
 		t.Error("expected error for empty content")
 	}
 }
@@ -293,7 +277,7 @@ func TestWriteOutputs_EmptyContent(t *testing.T) {
 func TestWriteOutputs_FallbackBasename(t *testing.T) {
 	dir := t.TempDir()
 	doc := doclingclient.Document{MDContent: "# hi"}
-	if err := writeOutputs(dir, doc, []string{"md"}); err != nil {
+	if err := writeOutputs(dir, doc, []doclingclient.OutputFormat{doclingclient.FormatMD}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(filepath.Join(dir, "output.md")); err != nil {

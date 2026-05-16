@@ -60,10 +60,14 @@ func newRootCmd() (*cobra.Command, *globalOpts) {
 }
 
 func newClient(g *globalOpts) *doclingclient.Client {
-	c := doclingclient.New(g.server)
-	c.APIKey = g.apiKey
-	c.TenantID = g.tenantID
-	return c
+	var opts []doclingclient.Option
+	if g.apiKey != "" {
+		opts = append(opts, doclingclient.WithAPIKey(g.apiKey))
+	}
+	if g.tenantID != "" {
+		opts = append(opts, doclingclient.WithTenantID(g.tenantID))
+	}
+	return doclingclient.New(g.server, opts...)
 }
 
 func newConvertCmd(g *globalOpts) *cobra.Command {
@@ -111,24 +115,30 @@ fresh or from cache, and --status-format json for ad-hoc post-processing.`,
 			if len(toFormats) == 0 {
 				return fmt.Errorf("--to requires at least one format")
 			}
-			if err := validateOutputFormats(toFormats); err != nil {
+			parsedTo, err := parseOutputFormats(toFormats)
+			if err != nil {
 				return err
 			}
-			if err := validateImageExportMode(imageExportMode); err != nil {
-				return err
+			parsedImageMode, err := doclingclient.ParseImageExportMode(imageExportMode)
+			if err != nil {
+				return fmt.Errorf("--image-export-mode: %w", err)
+			}
+			parsedTableMode, err := doclingclient.ParseTableMode(tableMode)
+			if err != nil {
+				return fmt.Errorf("--table-mode: %w", err)
 			}
 			if err := validateStatusFormat(statusFormat); err != nil {
 				return err
 			}
-			primary := toFormats[0]
+			primary := parsedTo[0]
 
 			opts := &doclingclient.Options{
 				FromFormats:     fromFormats,
-				ToFormats:       toFormats,
+				ToFormats:       parsedTo,
 				DoOCR:           doclingclient.Ptr(ocr),
 				ForceOCR:        doclingclient.Ptr(forceOCR),
-				TableMode:       tableMode,
-				ImageExportMode: imageExportMode,
+				TableMode:       parsedTableMode,
+				ImageExportMode: parsedImageMode,
 			}
 			if ocrLang != "" {
 				opts.OCRLang = splitComma(ocrLang)
@@ -166,11 +176,14 @@ fresh or from cache, and --status-format json for ad-hoc post-processing.`,
 					return err
 				}
 			}
-			if outputDir != "" {
-				return writeOutputs(outputDir, resp.Document, toFormats)
+			if err := resp.Err(false); err != nil {
+				return err
 			}
-			if len(toFormats) > 1 {
-				fmt.Fprintf(os.Stderr, "docli: only %q written to stdout (%d formats requested); pass --output <dir> to write all\n", primary, len(toFormats))
+			if outputDir != "" {
+				return writeOutputs(outputDir, resp.Document, parsedTo)
+			}
+			if len(parsedTo) > 1 {
+				fmt.Fprintf(os.Stderr, "docli: only %q written to stdout (%d formats requested); pass --output <dir> to write all\n", primary, len(parsedTo))
 			}
 			return writeContent(cmd.OutOrStdout(), resp.Document, primary)
 		},
@@ -326,9 +339,9 @@ func sourceForKey(input string) (doclingclient.Source, error) {
 }
 
 // formatExtension returns the file extension docli uses when writing a given
-// format to disk. Returns "" for unknown formats; validateOutputFormats should
+// format to disk. Returns "" for unknown formats; ParseOutputFormat should
 // have rejected those before we get here.
-func formatExtension(f string) string {
+func formatExtension(f doclingclient.OutputFormat) string {
 	switch f {
 	case doclingclient.FormatMD:
 		return ".md"
@@ -347,7 +360,7 @@ func formatExtension(f string) string {
 // writeOutputs writes one file per requested format into dir, named after the
 // server-reported source filename (extension stripped). Errors out before
 // writing anything if any format's content is empty.
-func writeOutputs(dir string, doc doclingclient.Document, formats []string) error {
+func writeOutputs(dir string, doc doclingclient.Document, formats []doclingclient.OutputFormat) error {
 	base := strings.TrimSuffix(doc.Filename, filepath.Ext(doc.Filename))
 	if base == "" {
 		base = "output"
@@ -382,7 +395,7 @@ func writeOutputs(dir string, doc doclingclient.Document, formats []string) erro
 	return nil
 }
 
-func writeContent(w io.Writer, doc doclingclient.Document, format string) error {
+func writeContent(w io.Writer, doc doclingclient.Document, format doclingclient.OutputFormat) error {
 	if format == doclingclient.FormatJSON {
 		if len(doc.JSONContent) == 0 {
 			return fmt.Errorf("server returned no %s content", format)
@@ -442,19 +455,17 @@ func parsePageRange(s string) ([]int, error) {
 	return []int{p, p}, nil
 }
 
-func validateOutputFormats(formats []string) error {
-	for _, f := range formats {
-		switch strings.TrimSpace(f) {
-		case doclingclient.FormatMD,
-			doclingclient.FormatJSON,
-			doclingclient.FormatHTML,
-			doclingclient.FormatText,
-			doclingclient.FormatDoctags:
-		default:
-			return fmt.Errorf("invalid --to format %q (want md, json, html, text, or doctags)", f)
+// parseOutputFormats validates and types every --to value, preserving order.
+func parseOutputFormats(formats []string) ([]doclingclient.OutputFormat, error) {
+	out := make([]doclingclient.OutputFormat, len(formats))
+	for i, s := range formats {
+		f, err := doclingclient.ParseOutputFormat(s)
+		if err != nil {
+			return nil, fmt.Errorf("--to: %w", err)
 		}
+		out[i] = f
 	}
-	return nil
+	return out, nil
 }
 
 func validateStatusFormat(f string) error {
@@ -484,7 +495,7 @@ func writeStatus(w io.Writer, resp *doclingclient.ConvertResponse, cached bool, 
 			Filename       string                    `json:"filename,omitempty"`
 			Errors         []doclingclient.ErrorItem `json:"errors"`
 		}{
-			Status:         resp.Status,
+			Status:         string(resp.Status),
 			ProcessingTime: resp.ProcessingTime,
 			Source:         origin,
 			Filename:       resp.Document.Filename,
@@ -502,17 +513,6 @@ func writeStatus(w io.Writer, resp *doclingclient.ConvertResponse, cached bool, 
 		}
 	}
 	return nil
-}
-
-func validateImageExportMode(m string) error {
-	switch m {
-	case "",
-		doclingclient.ImageExportPlaceholder,
-		doclingclient.ImageExportEmbedded,
-		doclingclient.ImageExportReferenced:
-		return nil
-	}
-	return fmt.Errorf("invalid --image-export-mode %q (want placeholder, embedded, or referenced)", m)
 }
 
 func envOr(key, def string) string {
