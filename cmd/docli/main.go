@@ -55,7 +55,7 @@ func newRootCmd() (*cobra.Command, *globalOpts) {
 	root.PersistentFlags().StringVarP(&g.apiKey, "api-key", "K", os.Getenv("DOCLING_API_KEY"), "API key, sent as X-Api-Key (env DOCLING_API_KEY)")
 	root.PersistentFlags().StringVarP(&g.tenantID, "tenant", "T", os.Getenv("DOCLING_TENANT_ID"), "tenant ID, sent as X-Tenant-Id (env DOCLING_TENANT_ID)")
 
-	root.AddCommand(newConvertCmd(g), newHealthCmd(g, "health"), newHealthCmd(g, "ready"), newVersionCmd(g))
+	root.AddCommand(newConvertCmd(g), newChunkCmd(g), newHealthCmd(g, "health"), newHealthCmd(g, "ready"), newVersionCmd(g))
 	return root, g
 }
 
@@ -206,6 +206,106 @@ fresh or from cache, and --status-format json for ad-hoc post-processing.`,
 	cmd.Flags().StringVar(&statusFormat, "status-format", "text", "format for --status output: text or json")
 	cmd.Flags().StringVar(&cacheDir, "cache-dir", envOr("DOCLING_CACHE_DIR", ""), "cache directory (env DOCLING_CACHE_DIR, default XDG cache)")
 	cmd.Flags().BoolVar(&noCache, "no-cache", false, "disable the on-disk result cache")
+	return cmd
+}
+
+func newChunkCmd(g *globalOpts) *cobra.Command {
+	var (
+		chunker        string
+		maxTokens      int
+		tokenizer      string
+		mergePeers     bool
+		mdTables       bool
+		includeRawText bool
+		pretty         bool
+	)
+	cmd := &cobra.Command{
+		Use:   "chunk <url-or-path>",
+		Short: "Chunk a document for embedding or RAG pipelines",
+		Long: `Convert a document and split it into chunks via the docling-serve /v1/chunk endpoints.
+
+Two chunker strategies are available:
+
+- hybrid (default): tokenization-aware chunks on top of hierarchical
+  splitting. Each chunk fits a token budget derived from --tokenizer or
+  capped by --max-tokens. This is the chunker most RAG pipelines want.
+- hierarchical: one chunk per detected document element (heading, paragraph,
+  list item, table). No tokenizer involved; chunk sizes vary with document
+  structure.
+
+Output is JSONL on stdout, one chunk per line. Use --pretty for indented JSON of the full response instead.`,
+		Args:    cobra.ExactArgs(1),
+		Example: "  docli chunk https://arxiv.org/pdf/2206.01062 > paper.jsonl\n  docli chunk --chunker hierarchical paper.pdf > paper.jsonl\n  docli chunk --max-tokens 512 --tokenizer Qwen/Qwen3-Embedding-0.6B paper.pdf",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			input := args[0]
+			client := newClient(g)
+			ctx := cmd.Context()
+
+			var resp *doclingclient.ChunkResponse
+			var err error
+			switch doclingclient.Chunker(chunker) {
+			case doclingclient.ChunkerHybrid:
+				opts := &doclingclient.HybridChunkerOptions{}
+				if cmd.Flags().Changed("max-tokens") {
+					opts.MaxTokens = doclingclient.Ptr(maxTokens)
+				}
+				if tokenizer != "" {
+					opts.Tokenizer = tokenizer
+				}
+				if cmd.Flags().Changed("merge-peers") {
+					opts.MergePeers = doclingclient.Ptr(mergePeers)
+				}
+				if cmd.Flags().Changed("markdown-tables") {
+					opts.UseMarkdownTables = doclingclient.Ptr(mdTables)
+				}
+				if cmd.Flags().Changed("include-raw-text") {
+					opts.IncludeRawText = doclingclient.Ptr(includeRawText)
+				}
+				if isURL(input) {
+					resp, err = client.ChunkHybrid(ctx, []doclingclient.Source{doclingclient.NewHTTPSource(input)}, nil, opts)
+				} else {
+					resp, err = client.ChunkHybridPath(ctx, input, nil, opts)
+				}
+			case doclingclient.ChunkerHierarchical:
+				opts := &doclingclient.HierarchicalChunkerOptions{}
+				if cmd.Flags().Changed("markdown-tables") {
+					opts.UseMarkdownTables = doclingclient.Ptr(mdTables)
+				}
+				if cmd.Flags().Changed("include-raw-text") {
+					opts.IncludeRawText = doclingclient.Ptr(includeRawText)
+				}
+				if isURL(input) {
+					resp, err = client.ChunkHierarchical(ctx, []doclingclient.Source{doclingclient.NewHTTPSource(input)}, nil, opts)
+				} else {
+					resp, err = client.ChunkHierarchicalPath(ctx, input, nil, opts)
+				}
+			default:
+				return fmt.Errorf("invalid --chunker %q (want hybrid or hierarchical)", chunker)
+			}
+			if err != nil {
+				return err
+			}
+
+			enc := json.NewEncoder(cmd.OutOrStdout())
+			if pretty {
+				enc.SetIndent("", "  ")
+				return enc.Encode(resp)
+			}
+			for _, c := range resp.Chunks {
+				if err := enc.Encode(c); err != nil {
+					return err
+				}
+			}
+			return nil
+		},
+	}
+	cmd.Flags().StringVar(&chunker, "chunker", "hybrid", "chunker: hybrid or hierarchical")
+	cmd.Flags().IntVar(&maxTokens, "max-tokens", 0, "hybrid: max tokens per chunk (server default if unset)")
+	cmd.Flags().StringVar(&tokenizer, "tokenizer", "", "hybrid: HuggingFace tokenizer model (server default if empty)")
+	cmd.Flags().BoolVar(&mergePeers, "merge-peers", true, "hybrid: merge undersized successive chunks with same headings")
+	cmd.Flags().BoolVar(&mdTables, "markdown-tables", false, "serialize tables as Markdown instead of triplets")
+	cmd.Flags().BoolVar(&includeRawText, "include-raw-text", false, "populate raw_text alongside contextualized text")
+	cmd.Flags().BoolVar(&pretty, "pretty", false, "emit the full response as indented JSON instead of JSONL of chunks")
 	return cmd
 }
 

@@ -62,7 +62,7 @@ func (c *Client) ConvertFile(ctx context.Context, files []FileUpload, opts *Opti
 		}()
 
 		if opts != nil {
-			if err = writeOptionsForm(mw, opts); err != nil {
+			if err = writeOptionsForm(mw, opts, ""); err != nil {
 				return
 			}
 		}
@@ -119,12 +119,13 @@ func EncodeFile(path string) (Source, error) {
 
 // writeOptionsForm writes Options fields as multipart form fields. List-typed
 // fields are written as repeated values, matching what the FastAPI form
-// parser expects.
-func writeOptionsForm(mw *multipart.Writer, o *Options) error {
-	write := func(k, v string) error { return mw.WriteField(k, v) }
+// parser expects. The /v1/convert/file endpoint uses bare field names ("");
+// the /v1/chunk/{...}/file endpoints prefix them with "convert_".
+func writeOptionsForm(mw *multipart.Writer, o *Options, prefix string) error {
+	write := func(k, v string) error { return mw.WriteField(prefix+k, v) }
 	writeList := func(k string, vs []string) error {
 		for _, v := range vs {
-			if err := mw.WriteField(k, v); err != nil {
+			if err := mw.WriteField(prefix+k, v); err != nil {
 				return err
 			}
 		}

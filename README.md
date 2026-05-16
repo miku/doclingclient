@@ -47,9 +47,10 @@ Create a minimal Go library first, then wrap a nice CLI around the library, so
 interacting with the docling service becomes easy to integrate into shell
 scripts or ad-hoc human (and maybe agentic) terminal use.
 
-**Status**: Library and CLI cover synchronous conversion (`/v1/convert/source`
-and `/v1/convert/file`), the `/health`, `/ready`, and `/version` routes. Async
-conversion and the chunking endpoints are not yet wrapped.
+**Status**: Library and CLI cover synchronous conversion
+(`/v1/convert/{source,file}`), synchronous chunking
+(`/v1/chunk/{hybrid,hierarchical}/{source,file}`), and the `/health`, `/ready`,
+and `/version` routes. Async conversion and async chunking are not yet wrapped.
 
 **Requirements**: Go 1.22+. A running `docling-serve` instance (defaults to
 `http://localhost:5001`).
@@ -121,6 +122,33 @@ docli health
 docli ready
 docli version
 ```
+
+### Chunking for RAG / embeddings
+
+`docli chunk` converts a document and splits it into chunks suitable for
+feeding into an embedding model. Output is JSONL on stdout — one chunk per
+line — which composes naturally with `jq`.
+
+```sh
+# Default hybrid chunker (tokenization-aware).
+docli chunk paper.pdf > chunks.jsonl
+
+# Pick a tokenizer and cap chunks to 512 tokens.
+docli chunk --max-tokens 512 \
+    --tokenizer Qwen/Qwen3-Embedding-0.6B \
+    paper.pdf > chunks.jsonl
+
+# Structural chunks (one per document element, no tokenizer).
+docli chunk --chunker hierarchical paper.pdf > chunks.jsonl
+
+# Inspect chunk lengths.
+jq -r '.num_tokens // (.text | length)' < chunks.jsonl | sort -n | uniq -c
+```
+
+Each chunk carries `text` (with headings/captions inlined for context),
+optional `raw_text` (with `--include-raw-text`), `num_tokens`, `headings`,
+`captions`, `page_numbers`, and `doc_items` references into the source
+document.
 
 ### `docli convert` flags
 
