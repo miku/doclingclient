@@ -65,8 +65,7 @@ scripts or ad-hoc human (and maybe agentic) terminal use.
 (`/v1/chunk/{hybrid,hierarchical}/{source,file}`), and the `/health`, `/ready`,
 and `/version` routes. Async conversion and async chunking are not yet wrapped.
 
-**Requirements**: Go 1.22+. A running `docling-serve` instance (defaults to
-`http://localhost:5001`).
+**Requirements**: Go 1.24+. A running `docling-serve` instance (defaults to `http://localhost:5001`).
 
 
 ## Library
