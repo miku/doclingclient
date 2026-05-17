@@ -178,7 +178,7 @@ func (c *FileCache) Put(key string, resp *ConvertResponse) error {
 // up a new server release within a day.
 const versionTTL = 24 * time.Hour
 
-const versionFileName = "_server_version.json"
+const versionFileName = "server_version.json"
 
 type cachedVersion struct {
 	FetchedAt time.Time      `json:"fetched_at"`
@@ -261,5 +261,5 @@ func (c *FileCache) WriteVersionInfo(v map[string]any) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filepath.Join(c.Dir(), "_info.json"), b, 0o644)
+	return os.WriteFile(filepath.Join(c.Dir(), "server_info.json"), b, 0o644)
 }
