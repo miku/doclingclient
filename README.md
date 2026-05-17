@@ -83,7 +83,9 @@ resp, err := c.ConvertURL(ctx, "https://arxiv.org/pdf/2206.01062", nil)
 
 // Convert a local file (streamed multipart upload).
 resp, err := c.ConvertPath(ctx, "paper.pdf", &doclingclient.Options{
-    ToFormats: []doclingclient.OutputFormat{doclingclient.FormatMD, doclingclient.FormatJSON},
+    ToFormats: []doclingclient.OutputFormat{
+                    doclingclient.FormatMD,
+                    doclingclient.FormatJSON},
     DoOCR:     doclingclient.Ptr(true),
     Pipeline:  doclingclient.PipelineStandard,
 })
