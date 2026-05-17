@@ -96,9 +96,9 @@ func TestChunkHybridFile_Multipart(t *testing.T) {
 			t.Fatal(err)
 		}
 		var (
-			sawFile       bool
-			tokenizer     string
-			maxTokens     string
+			sawFile        bool
+			tokenizer      string
+			maxTokens      string
 			convertBackend string
 		)
 		for {

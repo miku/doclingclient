@@ -222,12 +222,12 @@ func TestWriteStatus_Text(t *testing.T) {
 
 func TestFormatExtension(t *testing.T) {
 	cases := map[doclingclient.OutputFormat]string{
-		doclingclient.FormatMD:                ".md",
-		doclingclient.FormatJSON:              ".json",
-		doclingclient.FormatHTML:              ".html",
-		doclingclient.FormatText:              ".txt",
-		doclingclient.FormatDoctags:           ".doctags",
-		doclingclient.OutputFormat("bogus"):   "",
+		doclingclient.FormatMD:              ".md",
+		doclingclient.FormatJSON:            ".json",
+		doclingclient.FormatHTML:            ".html",
+		doclingclient.FormatText:            ".txt",
+		doclingclient.FormatDoctags:         ".doctags",
+		doclingclient.OutputFormat("bogus"): "",
 	}
 	for in, want := range cases {
 		t.Run(string(in), func(t *testing.T) {

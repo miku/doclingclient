@@ -184,28 +184,55 @@ count and leads to chunks that overflow (or underfill) the real embedder.
 The server needs to fetch the tokenizer the first time it sees it. In
 air-gapped deployments only models already cached on the server will work.
 
-### `docli convert` flags
+### Conversion flags (shared by `convert` and `chunk`)
 
-| Flag                  | Default | Description                                                                       |
-|-----------------------|---------|-----------------------------------------------------------------------------------|
-| `--from`              | (auto)  | Input formats, e.g. `pdf,docx`; server autodetects if empty.                      |
-| `--to`, `-t`          | `md`    | Output formats: `md`, `json`, `html`, `text`, `doctags`.                          |
-| `--output`, `-o`      | (none)  | Directory to write all requested formats as `<basename>.<ext>`; stdout is silent. |
-| `--ocr`               | `true`  | Enable OCR.                                                                       |
-| `--force-ocr`         | `false` | Force OCR over existing text.                                                     |
-| `--ocr-lang`          | (auto)  | Comma-separated OCR languages, e.g. `en,de`.                                      |
-| `--table-mode`        | (auto)  | `fast` or `accurate`; server default if empty.                                    |
-| `--tables`            | (auto)  | Extract table structure. Sent only when explicitly set.                           |
-| `--pages`             | (all)   | Page range, e.g. `1-10` or `3`.                                                   |
-| `--image-export-mode` | (auto)  | `placeholder`, `embedded`, or `referenced`. Server default if empty.              |
-| `--include-images`    | (auto)  | Include extracted images. Sent only when explicitly set.                          |
-| `--images-scale`      | (auto)  | Scale factor for extracted images (server default ~2.0).                          |
-| `--abort-on-error`    | `false` | Abort on first error. Sent only when explicitly set.                              |
-| `--document-timeout`  | (none)  | Per-document timeout in seconds.                                                  |
-| `--status`            | `false` | Emit one status line/object to stderr after the conversion.                       |
-| `--status-format`     | `text`  | `text` or `json` (see Caching below).                                             |
-| `--cache-dir`         | (XDG)   | Override the on-disk cache directory. Env: `DOCLING_CACHE_DIR`.                   |
-| `--no-cache`          | `false` | Disable the on-disk result cache.                                                 |
+These flags tune the underlying document conversion. They apply identically
+to `docli convert` and `docli chunk`. Numeric and boolean defaults marked
+`(auto)` are sent only when you set them explicitly, so docling-serve's own
+defaults stay authoritative on bare invocations.
+
+| Flag                  | Default | Description                                                            |
+|-----------------------|---------|------------------------------------------------------------------------|
+| `--from`              | (auto)  | Input formats, e.g. `pdf,docx`; server autodetects if empty.           |
+| `--ocr`               | `true`  | Enable OCR.                                                            |
+| `--force-ocr`         | `false` | Force OCR over existing text.                                          |
+| `--ocr-lang`          | (auto)  | Comma-separated OCR languages, e.g. `en,de`.                           |
+| `--table-mode`        | (auto)  | `fast` or `accurate`; server default if empty.                         |
+| `--tables`            | (auto)  | Extract table structure. Sent only when explicitly set.                |
+| `--pages`             | (all)   | Page range, e.g. `1-10` or `3`.                                        |
+| `--image-export-mode` | (auto)  | `placeholder`, `embedded`, or `referenced`. Server default if empty.   |
+| `--include-images`    | (auto)  | Include extracted images. Sent only when explicitly set.               |
+| `--images-scale`      | (auto)  | Scale factor for extracted images (server default ~2.0).               |
+| `--abort-on-error`    | `false` | Abort on first error. Sent only when explicitly set.                   |
+| `--document-timeout`  | (none)  | Per-document timeout in seconds.                                       |
+| `--pdf-backend`       | (auto)  | `pypdfium2`, `docling_parse`, `dlparse_v1`, `dlparse_v2`, `dlparse_v4`.|
+| `--pipeline`          | (auto)  | `legacy`, `standard`, `vlm`, or `asr`. Server default if empty.        |
+
+### `docli convert` extras
+
+| Flag              | Default | Description                                                                       |
+|-------------------|---------|-----------------------------------------------------------------------------------|
+| `--to`, `-t`      | `md`    | Output formats: `md`, `json`, `html`, `text`, `doctags`.                          |
+| `--output`, `-o`  | (none)  | Directory to write all requested formats as `<basename>.<ext>`; stdout is silent. |
+| `--status`        | `false` | Emit one status line/object to stderr after the conversion.                       |
+| `--status-format` | `text`  | `text` or `json` (see Caching below).                                             |
+| `--cache-dir`     | (XDG)   | Override the on-disk cache directory. Env: `DOCLING_CACHE_DIR`.                   |
+| `--no-cache`      | `false` | Disable the on-disk result cache.                                                 |
+
+### `docli chunk` extras
+
+| Flag                 | Default                                  | Description                                                              |
+|----------------------|------------------------------------------|--------------------------------------------------------------------------|
+| `--chunker`          | `hybrid`                                 | Chunker strategy: `hybrid` or `hierarchical`.                            |
+| `--max-tokens`       | (auto)                                   | Hybrid only. Max tokens per chunk; derived from the tokenizer if unset.  |
+| `--tokenizer`        | `sentence-transformers/all-MiniLM-L6-v2` | Hybrid only. HuggingFace tokenizer ID. See "Tokenizer choice" above.     |
+| `--merge-peers`      | `true`                                   | Hybrid only. Merge undersized successive chunks with the same headings.  |
+| `--markdown-tables`  | `false`                                  | Serialize tables as Markdown instead of triplets.                        |
+| `--include-raw-text` | `false`                                  | Populate `raw_text` on each chunk alongside the contextualized `text`.   |
+| `--pretty`           | `false`                                  | Emit the full response as indented JSON instead of one chunk per line.   |
+
+Note: `docli chunk` does not cache results; each invocation re-runs the
+conversion server-side. Only `docli convert` uses the on-disk cache.
 
 Global flags (any subcommand): `--server`/`-s` (env `DOCLING_SERVER`),
 `--api-key`/`-K` (env `DOCLING_API_KEY`), `--tenant`/`-T` (env

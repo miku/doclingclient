@@ -72,24 +72,12 @@ func newClient(g *globalOpts) *doclingclient.Client {
 
 func newConvertCmd(g *globalOpts) *cobra.Command {
 	var (
-		fromFormats     []string
-		toFormats       []string
-		ocr             bool
-		forceOCR        bool
-		ocrLang         string
-		tableMode       string
-		pages           string
-		imageExportMode string
-		abortOnError    bool
-		docTimeout      float64
-		doTables        bool
-		imagesScale     float64
-		includeImages   bool
-		status          bool
-		statusFormat    string
-		outputDir       string
-		cacheDir        string
-		noCache         bool
+		toFormats    []string
+		status       bool
+		statusFormat string
+		outputDir    string
+		cacheDir     string
+		noCache      bool
 	)
 	cmd := &cobra.Command{
 		Use:   "convert <url-or-path>",
@@ -111,101 +99,55 @@ option that affects output. Use --status to see whether a run was served
 fresh or from cache, and --status-format json for ad-hoc post-processing.`,
 		Args:    cobra.ExactArgs(1),
 		Example: "  docli convert https://arxiv.org/pdf/2206.01062 > paper.md\n  docli convert --to json paper.pdf > paper.json\n  docli convert --to md,json,html --output ./out paper.pdf",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(toFormats) == 0 {
-				return fmt.Errorf("--to requires at least one format")
-			}
-			parsedTo, err := parseOutputFormats(toFormats)
-			if err != nil {
-				return err
-			}
-			parsedImageMode, err := doclingclient.ParseImageExportMode(imageExportMode)
-			if err != nil {
-				return fmt.Errorf("--image-export-mode: %w", err)
-			}
-			parsedTableMode, err := doclingclient.ParseTableMode(tableMode)
-			if err != nil {
-				return fmt.Errorf("--table-mode: %w", err)
-			}
-			if err := validateStatusFormat(statusFormat); err != nil {
-				return err
-			}
-			primary := parsedTo[0]
-
-			opts := &doclingclient.Options{
-				FromFormats:     fromFormats,
-				ToFormats:       parsedTo,
-				DoOCR:           doclingclient.Ptr(ocr),
-				ForceOCR:        doclingclient.Ptr(forceOCR),
-				TableMode:       parsedTableMode,
-				ImageExportMode: parsedImageMode,
-			}
-			if ocrLang != "" {
-				opts.OCRLang = splitComma(ocrLang)
-			}
-			if pages != "" {
-				r, err := parsePageRange(pages)
-				if err != nil {
-					return err
-				}
-				opts.PageRange = r
-			}
-			if cmd.Flags().Changed("abort-on-error") {
-				opts.AbortOnError = doclingclient.Ptr(abortOnError)
-			}
-			if cmd.Flags().Changed("tables") {
-				opts.DoTableStructure = doclingclient.Ptr(doTables)
-			}
-			if cmd.Flags().Changed("include-images") {
-				opts.IncludeImages = doclingclient.Ptr(includeImages)
-			}
-			if cmd.Flags().Changed("document-timeout") {
-				opts.DocumentTimeout = doclingclient.Ptr(docTimeout)
-			}
-			if cmd.Flags().Changed("images-scale") {
-				opts.ImagesScale = doclingclient.Ptr(imagesScale)
-			}
-
-			client := newClient(g)
-			resp, cached, err := runConvertCached(cmd.Context(), client, args[0], opts, cacheDir, noCache)
-			if err != nil {
-				return err
-			}
-			if status {
-				if err := writeStatus(os.Stderr, resp, cached, statusFormat); err != nil {
-					return err
-				}
-			}
-			if err := resp.Err(false); err != nil {
-				return err
-			}
-			if outputDir != "" {
-				return writeOutputs(outputDir, resp.Document, parsedTo)
-			}
-			if len(parsedTo) > 1 {
-				fmt.Fprintf(os.Stderr, "docli: only %q written to stdout (%d formats requested); pass --output <dir> to write all\n", primary, len(parsedTo))
-			}
-			return writeContent(cmd.OutOrStdout(), resp.Document, primary)
-		},
 	}
-	cmd.Flags().StringSliceVar(&fromFormats, "from", nil, "input formats (e.g. pdf,docx); server autodetects if empty")
 	cmd.Flags().StringSliceVarP(&toFormats, "to", "t", []string{"md"}, "output formats: md, json, html, text, doctags")
 	cmd.Flags().StringVarP(&outputDir, "output", "o", "", "directory to write all requested formats as <basename>.<ext>; stdout stays silent when set")
-	cmd.Flags().BoolVar(&ocr, "ocr", true, "enable OCR")
-	cmd.Flags().BoolVar(&forceOCR, "force-ocr", false, "force OCR over existing text")
-	cmd.Flags().StringVar(&ocrLang, "ocr-lang", "", "comma-separated OCR languages, e.g. 'en,de'")
-	cmd.Flags().StringVar(&tableMode, "table-mode", "", "table mode: fast or accurate (server default if empty)")
-	cmd.Flags().StringVar(&pages, "pages", "", "page range, e.g. '1-10' or '3'")
-	cmd.Flags().StringVar(&imageExportMode, "image-export-mode", "", "image export mode for image-capable outputs: placeholder, embedded, referenced (server default if empty)")
-	cmd.Flags().BoolVar(&abortOnError, "abort-on-error", false, "abort the conversion on the first error")
-	cmd.Flags().Float64Var(&docTimeout, "document-timeout", 0, "per-document timeout in seconds (server default if unset)")
-	cmd.Flags().BoolVar(&doTables, "tables", true, "extract table structure")
-	cmd.Flags().Float64Var(&imagesScale, "images-scale", 0, "scale factor for extracted images (server default 2.0 if unset)")
-	cmd.Flags().BoolVar(&includeImages, "include-images", true, "include images extracted from the document")
+	convertFlags := addConvertOptionFlags(cmd)
 	cmd.Flags().BoolVar(&status, "status", false, "print status and processing time to stderr")
 	cmd.Flags().StringVar(&statusFormat, "status-format", "text", "format for --status output: text or json")
 	cmd.Flags().StringVar(&cacheDir, "cache-dir", envOr("DOCLING_CACHE_DIR", ""), "cache directory (env DOCLING_CACHE_DIR, default XDG cache)")
 	cmd.Flags().BoolVar(&noCache, "no-cache", false, "disable the on-disk result cache")
+
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if len(toFormats) == 0 {
+			return fmt.Errorf("--to requires at least one format")
+		}
+		parsedTo, err := parseOutputFormats(toFormats)
+		if err != nil {
+			return err
+		}
+		if err := validateStatusFormat(statusFormat); err != nil {
+			return err
+		}
+		primary := parsedTo[0]
+
+		opts, err := convertFlags.build(cmd)
+		if err != nil {
+			return err
+		}
+		opts.ToFormats = parsedTo
+
+		client := newClient(g)
+		resp, cached, err := runConvertCached(cmd.Context(), client, args[0], opts, cacheDir, noCache)
+		if err != nil {
+			return err
+		}
+		if status {
+			if err := writeStatus(os.Stderr, resp, cached, statusFormat); err != nil {
+				return err
+			}
+		}
+		if err := resp.Err(false); err != nil {
+			return err
+		}
+		if outputDir != "" {
+			return writeOutputs(outputDir, resp.Document, parsedTo)
+		}
+		if len(parsedTo) > 1 {
+			fmt.Fprintf(os.Stderr, "docli: only %q written to stdout (%d formats requested); pass --output <dir> to write all\n", primary, len(parsedTo))
+		}
+		return writeContent(cmd.OutOrStdout(), resp.Document, primary)
+	}
 	return cmd
 }
 
@@ -233,72 +175,15 @@ Two chunker strategies are available:
   list item, table). No tokenizer involved; chunk sizes vary with document
   structure.
 
+All conversion flags (--ocr, --pages, --pdf-backend, --pipeline, etc.) apply
+the same way as for ` + "`docli convert`" + ` and tune the underlying conversion
+before chunking.
+
 Output is JSONL on stdout, one chunk per line. Use --pretty for indented JSON of the full response instead.`,
 		Args:    cobra.ExactArgs(1),
 		Example: "  docli chunk https://arxiv.org/pdf/2206.01062 > paper.jsonl\n  docli chunk --chunker hierarchical paper.pdf > paper.jsonl\n  docli chunk --max-tokens 512 --tokenizer Qwen/Qwen3-Embedding-0.6B paper.pdf",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			input := args[0]
-			client := newClient(g)
-			ctx := cmd.Context()
-
-			var resp *doclingclient.ChunkResponse
-			var err error
-			switch doclingclient.Chunker(chunker) {
-			case doclingclient.ChunkerHybrid:
-				opts := &doclingclient.HybridChunkerOptions{}
-				if cmd.Flags().Changed("max-tokens") {
-					opts.MaxTokens = doclingclient.Ptr(maxTokens)
-				}
-				if tokenizer != "" {
-					opts.Tokenizer = tokenizer
-				}
-				if cmd.Flags().Changed("merge-peers") {
-					opts.MergePeers = doclingclient.Ptr(mergePeers)
-				}
-				if cmd.Flags().Changed("markdown-tables") {
-					opts.UseMarkdownTables = doclingclient.Ptr(mdTables)
-				}
-				if cmd.Flags().Changed("include-raw-text") {
-					opts.IncludeRawText = doclingclient.Ptr(includeRawText)
-				}
-				if isURL(input) {
-					resp, err = client.ChunkHybrid(ctx, []doclingclient.Source{doclingclient.NewHTTPSource(input)}, nil, opts)
-				} else {
-					resp, err = client.ChunkHybridPath(ctx, input, nil, opts)
-				}
-			case doclingclient.ChunkerHierarchical:
-				opts := &doclingclient.HierarchicalChunkerOptions{}
-				if cmd.Flags().Changed("markdown-tables") {
-					opts.UseMarkdownTables = doclingclient.Ptr(mdTables)
-				}
-				if cmd.Flags().Changed("include-raw-text") {
-					opts.IncludeRawText = doclingclient.Ptr(includeRawText)
-				}
-				if isURL(input) {
-					resp, err = client.ChunkHierarchical(ctx, []doclingclient.Source{doclingclient.NewHTTPSource(input)}, nil, opts)
-				} else {
-					resp, err = client.ChunkHierarchicalPath(ctx, input, nil, opts)
-				}
-			default:
-				return fmt.Errorf("invalid --chunker %q (want hybrid or hierarchical)", chunker)
-			}
-			if err != nil {
-				return err
-			}
-
-			enc := json.NewEncoder(cmd.OutOrStdout())
-			if pretty {
-				enc.SetIndent("", "  ")
-				return enc.Encode(resp)
-			}
-			for _, c := range resp.Chunks {
-				if err := enc.Encode(c); err != nil {
-					return err
-				}
-			}
-			return nil
-		},
 	}
+	convertFlags := addConvertOptionFlags(cmd)
 	cmd.Flags().StringVar(&chunker, "chunker", "hybrid", "chunker: hybrid or hierarchical")
 	cmd.Flags().IntVar(&maxTokens, "max-tokens", 0, "hybrid: max tokens per chunk (server default if unset)")
 	cmd.Flags().StringVar(&tokenizer, "tokenizer", "", "hybrid: HuggingFace tokenizer model (server default if empty)")
@@ -306,6 +191,72 @@ Output is JSONL on stdout, one chunk per line. Use --pretty for indented JSON of
 	cmd.Flags().BoolVar(&mdTables, "markdown-tables", false, "serialize tables as Markdown instead of triplets")
 	cmd.Flags().BoolVar(&includeRawText, "include-raw-text", false, "populate raw_text alongside contextualized text")
 	cmd.Flags().BoolVar(&pretty, "pretty", false, "emit the full response as indented JSON instead of JSONL of chunks")
+
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		input := args[0]
+		convertOpts, err := convertFlags.build(cmd)
+		if err != nil {
+			return err
+		}
+		client := newClient(g)
+		ctx := cmd.Context()
+
+		var resp *doclingclient.ChunkResponse
+		switch doclingclient.Chunker(chunker) {
+		case doclingclient.ChunkerHybrid:
+			opts := &doclingclient.HybridChunkerOptions{}
+			if cmd.Flags().Changed("max-tokens") {
+				opts.MaxTokens = doclingclient.Ptr(maxTokens)
+			}
+			if tokenizer != "" {
+				opts.Tokenizer = tokenizer
+			}
+			if cmd.Flags().Changed("merge-peers") {
+				opts.MergePeers = doclingclient.Ptr(mergePeers)
+			}
+			if cmd.Flags().Changed("markdown-tables") {
+				opts.UseMarkdownTables = doclingclient.Ptr(mdTables)
+			}
+			if cmd.Flags().Changed("include-raw-text") {
+				opts.IncludeRawText = doclingclient.Ptr(includeRawText)
+			}
+			if isURL(input) {
+				resp, err = client.ChunkHybrid(ctx, []doclingclient.Source{doclingclient.NewHTTPSource(input)}, convertOpts, opts)
+			} else {
+				resp, err = client.ChunkHybridPath(ctx, input, convertOpts, opts)
+			}
+		case doclingclient.ChunkerHierarchical:
+			opts := &doclingclient.HierarchicalChunkerOptions{}
+			if cmd.Flags().Changed("markdown-tables") {
+				opts.UseMarkdownTables = doclingclient.Ptr(mdTables)
+			}
+			if cmd.Flags().Changed("include-raw-text") {
+				opts.IncludeRawText = doclingclient.Ptr(includeRawText)
+			}
+			if isURL(input) {
+				resp, err = client.ChunkHierarchical(ctx, []doclingclient.Source{doclingclient.NewHTTPSource(input)}, convertOpts, opts)
+			} else {
+				resp, err = client.ChunkHierarchicalPath(ctx, input, convertOpts, opts)
+			}
+		default:
+			return fmt.Errorf("invalid --chunker %q (want hybrid or hierarchical)", chunker)
+		}
+		if err != nil {
+			return err
+		}
+
+		enc := json.NewEncoder(cmd.OutOrStdout())
+		if pretty {
+			enc.SetIndent("", "  ")
+			return enc.Encode(resp)
+		}
+		for _, c := range resp.Chunks {
+			if err := enc.Encode(c); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 	return cmd
 }
 
@@ -620,4 +571,105 @@ func envOr(key, def string) string {
 		return v
 	}
 	return def
+}
+
+// convertOptFlags holds the conversion-tuning flag values shared by both
+// `docli convert` and `docli chunk`. Register them with addConvertOptionFlags
+// and build the corresponding *Options with build.
+type convertOptFlags struct {
+	fromFormats     []string
+	ocr             bool
+	forceOCR        bool
+	ocrLang         string
+	tableMode       string
+	pages           string
+	imageExportMode string
+	abortOnError    bool
+	docTimeout      float64
+	doTables        bool
+	imagesScale     float64
+	includeImages   bool
+	pdfBackend      string
+	pipeline        string
+}
+
+// addConvertOptionFlags registers the flag block on cmd and returns the
+// backing storage. Defaults match the existing convert command; the build()
+// pass uses cmd.Flags().Changed() to keep server defaults intact for bool
+// and numeric flags the user didn't touch.
+func addConvertOptionFlags(cmd *cobra.Command) *convertOptFlags {
+	f := &convertOptFlags{}
+	cmd.Flags().StringSliceVar(&f.fromFormats, "from", nil, "input formats (e.g. pdf,docx); server autodetects if empty")
+	cmd.Flags().BoolVar(&f.ocr, "ocr", true, "enable OCR")
+	cmd.Flags().BoolVar(&f.forceOCR, "force-ocr", false, "force OCR over existing text")
+	cmd.Flags().StringVar(&f.ocrLang, "ocr-lang", "", "comma-separated OCR languages, e.g. 'en,de'")
+	cmd.Flags().StringVar(&f.tableMode, "table-mode", "", "table mode: fast or accurate (server default if empty)")
+	cmd.Flags().StringVar(&f.pages, "pages", "", "page range, e.g. '1-10' or '3'")
+	cmd.Flags().StringVar(&f.imageExportMode, "image-export-mode", "", "image export mode for image-capable outputs: placeholder, embedded, referenced (server default if empty)")
+	cmd.Flags().BoolVar(&f.abortOnError, "abort-on-error", false, "abort the conversion on the first error")
+	cmd.Flags().Float64Var(&f.docTimeout, "document-timeout", 0, "per-document timeout in seconds (server default if unset)")
+	cmd.Flags().BoolVar(&f.doTables, "tables", true, "extract table structure")
+	cmd.Flags().Float64Var(&f.imagesScale, "images-scale", 0, "scale factor for extracted images (server default 2.0 if unset)")
+	cmd.Flags().BoolVar(&f.includeImages, "include-images", true, "include images extracted from the document")
+	cmd.Flags().StringVar(&f.pdfBackend, "pdf-backend", "", "pdf backend: pypdfium2, docling_parse, dlparse_v1, dlparse_v2, dlparse_v4 (server default if empty)")
+	cmd.Flags().StringVar(&f.pipeline, "pipeline", "", "processing pipeline: legacy, standard, vlm, asr (server default if empty)")
+	return f
+}
+
+// build constructs an *Options from the parsed flags. Numeric/bool flags with
+// non-zero CLI defaults are sent only when the user explicitly set them, so
+// the server's own defaults stay authoritative on bare invocations.
+func (f *convertOptFlags) build(cmd *cobra.Command) (*doclingclient.Options, error) {
+	imageMode, err := doclingclient.ParseImageExportMode(f.imageExportMode)
+	if err != nil {
+		return nil, fmt.Errorf("--image-export-mode: %w", err)
+	}
+	tableMode, err := doclingclient.ParseTableMode(f.tableMode)
+	if err != nil {
+		return nil, fmt.Errorf("--table-mode: %w", err)
+	}
+	pdfBackend, err := doclingclient.ParsePDFBackend(f.pdfBackend)
+	if err != nil {
+		return nil, fmt.Errorf("--pdf-backend: %w", err)
+	}
+	pipeline, err := doclingclient.ParsePipeline(f.pipeline)
+	if err != nil {
+		return nil, fmt.Errorf("--pipeline: %w", err)
+	}
+
+	opts := &doclingclient.Options{
+		FromFormats:     f.fromFormats,
+		DoOCR:           doclingclient.Ptr(f.ocr),
+		ForceOCR:        doclingclient.Ptr(f.forceOCR),
+		TableMode:       tableMode,
+		ImageExportMode: imageMode,
+		PDFBackend:      pdfBackend,
+		Pipeline:        pipeline,
+	}
+	if f.ocrLang != "" {
+		opts.OCRLang = splitComma(f.ocrLang)
+	}
+	if f.pages != "" {
+		r, err := parsePageRange(f.pages)
+		if err != nil {
+			return nil, err
+		}
+		opts.PageRange = r
+	}
+	if cmd.Flags().Changed("abort-on-error") {
+		opts.AbortOnError = doclingclient.Ptr(f.abortOnError)
+	}
+	if cmd.Flags().Changed("tables") {
+		opts.DoTableStructure = doclingclient.Ptr(f.doTables)
+	}
+	if cmd.Flags().Changed("include-images") {
+		opts.IncludeImages = doclingclient.Ptr(f.includeImages)
+	}
+	if cmd.Flags().Changed("document-timeout") {
+		opts.DocumentTimeout = doclingclient.Ptr(f.docTimeout)
+	}
+	if cmd.Flags().Changed("images-scale") {
+		opts.ImagesScale = doclingclient.Ptr(f.imagesScale)
+	}
+	return opts, nil
 }
