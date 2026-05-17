@@ -15,6 +15,8 @@ client, which may be a lower spec machine.
 $ go install github.com/miku/doclingclient/cmd/docli@latest
 ```
 
+Packages (deb, rpm), cf. [releases](https://github.com/miku/doclingclient/releases).
+
 
 ## Background, Prompt
 
