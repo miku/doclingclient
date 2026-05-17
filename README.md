@@ -1,12 +1,14 @@
 # doclingclient
 
 A Go [docling](https://www.docling.ai/) client library and CLI.
-[Docling](https://www.docling.ai/) is a document conversion project, which can
-also be run [as service](https://github.com/docling-project/docling-serve).
-This helps to decouple the document processing, which may benefit from a GPU,
-from the client, which may be a lower spec machine.
+[Docling](https://www.docling.ai/) is a deep learning document analysis and
+conversion project, which can also be run [as
+service](https://github.com/docling-project/docling-serve). This project helps
+to decouple the document processing, which may benefit from a GPU, from the
+client, which may be a lower spec machine.
 
-Docling serve supplies an openapi spec, currently using version 3.1.0.
+Docling serve supplies an [openapi](openapi.json) spec, currently using version
+3.1.0 of the standard.
 
 ```
 $ jq -rc '.paths | keys[]' openapi.json
@@ -34,16 +36,16 @@ $ jq -rc '.paths | keys[]' openapi.json
 /version
 ```
 
-Unfortunately, an SDK from a spec can be quite large and may have downsides;
-for a comparison, see [this
+Unfortunately, an SDK generated from a spec can be quite large and may have
+downsides; cf. also [this
 comparison](https://www.speakeasy.com/docs/sdks/languages/golang/oss-comparison-go#go-sdk-generator-options).
 
-Hence, we fall back to a more manual approach. Use an LLM to build a simple,
-idiomatic client for the core functionality first. For docling this may be just
-"/v1/convert/file" and "/v1/convert/source" - this would already serve most use
-cases.
+Hence, we decided to use a more manual approach. We use an LLM to build a
+simple, mostly idiomatic client for the core functionality first. For docling this may
+be just "/v1/convert/file" and "/v1/convert/source" - this would already serve
+most use cases.
 
-Create a minimal Go library first, then wrap a nice CLI around the library, so
+Create a minimal Go library, then wrap a nice CLI around the library, so
 interacting with the docling service becomes easy to integrate into shell
 scripts or ad-hoc human (and maybe agentic) terminal use.
 
