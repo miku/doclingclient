@@ -7,6 +7,15 @@ service](https://github.com/docling-project/docling-serve). This project helps
 to decouple the document processing, which may benefit from a GPU, from the
 client, which may be a lower spec machine.
 
+## Installation
+
+```
+$ go install github.com/miku/doclingclient/cmd/docli@latest
+```
+
+
+## Background, Prompt
+
 Docling serve supplies an [openapi](openapi.json) spec, currently using version
 3.1.0 of the standard.
 
