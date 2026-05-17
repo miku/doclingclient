@@ -7,6 +7,8 @@ service](https://github.com/docling-project/docling-serve). This project helps
 to decouple the document processing, which may benefit from a GPU, from the
 client, which may be a lower spec machine.
 
+[![](static/Europeana.eu-90402-RP_T_2013_34_6_R_-98a3ebb632a8943697d57d5193f12634-s.jpeg)](https://www.europeana.eu/en/item/90402/RP_T_2013_34_6_R_)
+
 ## Installation
 
 ```
