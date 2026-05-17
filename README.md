@@ -20,7 +20,7 @@ Packages (deb, rpm), cf. [releases](https://github.com/miku/doclingclient/releas
 
 ## Background, Prompt
 
-Docling serve supplies an [openapi](openapi.json) spec, currently using version
+[Docling serve](https://github.com/docling-project/docling-serve) supplies an [openapi](openapi.json) spec, currently using version
 3.1.0 of the standard.
 
 ```
