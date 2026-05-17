@@ -1,4 +1,5 @@
 # CONTRIBUTING
 
-Thanks for your contribution. Please open an issue or submit a pull request.
-Please disclose any AI use (a mention is enough).
+Thanks for considering to contribue. Please open an issue or submit a pull
+request and we will try to review it in time. Asmaller and more focussed
+changes has a higher chance to get reviewed and accepted.
