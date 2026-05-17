@@ -137,12 +137,12 @@ func TestFileCache_WriteVersionInfo(t *testing.T) {
 	if err := fc.WriteVersionInfo(v); err != nil {
 		t.Fatal(err)
 	}
-	b, err := os.ReadFile(filepath.Join(dir, "vtest", "_info.json"))
+	b, err := os.ReadFile(filepath.Join(dir, "vtest", "server_info.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(b) == 0 {
-		t.Error("expected non-empty _info.json")
+		t.Error("expected non-empty server_info.json")
 	}
 }
 

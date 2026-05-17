@@ -263,9 +263,9 @@ Layout:
 
 ```
 ~/.cache/doclingclient/
-├── _server_version.json          # /version response, refreshed every 24 h
+├── server_version.json           # /version response, refreshed every 24 h
 └── <12-char-server-hash>/
-    ├── _info.json                # full server version map for this namespace
+    ├── server_info.json           # full server version map for this namespace
     └── <input-hash>.json.zst     # zstd-compressed ConvertResponse JSON
 ```
 

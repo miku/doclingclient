@@ -187,7 +187,7 @@ type cachedVersion struct {
 
 // ServerVersion returns the docling-serve /version payload and a short stable
 // hash of it suitable as a cache namespace. The /version result itself is
-// cached on disk at <cacheDir>/_server_version.json for up to 24 h to avoid
+// cached on disk at <cacheDir>/server_version.json for up to 24 h to avoid
 // an extra round trip on every invocation.
 func ServerVersion(ctx context.Context, c *Client, cacheDir string) (map[string]any, string, error) {
 	if cacheDir != "" {
@@ -251,7 +251,7 @@ func versionHash(v map[string]any) string {
 }
 
 // WriteVersionInfo records the full version map alongside cached results, so
-// `cat <cache-dir>/<hash>/_info.json` reveals which server build that
+// `cat <cache-dir>/<hash>/server_info.json` reveals which server build that
 // namespace corresponds to.
 func (c *FileCache) WriteVersionInfo(v map[string]any) error {
 	if v == nil {
