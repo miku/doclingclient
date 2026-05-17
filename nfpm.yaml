@@ -1,0 +1,30 @@
+name: doclingclient
+arch: ${GOARCH}
+platform: linux
+version: ${SEMVER}
+version_schema: semver
+epoch: 0
+release: 0
+section: utils
+priority: optional
+maintainer: Martin Czygan <martin.czygan@gmail.com>
+description: A Go docling client library and CLI.
+vendor: Reka Labs
+homepage: https://github.com/miku/doclingclient
+license: MIT
+disable_globbing: false
+
+contents:
+  # Binary
+  - src: docli
+    dst: /usr/local/bin/docli
+    file_info:
+      mode: 0755
+
+umask: 0o002
+
+deb:
+  compression: zstd
+
+rpm:
+  compression: zstd
