@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 TARGETS := docli
 PKGNAME := doclingclient
-VERSION := 0.1.2
+VERSION := 0.1.3
 BUILDTIME := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
 
 GOLDFLAGS += -X main.Version=$(VERSION)
