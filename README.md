@@ -15,12 +15,11 @@ client, which may be a lower spec machine.
 $ go install github.com/miku/doclingclient/cmd/docli@latest
 ```
 
-Packages (deb, rpm), cf. [releases](https://github.com/miku/doclingclient/releases).
-
-Quick start:
+Packages (deb, rpm), cf.
+[releases](https://github.com/miku/doclingclient/releases). Quick start:
 
 ```shell
-$ docli --server http://docling.city:5001 convert https://arxiv.org/pdf/2110.06595 # md, stdout
+$ docli --server http://docling.city:5001 convert https://arxiv.org/pdf/2110.06595
 ```
 
 
