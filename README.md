@@ -72,6 +72,13 @@ scripts or ad-hoc human (and maybe agentic) terminal use.
 (`/v1/chunk/{hybrid,hierarchical}/{source,file}`), and the `/health`, `/ready`,
 and `/version` routes. Async conversion and async chunking are not yet wrapped.
 
+**Breaking changes since v0.1.3**: `Source` is now an interface; concrete
+implementations are `HTTPSource`, `FileSource`, and `S3Source`. The
+constructors `NewHTTPSource(url)` and `NewFileSource(name, b64)` keep their
+signatures, so call-sites that use them are unaffected. Struct literals like
+`Source{Kind: "http", URL: "..."}` no longer compile — switch to
+`HTTPSource{URL: "..."}` or the constructor.
+
 **Requirements**: Go 1.24+. A running `docling-serve` instance (defaults to `http://localhost:5001`).
 
 
@@ -102,6 +109,16 @@ if err := resp.Err(false); err != nil {
     log.Fatal(err)
 }
 fmt.Println(resp.Document.MDContent)
+
+// Convert with an explicit delivery target. The server defaults to inbody;
+// use PutTarget / S3Target / ZipTarget to redirect the result. The
+// multipart file endpoint supports only inbody and zip, expressed as
+// TargetTypeInBody / TargetTypeZip.
+resp, err = c.ConvertWithTarget(ctx,
+    []doclingclient.Source{doclingclient.NewHTTPSource("https://arxiv.org/pdf/2206.01062")},
+    nil,
+    doclingclient.PutTarget{URL: "https://sink.example/result"},
+)
 ```
 
 The library covers `/v1/convert/source` (URL or base64 in-body), `/v1/convert/file`
