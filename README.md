@@ -312,6 +312,10 @@ go test -cover ./...
 The library exercises its HTTP client against `httptest.Server`; no live
 docling-serve instance is required.
 
+## Other projects
+
+* [https://github.com/iguanesolutions/go-docling](https://github.com/iguanesolutions/go-docling)
+
 ## A random thought on openapi
 
 [OpenAPI](https://en.wikipedia.org/wiki/OpenAPI_Specification) was very helpful
@@ -322,4 +326,5 @@ few](https://www.speakeasy.com/docs/sdks/languages/golang/oss-comparison-go). A
 more systematic comparison of features of various libraries is still
 outstanding, but you could see an LLM + Prompt + openapi.json based client SDK
 generator.
+
 
