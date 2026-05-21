@@ -70,52 +70,77 @@ type ChunkResponse struct {
 	ProcessingTime float64           `json:"processing_time"`
 }
 
-type chunkRequest[T any] struct {
-	Sources             []Source `json:"sources"`
-	ConvertOptions      *Options `json:"convert_options,omitempty"`
-	ChunkingOptions     *T       `json:"chunking_options,omitempty"`
-	IncludeConvertedDoc *bool    `json:"include_converted_doc,omitempty"`
+// ChunkHybridURLRequest is the body of POST /v1/chunk/hybrid/source.
+type ChunkHybridURLRequest struct {
+	Sources             []Source             `json:"sources"`
+	ConvertOptions      ConvertOptions       `json:"convert_options,omitzero"`
+	ChunkingOptions     HybridChunkerOptions `json:"chunking_options,omitzero"`
+	IncludeConvertedDoc bool                 `json:"include_converted_doc,omitempty"`
 }
 
-// ChunkHybrid sends a JSON request to /v1/chunk/hybrid/source.
-func (c *Client) ChunkHybrid(ctx context.Context, sources []Source, convertOpts *Options, chunkOpts *HybridChunkerOptions) (*ChunkResponse, error) {
-	return chunkJSON(ctx, c, "/v1/chunk/hybrid/source", sources, convertOpts, chunkOpts)
+// ChunkHierarchicalURLRequest is the body of POST /v1/chunk/hierarchical/source.
+type ChunkHierarchicalURLRequest struct {
+	Sources             []Source                   `json:"sources"`
+	ConvertOptions      ConvertOptions             `json:"convert_options,omitzero"`
+	ChunkingOptions     HierarchicalChunkerOptions `json:"chunking_options,omitzero"`
+	IncludeConvertedDoc bool                       `json:"include_converted_doc,omitempty"`
 }
 
-// ChunkHierarchical sends a JSON request to /v1/chunk/hierarchical/source.
-func (c *Client) ChunkHierarchical(ctx context.Context, sources []Source, convertOpts *Options, chunkOpts *HierarchicalChunkerOptions) (*ChunkResponse, error) {
-	return chunkJSON(ctx, c, "/v1/chunk/hierarchical/source", sources, convertOpts, chunkOpts)
+// ChunkHybridFileRequest bundles the multipart inputs to
+// POST /v1/chunk/hybrid/file.
+type ChunkHybridFileRequest struct {
+	Files               []File
+	ConvertOptions      ConvertOptions
+	ChunkingOptions     HybridChunkerOptions
+	IncludeConvertedDoc bool
 }
 
-// ChunkHybridFile uploads files via multipart/form-data to
-// /v1/chunk/hybrid/file.
-func (c *Client) ChunkHybridFile(ctx context.Context, files []FileUpload, convertOpts *Options, chunkOpts *HybridChunkerOptions) (*ChunkResponse, error) {
-	return chunkFile(ctx, c, "/v1/chunk/hybrid/file", files, convertOpts, chunkOpts)
+// ChunkHierarchicalFileRequest bundles the multipart inputs to
+// POST /v1/chunk/hierarchical/file.
+type ChunkHierarchicalFileRequest struct {
+	Files               []File
+	ConvertOptions      ConvertOptions
+	ChunkingOptions     HierarchicalChunkerOptions
+	IncludeConvertedDoc bool
 }
 
-// ChunkHierarchicalFile uploads files via multipart/form-data to
-// /v1/chunk/hierarchical/file.
-func (c *Client) ChunkHierarchicalFile(ctx context.Context, files []FileUpload, convertOpts *Options, chunkOpts *HierarchicalChunkerOptions) (*ChunkResponse, error) {
-	return chunkFile(ctx, c, "/v1/chunk/hierarchical/file", files, convertOpts, chunkOpts)
-}
-
-func chunkJSON[T any](ctx context.Context, c *Client, path string, sources []Source, convertOpts *Options, chunkOpts *T) (*ChunkResponse, error) {
-	if len(sources) == 0 {
+// ChunkHybridURL sends a JSON request to /v1/chunk/hybrid/source.
+func (c *Client) ChunkHybridURL(ctx context.Context, req ChunkHybridURLRequest) (*ChunkResponse, error) {
+	if len(req.Sources) == 0 {
 		return nil, fmt.Errorf("doclingclient: no sources provided")
 	}
-	body := chunkRequest[T]{
-		Sources:         sources,
-		ConvertOptions:  convertOpts,
-		ChunkingOptions: chunkOpts,
-	}
 	var out ChunkResponse
-	if err := c.postJSON(ctx, path, body, &out); err != nil {
+	if err := c.postJSON(ctx, "/v1/chunk/hybrid/source", req, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil
 }
 
-func chunkFile(ctx context.Context, c *Client, path string, files []FileUpload, convertOpts *Options, chunkOpts any) (*ChunkResponse, error) {
+// ChunkHierarchicalURL sends a JSON request to /v1/chunk/hierarchical/source.
+func (c *Client) ChunkHierarchicalURL(ctx context.Context, req ChunkHierarchicalURLRequest) (*ChunkResponse, error) {
+	if len(req.Sources) == 0 {
+		return nil, fmt.Errorf("doclingclient: no sources provided")
+	}
+	var out ChunkResponse
+	if err := c.postJSON(ctx, "/v1/chunk/hierarchical/source", req, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ChunkHybridFile uploads files via multipart/form-data to
+// /v1/chunk/hybrid/file.
+func (c *Client) ChunkHybridFile(ctx context.Context, req ChunkHybridFileRequest) (*ChunkResponse, error) {
+	return chunkFile(ctx, c, "/v1/chunk/hybrid/file", req.Files, req.ConvertOptions, req.ChunkingOptions, req.IncludeConvertedDoc)
+}
+
+// ChunkHierarchicalFile uploads files via multipart/form-data to
+// /v1/chunk/hierarchical/file.
+func (c *Client) ChunkHierarchicalFile(ctx context.Context, req ChunkHierarchicalFileRequest) (*ChunkResponse, error) {
+	return chunkFile(ctx, c, "/v1/chunk/hierarchical/file", req.Files, req.ConvertOptions, req.ChunkingOptions, req.IncludeConvertedDoc)
+}
+
+func chunkFile(ctx context.Context, c *Client, path string, files []File, convertOpts ConvertOptions, chunkOpts any, includeConvertedDoc bool) (*ChunkResponse, error) {
 	if len(files) == 0 {
 		return nil, fmt.Errorf("doclingclient: no files provided")
 	}
@@ -133,23 +158,24 @@ func chunkFile(ctx context.Context, c *Client, path string, files []FileUpload, 
 			_ = pw.CloseWithError(err)
 		}()
 
-		if convertOpts != nil {
-			if err = encodeFormFields(mw, convertOpts, "convert_"); err != nil {
-				return
-			}
+		if err = encodeFormFields(mw, convertOpts, "convert_"); err != nil {
+			return
 		}
-		if chunkOpts != nil {
-			if err = encodeFormFields(mw, chunkOpts, "chunking_"); err != nil {
+		if err = encodeFormFields(mw, chunkOpts, "chunking_"); err != nil {
+			return
+		}
+		if includeConvertedDoc {
+			if err = mw.WriteField("include_converted_doc", "true"); err != nil {
 				return
 			}
 		}
 		for _, f := range files {
 			var part io.Writer
-			part, err = mw.CreateFormFile("files", f.Name)
+			part, err = mw.CreateFormFile("files", filepath.Base(f.Name()))
 			if err != nil {
 				return
 			}
-			if _, err = io.Copy(part, f.Content); err != nil {
+			if _, err = io.Copy(part, f); err != nil {
 				return
 			}
 		}
@@ -170,22 +196,30 @@ func chunkFile(ctx context.Context, c *Client, path string, files []FileUpload, 
 
 // ChunkHybridPath is a convenience wrapper around ChunkHybridFile for a single
 // local file path.
-func (c *Client) ChunkHybridPath(ctx context.Context, path string, convertOpts *Options, chunkOpts *HybridChunkerOptions) (*ChunkResponse, error) {
+func (c *Client) ChunkHybridPath(ctx context.Context, path string, convertOpts ConvertOptions, chunkOpts HybridChunkerOptions) (*ChunkResponse, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
-	return c.ChunkHybridFile(ctx, []FileUpload{{Name: filepath.Base(path), Content: f}}, convertOpts, chunkOpts)
+	return c.ChunkHybridFile(ctx, ChunkHybridFileRequest{
+		Files:           []File{FileReader{Filename: filepath.Base(path), Reader: f}},
+		ConvertOptions:  convertOpts,
+		ChunkingOptions: chunkOpts,
+	})
 }
 
 // ChunkHierarchicalPath is a convenience wrapper around ChunkHierarchicalFile
 // for a single local file path.
-func (c *Client) ChunkHierarchicalPath(ctx context.Context, path string, convertOpts *Options, chunkOpts *HierarchicalChunkerOptions) (*ChunkResponse, error) {
+func (c *Client) ChunkHierarchicalPath(ctx context.Context, path string, convertOpts ConvertOptions, chunkOpts HierarchicalChunkerOptions) (*ChunkResponse, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
-	return c.ChunkHierarchicalFile(ctx, []FileUpload{{Name: filepath.Base(path), Content: f}}, convertOpts, chunkOpts)
+	return c.ChunkHierarchicalFile(ctx, ChunkHierarchicalFileRequest{
+		Files:           []File{FileReader{Filename: filepath.Base(path), Reader: f}},
+		ConvertOptions:  convertOpts,
+		ChunkingOptions: chunkOpts,
+	})
 }

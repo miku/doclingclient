@@ -3,6 +3,7 @@ package doclingclient
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -223,17 +224,39 @@ func NewFileSource(filename, base64String string) FileSource {
 	return FileSource{Filename: filename, Base64String: base64String}
 }
 
-// Options is a subset of ConvertDocumentsOptions covering the parameters most
-// callers want to tweak. Zero values are omitted from the request, so the
+// File is the upload abstraction used by the multipart endpoints. Any type
+// that supplies a filename (Name) and a reader satisfies it — including
+// *os.File, FileReader, and bare struct literals wrapping bytes.NewReader.
+type File interface {
+	Name() string
+	io.Reader
+}
+
+// FileReader pairs a filename with an arbitrary reader. Use it when you have
+// the content in memory (e.g. via bytes.NewReader) but still need the File
+// interface.
+type FileReader struct {
+	Filename string
+	io.Reader
+}
+
+// Name returns the filename reported to the server in the multipart upload.
+func (fr FileReader) Name() string { return fr.Filename }
+
+// ConvertOptions is a subset of ConvertDocumentsOptions covering the parameters
+// most callers want to tweak. Zero values are omitted from the request, so the
 // server uses its defaults.
 //
-// Pointer fields distinguish "unset" from "explicitly false/zero".
-type Options struct {
+// Pointer fields distinguish "unset" from "explicitly false/zero" — needed
+// only where the server's own default is true and overriding to false matters
+// (DoOCR, IncludeImages, DoTableStructure). Toggles whose server default is
+// false stay as plain bool.
+type ConvertOptions struct {
 	FromFormats      []string        `json:"from_formats,omitempty"`
 	ToFormats        []OutputFormat  `json:"to_formats,omitempty"`
 	ImageExportMode  ImageExportMode `json:"image_export_mode,omitempty"`
 	DoOCR            *bool           `json:"do_ocr,omitempty"`
-	ForceOCR         *bool           `json:"force_ocr,omitempty"`
+	ForceOCR         bool            `json:"force_ocr,omitempty"`
 	OCREngine        string          `json:"ocr_engine,omitempty"`
 	OCRLang          []string        `json:"ocr_lang,omitempty"`
 	OCRPreset        string          `json:"ocr_preset,omitempty"`
@@ -241,18 +264,11 @@ type Options struct {
 	TableMode        TableMode       `json:"table_mode,omitempty"`
 	Pipeline         Pipeline        `json:"pipeline,omitempty"`
 	PageRange        []int           `json:"page_range,omitempty"`
-	AbortOnError     *bool           `json:"abort_on_error,omitempty"`
+	AbortOnError     bool            `json:"abort_on_error,omitempty"`
 	DoTableStructure *bool           `json:"do_table_structure,omitempty"`
 	IncludeImages    *bool           `json:"include_images,omitempty"`
 	ImagesScale      *float64        `json:"images_scale,omitempty"`
 	DocumentTimeout  *float64        `json:"document_timeout,omitempty"`
-}
-
-// convertRequest is the JSON payload for /v1/convert/source.
-type convertRequest struct {
-	Options *Options `json:"options,omitempty"`
-	Sources []Source `json:"sources"`
-	Target  Target   `json:"target,omitempty"`
 }
 
 // TargetKind discriminates the concrete Target variants the server accepts on
@@ -355,9 +371,16 @@ type ConvertResponse struct {
 	ProcessingTime float64          `json:"processing_time"`
 }
 
-// Document holds the converted representations the server produced. Only the
-// fields matching the requested to_formats are populated.
+// Document holds the converted representations the server produced. Contents
+// carries one entry per requested format that the server actually returned;
+// use the typed accessor methods (MarkdownContent, JSONContent, ...) to fetch
+// a specific representation.
 type Document struct {
+	Filename string
+	Contents []Content
+}
+
+type documentWire struct {
 	Filename       string          `json:"filename"`
 	MDContent      string          `json:"md_content,omitempty"`
 	JSONContent    json.RawMessage `json:"json_content,omitempty"`
@@ -365,6 +388,162 @@ type Document struct {
 	TextContent    string          `json:"text_content,omitempty"`
 	DoctagsContent string          `json:"doctags_content,omitempty"`
 }
+
+// UnmarshalJSON decodes the wire-format Document and collapses the per-format
+// string fields into a Contents slice of typed Content entries.
+func (d *Document) UnmarshalJSON(data []byte) error {
+	var w documentWire
+	if err := json.Unmarshal(data, &w); err != nil {
+		return err
+	}
+	d.Filename = w.Filename
+	d.Contents = nil
+	if w.MDContent != "" {
+		d.Contents = append(d.Contents, MarkdownContent(w.MDContent))
+	}
+	if len(w.JSONContent) > 0 && string(w.JSONContent) != "null" {
+		d.Contents = append(d.Contents, JSONContent(w.JSONContent))
+	}
+	if w.HTMLContent != "" {
+		d.Contents = append(d.Contents, HTMLContent(w.HTMLContent))
+	}
+	if w.TextContent != "" {
+		d.Contents = append(d.Contents, TextContent(w.TextContent))
+	}
+	if w.DoctagsContent != "" {
+		d.Contents = append(d.Contents, DoctagsContent(w.DoctagsContent))
+	}
+	return nil
+}
+
+// MarshalJSON emits the wire-format Document so cache round-trips and other
+// re-encodings preserve the docling-serve shape.
+func (d Document) MarshalJSON() ([]byte, error) {
+	w := documentWire{Filename: d.Filename}
+	for _, c := range d.Contents {
+		switch v := c.(type) {
+		case MarkdownContent:
+			w.MDContent = string(v)
+		case JSONContent:
+			w.JSONContent = json.RawMessage(v)
+		case HTMLContent:
+			w.HTMLContent = string(v)
+		case TextContent:
+			w.TextContent = string(v)
+		case DoctagsContent:
+			w.DoctagsContent = string(v)
+		}
+	}
+	return json.Marshal(w)
+}
+
+// MarkdownContent returns the markdown representation, or "" if the server
+// did not return one.
+func (d Document) MarkdownContent() string {
+	for _, c := range d.Contents {
+		if mc, ok := c.(MarkdownContent); ok {
+			return string(mc)
+		}
+	}
+	return ""
+}
+
+// JSONContent returns the JSON representation as raw bytes, or nil if the
+// server did not return one.
+func (d Document) JSONContent() json.RawMessage {
+	for _, c := range d.Contents {
+		if jc, ok := c.(JSONContent); ok {
+			return json.RawMessage(jc)
+		}
+	}
+	return nil
+}
+
+// HTMLContent returns the HTML representation, or "" if the server did not
+// return one.
+func (d Document) HTMLContent() string {
+	for _, c := range d.Contents {
+		if hc, ok := c.(HTMLContent); ok {
+			return string(hc)
+		}
+	}
+	return ""
+}
+
+// TextContent returns the plain-text representation, or "" if the server did
+// not return one.
+func (d Document) TextContent() string {
+	for _, c := range d.Contents {
+		if tc, ok := c.(TextContent); ok {
+			return string(tc)
+		}
+	}
+	return ""
+}
+
+// DoctagsContent returns the doctags representation, or "" if the server did
+// not return one.
+func (d Document) DoctagsContent() string {
+	for _, c := range d.Contents {
+		if dc, ok := c.(DoctagsContent); ok {
+			return string(dc)
+		}
+	}
+	return ""
+}
+
+// Content is one converted representation of a Document. Concrete types are
+// MarkdownContent, JSONContent, HTMLContent, TextContent, and DoctagsContent.
+type Content interface {
+	Format() OutputFormat
+	fmt.Stringer
+}
+
+// MarkdownContent is the md_content payload returned by docling-serve.
+type MarkdownContent string
+
+// Format reports the output format this content was produced for.
+func (c MarkdownContent) Format() OutputFormat { return FormatMD }
+
+// String returns the markdown text.
+func (c MarkdownContent) String() string { return string(c) }
+
+// JSONContent is the json_content payload returned by docling-serve.
+type JSONContent json.RawMessage
+
+// Format reports the output format this content was produced for.
+func (c JSONContent) Format() OutputFormat { return FormatJSON }
+
+// String returns the JSON payload as a string. For raw bytes, cast to
+// json.RawMessage directly.
+func (c JSONContent) String() string { return string(c) }
+
+// HTMLContent is the html_content payload returned by docling-serve.
+type HTMLContent string
+
+// Format reports the output format this content was produced for.
+func (c HTMLContent) Format() OutputFormat { return FormatHTML }
+
+// String returns the HTML.
+func (c HTMLContent) String() string { return string(c) }
+
+// TextContent is the text_content payload returned by docling-serve.
+type TextContent string
+
+// Format reports the output format this content was produced for.
+func (c TextContent) Format() OutputFormat { return FormatText }
+
+// String returns the plain text.
+func (c TextContent) String() string { return string(c) }
+
+// DoctagsContent is the doctags_content payload returned by docling-serve.
+type DoctagsContent string
+
+// Format reports the output format this content was produced for.
+func (c DoctagsContent) Format() OutputFormat { return FormatDoctags }
+
+// String returns the doctags markup.
+func (c DoctagsContent) String() string { return string(c) }
 
 // ErrorItem is a per-component error reported by the converter.
 type ErrorItem struct {
@@ -408,7 +587,7 @@ func (r *ConvertResponse) Err(partialIsError bool) error {
 	return nil
 }
 
-// Ptr returns a pointer to v. Handy for Options fields like DoOCR.
+// Ptr returns a pointer to v. Handy for ConvertOptions fields like DoOCR.
 func Ptr[T any](v T) *T { return &v }
 
 // castStrings widens a slice of any underlying-string type to []string. Used

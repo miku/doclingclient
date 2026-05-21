@@ -145,12 +145,14 @@ func TestEnvOr(t *testing.T) {
 
 func TestWriteContent(t *testing.T) {
 	doc := doclingclient.Document{
-		Filename:       "x.pdf",
-		MDContent:      "# hi",
-		JSONContent:    json.RawMessage(`{"a":1}`),
-		HTMLContent:    "<p>hi</p>",
-		TextContent:    "hi",
-		DoctagsContent: "<doc/>",
+		Filename: "x.pdf",
+		Contents: []doclingclient.Content{
+			doclingclient.MarkdownContent("# hi"),
+			doclingclient.JSONContent(`{"a":1}`),
+			doclingclient.HTMLContent("<p>hi</p>"),
+			doclingclient.TextContent("hi"),
+			doclingclient.DoctagsContent("<doc/>"),
+		},
 	}
 	cases := []struct {
 		format doclingclient.OutputFormat
@@ -192,7 +194,8 @@ func TestWriteContent_EmptyContent(t *testing.T) {
 
 func TestWriteContent_UnknownFormat(t *testing.T) {
 	var buf bytes.Buffer
-	err := writeContent(&buf, doclingclient.Document{MDContent: "x"}, doclingclient.OutputFormat("bogus"))
+	doc := doclingclient.Document{Contents: []doclingclient.Content{doclingclient.MarkdownContent("x")}}
+	err := writeContent(&buf, doc, doclingclient.OutputFormat("bogus"))
 	if err == nil {
 		t.Error("expected error for unknown format")
 	}
@@ -241,10 +244,12 @@ func TestFormatExtension(t *testing.T) {
 func TestWriteOutputs(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "out")
 	doc := doclingclient.Document{
-		Filename:    "paper.pdf",
-		MDContent:   "# hi",
-		JSONContent: json.RawMessage(`{"a":1}`),
-		HTMLContent: "<p>hi</p>",
+		Filename: "paper.pdf",
+		Contents: []doclingclient.Content{
+			doclingclient.MarkdownContent("# hi"),
+			doclingclient.JSONContent(`{"a":1}`),
+			doclingclient.HTMLContent("<p>hi</p>"),
+		},
 	}
 	if err := writeOutputs(dir, doc, []doclingclient.OutputFormat{doclingclient.FormatMD, doclingclient.FormatJSON, doclingclient.FormatHTML}); err != nil {
 		t.Fatal(err)
@@ -276,7 +281,7 @@ func TestWriteOutputs_EmptyContent(t *testing.T) {
 
 func TestWriteOutputs_FallbackBasename(t *testing.T) {
 	dir := t.TempDir()
-	doc := doclingclient.Document{MDContent: "# hi"}
+	doc := doclingclient.Document{Contents: []doclingclient.Content{doclingclient.MarkdownContent("# hi")}}
 	if err := writeOutputs(dir, doc, []doclingclient.OutputFormat{doclingclient.FormatMD}); err != nil {
 		t.Fatal(err)
 	}

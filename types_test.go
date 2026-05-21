@@ -95,8 +95,8 @@ func TestParseTableMode(t *testing.T) {
 	}
 }
 
-func TestOptions_JSONMarshalUsesEnumStrings(t *testing.T) {
-	opts := Options{
+func TestConvertOptions_JSONMarshalUsesEnumStrings(t *testing.T) {
+	opts := ConvertOptions{
 		ToFormats:       []OutputFormat{FormatMD, FormatJSON},
 		ImageExportMode: ImageExportEmbedded,
 		Pipeline:        PipelineStandard,

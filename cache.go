@@ -29,13 +29,13 @@ type Cache interface {
 // conversion output. For local files, pass a synthetic Source whose
 // Base64String is "sha256:<filehash>" instead of the actual base64 — see
 // SourceForFile.
-func CacheKey(sources []Source, opts *Options) string {
+func CacheKey(sources []Source, opts ConvertOptions) string {
 	h := sha256.New()
 	enc := json.NewEncoder(h)
 	enc.SetEscapeHTML(false)
 	_ = enc.Encode(struct {
-		Sources []Source `json:"sources"`
-		Options *Options `json:"options,omitempty"`
+		Sources []Source       `json:"sources"`
+		Options ConvertOptions `json:"options,omitzero"`
 	}{sources, opts})
 	return hex.EncodeToString(h.Sum(nil))
 }

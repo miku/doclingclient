@@ -9,7 +9,7 @@ import (
 
 func TestCacheKey_Deterministic(t *testing.T) {
 	src := []Source{NewHTTPSource("https://example.org/a.pdf")}
-	opts := &Options{ToFormats: []OutputFormat{FormatMD, FormatJSON}, DoOCR: Ptr(true)}
+	opts := ConvertOptions{ToFormats: []OutputFormat{FormatMD, FormatJSON}, DoOCR: Ptr(true)}
 
 	a := CacheKey(src, opts)
 	b := CacheKey(src, opts)
@@ -23,20 +23,20 @@ func TestCacheKey_Deterministic(t *testing.T) {
 
 func TestCacheKey_SensitiveToInputs(t *testing.T) {
 	base := []Source{NewHTTPSource("https://example.org/a.pdf")}
-	baseOpts := &Options{ToFormats: []OutputFormat{FormatMD}}
+	baseOpts := ConvertOptions{ToFormats: []OutputFormat{FormatMD}}
 	baseKey := CacheKey(base, baseOpts)
 
 	cases := []struct {
 		name string
 		src  []Source
-		opts *Options
+		opts ConvertOptions
 	}{
 		{"different url", []Source{NewHTTPSource("https://example.org/b.pdf")}, baseOpts},
-		{"different to_formats", base, &Options{ToFormats: []OutputFormat{FormatJSON}}},
-		{"extra to_format", base, &Options{ToFormats: []OutputFormat{FormatMD, FormatJSON}}},
-		{"toggle ocr", base, &Options{ToFormats: []OutputFormat{FormatMD}, DoOCR: Ptr(true)}},
-		{"different page range", base, &Options{ToFormats: []OutputFormat{FormatMD}, PageRange: []int{1, 5}}},
-		{"nil opts", base, nil},
+		{"different to_formats", base, ConvertOptions{ToFormats: []OutputFormat{FormatJSON}}},
+		{"extra to_format", base, ConvertOptions{ToFormats: []OutputFormat{FormatMD, FormatJSON}}},
+		{"toggle ocr", base, ConvertOptions{ToFormats: []OutputFormat{FormatMD}, DoOCR: Ptr(true)}},
+		{"different page range", base, ConvertOptions{ToFormats: []OutputFormat{FormatMD}, PageRange: []int{1, 5}}},
+		{"zero opts", base, ConvertOptions{}},
 	}
 	seen := map[string]string{baseKey: "base"}
 	for _, tc := range cases {
@@ -108,7 +108,7 @@ func TestFileCache_RoundTrip(t *testing.T) {
 	want := &ConvertResponse{
 		Status:         "success",
 		ProcessingTime: 1.25,
-		Document:       Document{Filename: "x.pdf", MDContent: "# title"},
+		Document:       Document{Filename: "x.pdf", Contents: []Content{MarkdownContent("# title")}},
 	}
 	if err := fc.Put("k1", want); err != nil {
 		t.Fatal(err)
@@ -118,7 +118,7 @@ func TestFileCache_RoundTrip(t *testing.T) {
 	if err != nil || !ok {
 		t.Fatalf("Get(k1) = (_, %v, %v), want (true, nil)", ok, err)
 	}
-	if got.Status != want.Status || got.Document.MDContent != want.Document.MDContent {
+	if got.Status != want.Status || got.Document.MarkdownContent() != want.Document.MarkdownContent() {
 		t.Errorf("roundtrip mismatch: got %+v want %+v", got, want)
 	}
 

@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestChunkHybrid_JSONSource(t *testing.T) {
+func TestChunkHybridURL_JSONSource(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/v1/chunk/hybrid/source" {
 			t.Errorf("path = %q", r.URL.Path)
@@ -21,7 +21,7 @@ func TestChunkHybrid_JSONSource(t *testing.T) {
 		}
 		var got struct {
 			Sources         []map[string]any      `json:"sources"`
-			ConvertOptions  *Options              `json:"convert_options"`
+			ConvertOptions  *ConvertOptions       `json:"convert_options"`
 			ChunkingOptions *HybridChunkerOptions `json:"chunking_options"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
@@ -40,13 +40,14 @@ func TestChunkHybrid_JSONSource(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	resp, err := New(srv.URL).ChunkHybrid(
+	resp, err := New(srv.URL).ChunkHybridURL(
 		context.Background(),
-		[]Source{NewHTTPSource("https://example.org/x.pdf")},
-		nil,
-		&HybridChunkerOptions{
-			MaxTokens: Ptr(512),
-			Tokenizer: "Qwen/Qwen3-Embedding-0.6B",
+		ChunkHybridURLRequest{
+			Sources: []Source{NewHTTPSource("https://example.org/x.pdf")},
+			ChunkingOptions: HybridChunkerOptions{
+				MaxTokens: Ptr(512),
+				Tokenizer: "Qwen/Qwen3-Embedding-0.6B",
+			},
 		},
 	)
 	if err != nil {
@@ -60,7 +61,7 @@ func TestChunkHybrid_JSONSource(t *testing.T) {
 	}
 }
 
-func TestChunkHierarchical_JSONSource(t *testing.T) {
+func TestChunkHierarchicalURL_JSONSource(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/v1/chunk/hierarchical/source" {
 			t.Errorf("path = %q", r.URL.Path)
@@ -69,11 +70,12 @@ func TestChunkHierarchical_JSONSource(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	resp, err := New(srv.URL).ChunkHierarchical(
+	resp, err := New(srv.URL).ChunkHierarchicalURL(
 		context.Background(),
-		[]Source{NewHTTPSource("https://example.org/x.pdf")},
-		nil,
-		&HierarchicalChunkerOptions{UseMarkdownTables: Ptr(true)},
+		ChunkHierarchicalURLRequest{
+			Sources:         []Source{NewHTTPSource("https://example.org/x.pdf")},
+			ChunkingOptions: HierarchicalChunkerOptions{UseMarkdownTables: Ptr(true)},
+		},
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -141,11 +143,13 @@ func TestChunkHybridFile_Multipart(t *testing.T) {
 
 	_, err := New(srv.URL).ChunkHybridFile(
 		context.Background(),
-		[]FileUpload{{Name: "paper.pdf", Content: bytes.NewReader([]byte("pdf"))}},
-		&Options{PDFBackend: PDFBackendDLParseV4},
-		&HybridChunkerOptions{
-			MaxTokens: Ptr(256),
-			Tokenizer: "sentence-transformers/all-MiniLM-L6-v2",
+		ChunkHybridFileRequest{
+			Files:          []File{FileReader{Filename: "paper.pdf", Reader: bytes.NewReader([]byte("pdf"))}},
+			ConvertOptions: ConvertOptions{PDFBackend: PDFBackendDLParseV4},
+			ChunkingOptions: HybridChunkerOptions{
+				MaxTokens: Ptr(256),
+				Tokenizer: "sentence-transformers/all-MiniLM-L6-v2",
+			},
 		},
 	)
 	if err != nil {
@@ -153,16 +157,16 @@ func TestChunkHybridFile_Multipart(t *testing.T) {
 	}
 }
 
-func TestChunkHybrid_NoSources(t *testing.T) {
+func TestChunkHybridURL_NoSources(t *testing.T) {
 	c := New("http://does-not-matter")
-	if _, err := c.ChunkHybrid(context.Background(), nil, nil, nil); err == nil {
+	if _, err := c.ChunkHybridURL(context.Background(), ChunkHybridURLRequest{}); err == nil {
 		t.Error("expected error")
 	}
 }
 
 func TestChunkHybridFile_NoFiles(t *testing.T) {
 	c := New("http://does-not-matter")
-	if _, err := c.ChunkHybridFile(context.Background(), nil, nil, nil); err == nil {
+	if _, err := c.ChunkHybridFile(context.Background(), ChunkHybridFileRequest{}); err == nil {
 		t.Error("expected error")
 	}
 }

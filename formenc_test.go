@@ -31,7 +31,7 @@ func collectForm(t *testing.T, body []byte, boundary string) map[string][]string
 func TestEncodeFormFields_OptionsScalarsAndSlices(t *testing.T) {
 	var buf bytes.Buffer
 	mw := multipart.NewWriter(&buf)
-	opts := &Options{
+	opts := &ConvertOptions{
 		FromFormats:     []string{"pdf"},
 		ToFormats:       []OutputFormat{FormatMD, FormatJSON},
 		ImageExportMode: ImageExportEmbedded,
@@ -105,7 +105,7 @@ func TestEncodeFormFields_Prefix(t *testing.T) {
 func TestEncodeFormFields_NilPointerNoop(t *testing.T) {
 	var buf bytes.Buffer
 	mw := multipart.NewWriter(&buf)
-	var opts *Options
+	var opts *ConvertOptions
 	if err := encodeFormFields(mw, opts, ""); err != nil {
 		t.Fatal(err)
 	}

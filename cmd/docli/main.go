@@ -209,7 +209,7 @@ Output is JSONL on stdout, one chunk per line. Use --pretty for indented JSON of
 		var resp *doclingclient.ChunkResponse
 		switch doclingclient.Chunker(chunker) {
 		case doclingclient.ChunkerHybrid:
-			opts := &doclingclient.HybridChunkerOptions{}
+			opts := doclingclient.HybridChunkerOptions{}
 			if cmd.Flags().Changed("max-tokens") {
 				opts.MaxTokens = doclingclient.Ptr(maxTokens)
 			}
@@ -226,12 +226,16 @@ Output is JSONL on stdout, one chunk per line. Use --pretty for indented JSON of
 				opts.IncludeRawText = doclingclient.Ptr(includeRawText)
 			}
 			if isURL(input) {
-				resp, err = client.ChunkHybrid(ctx, []doclingclient.Source{doclingclient.NewHTTPSource(input)}, convertOpts, opts)
+				resp, err = client.ChunkHybridURL(ctx, doclingclient.ChunkHybridURLRequest{
+					Sources:         []doclingclient.Source{doclingclient.NewHTTPSource(input)},
+					ConvertOptions:  convertOpts,
+					ChunkingOptions: opts,
+				})
 			} else {
 				resp, err = client.ChunkHybridPath(ctx, input, convertOpts, opts)
 			}
 		case doclingclient.ChunkerHierarchical:
-			opts := &doclingclient.HierarchicalChunkerOptions{}
+			opts := doclingclient.HierarchicalChunkerOptions{}
 			if cmd.Flags().Changed("markdown-tables") {
 				opts.UseMarkdownTables = doclingclient.Ptr(mdTables)
 			}
@@ -239,7 +243,11 @@ Output is JSONL on stdout, one chunk per line. Use --pretty for indented JSON of
 				opts.IncludeRawText = doclingclient.Ptr(includeRawText)
 			}
 			if isURL(input) {
-				resp, err = client.ChunkHierarchical(ctx, []doclingclient.Source{doclingclient.NewHTTPSource(input)}, convertOpts, opts)
+				resp, err = client.ChunkHierarchicalURL(ctx, doclingclient.ChunkHierarchicalURLRequest{
+					Sources:         []doclingclient.Source{doclingclient.NewHTTPSource(input)},
+					ConvertOptions:  convertOpts,
+					ChunkingOptions: opts,
+				})
 			} else {
 				resp, err = client.ChunkHierarchicalPath(ctx, input, convertOpts, opts)
 			}
@@ -317,7 +325,7 @@ top-level --version flag instead.`,
 	}
 }
 
-func runConvert(ctx context.Context, c *doclingclient.Client, input string, opts *doclingclient.Options) (*doclingclient.ConvertResponse, error) {
+func runConvert(ctx context.Context, c *doclingclient.Client, input string, opts doclingclient.ConvertOptions) (*doclingclient.ConvertResponse, error) {
 	if isURL(input) {
 		return c.ConvertURL(ctx, input, opts)
 	}
@@ -331,7 +339,7 @@ func runConvert(ctx context.Context, c *doclingclient.Client, input string, opts
 // On any cache-related error (resolving cache dir, fetching server version,
 // reading or writing the entry) it falls back to a live conversion rather
 // than failing — the cache is an optimisation, not a source of truth.
-func runConvertCached(ctx context.Context, c *doclingclient.Client, input string, opts *doclingclient.Options, cacheDir string, noCache bool) (*doclingclient.ConvertResponse, bool, error) {
+func runConvertCached(ctx context.Context, c *doclingclient.Client, input string, opts doclingclient.ConvertOptions, cacheDir string, noCache bool) (*doclingclient.ConvertResponse, bool, error) {
 	if noCache {
 		resp, err := runConvert(ctx, c, input, opts)
 		return resp, false, err
@@ -428,15 +436,15 @@ func writeOutputs(dir string, doc doclingclient.Document, formats []doclingclien
 		var content []byte
 		switch f {
 		case doclingclient.FormatJSON:
-			content = doc.JSONContent
+			content = doc.JSONContent()
 		case doclingclient.FormatMD:
-			content = []byte(doc.MDContent)
+			content = []byte(doc.MarkdownContent())
 		case doclingclient.FormatHTML:
-			content = []byte(doc.HTMLContent)
+			content = []byte(doc.HTMLContent())
 		case doclingclient.FormatText:
-			content = []byte(doc.TextContent)
+			content = []byte(doc.TextContent())
 		case doclingclient.FormatDoctags:
-			content = []byte(doc.DoctagsContent)
+			content = []byte(doc.DoctagsContent())
 		default:
 			return fmt.Errorf("unknown output format: %s", f)
 		}
@@ -453,22 +461,23 @@ func writeOutputs(dir string, doc doclingclient.Document, formats []doclingclien
 
 func writeContent(w io.Writer, doc doclingclient.Document, format doclingclient.OutputFormat) error {
 	if format == doclingclient.FormatJSON {
-		if len(doc.JSONContent) == 0 {
+		jc := doc.JSONContent()
+		if len(jc) == 0 {
 			return fmt.Errorf("server returned no %s content", format)
 		}
-		_, err := w.Write(doc.JSONContent)
+		_, err := w.Write(jc)
 		return err
 	}
 	var content string
 	switch format {
 	case doclingclient.FormatMD:
-		content = doc.MDContent
+		content = doc.MarkdownContent()
 	case doclingclient.FormatHTML:
-		content = doc.HTMLContent
+		content = doc.HTMLContent()
 	case doclingclient.FormatText:
-		content = doc.TextContent
+		content = doc.TextContent()
 	case doclingclient.FormatDoctags:
-		content = doc.DoctagsContent
+		content = doc.DoctagsContent()
 	default:
 		return fmt.Errorf("unknown output format: %s", format)
 	}
@@ -580,7 +589,7 @@ func envOr(key, def string) string {
 
 // convertOptFlags holds the conversion-tuning flag values shared by both
 // `docli convert` and `docli chunk`. Register them with addConvertOptionFlags
-// and build the corresponding *Options with build.
+// and build the corresponding ConvertOptions with build.
 type convertOptFlags struct {
 	fromFormats     []string
 	ocr             bool
@@ -621,31 +630,31 @@ func addConvertOptionFlags(cmd *cobra.Command) *convertOptFlags {
 	return f
 }
 
-// build constructs an *Options from the parsed flags. Numeric/bool flags with
-// non-zero CLI defaults are sent only when the user explicitly set them, so
-// the server's own defaults stay authoritative on bare invocations.
-func (f *convertOptFlags) build(cmd *cobra.Command) (*doclingclient.Options, error) {
+// build constructs a ConvertOptions value from the parsed flags. Numeric/bool
+// flags with non-zero CLI defaults are sent only when the user explicitly set
+// them, so the server's own defaults stay authoritative on bare invocations.
+func (f *convertOptFlags) build(cmd *cobra.Command) (doclingclient.ConvertOptions, error) {
 	imageMode, err := doclingclient.ParseImageExportMode(f.imageExportMode)
 	if err != nil {
-		return nil, fmt.Errorf("--image-export-mode: %w", err)
+		return doclingclient.ConvertOptions{}, fmt.Errorf("--image-export-mode: %w", err)
 	}
 	tableMode, err := doclingclient.ParseTableMode(f.tableMode)
 	if err != nil {
-		return nil, fmt.Errorf("--table-mode: %w", err)
+		return doclingclient.ConvertOptions{}, fmt.Errorf("--table-mode: %w", err)
 	}
 	pdfBackend, err := doclingclient.ParsePDFBackend(f.pdfBackend)
 	if err != nil {
-		return nil, fmt.Errorf("--pdf-backend: %w", err)
+		return doclingclient.ConvertOptions{}, fmt.Errorf("--pdf-backend: %w", err)
 	}
 	pipeline, err := doclingclient.ParsePipeline(f.pipeline)
 	if err != nil {
-		return nil, fmt.Errorf("--pipeline: %w", err)
+		return doclingclient.ConvertOptions{}, fmt.Errorf("--pipeline: %w", err)
 	}
 
-	opts := &doclingclient.Options{
+	opts := doclingclient.ConvertOptions{
 		FromFormats:     f.fromFormats,
 		DoOCR:           doclingclient.Ptr(f.ocr),
-		ForceOCR:        doclingclient.Ptr(f.forceOCR),
+		ForceOCR:        f.forceOCR,
 		TableMode:       tableMode,
 		ImageExportMode: imageMode,
 		PDFBackend:      pdfBackend,
@@ -657,12 +666,12 @@ func (f *convertOptFlags) build(cmd *cobra.Command) (*doclingclient.Options, err
 	if f.pages != "" {
 		r, err := parsePageRange(f.pages)
 		if err != nil {
-			return nil, err
+			return doclingclient.ConvertOptions{}, err
 		}
 		opts.PageRange = r
 	}
 	if cmd.Flags().Changed("abort-on-error") {
-		opts.AbortOnError = doclingclient.Ptr(f.abortOnError)
+		opts.AbortOnError = f.abortOnError
 	}
 	if cmd.Flags().Changed("tables") {
 		opts.DoTableStructure = doclingclient.Ptr(f.doTables)

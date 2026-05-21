@@ -11,53 +11,42 @@ import (
 	"path/filepath"
 )
 
-// Convert sends a JSON request to /v1/convert/source. Use this when your
-// inputs are URLs or already base64-encoded files. The server defaults to
-// inbody delivery; use ConvertWithTarget to request put/s3/zip.
-func (c *Client) Convert(ctx context.Context, sources []Source, opts *Options) (*ConvertResponse, error) {
-	return c.ConvertWithTarget(ctx, sources, opts, nil)
+// ProcessURLRequest is the body of POST /v1/convert/source. Sources is
+// required; Target defaults to inbody (server's choice when omitted), and
+// ConvertOptions stays at server defaults when left zero.
+type ProcessURLRequest struct {
+	Sources        []Source       `json:"sources"`
+	Target         Target         `json:"target,omitempty"`
+	ConvertOptions ConvertOptions `json:"options,omitzero"`
 }
 
-// ConvertWithTarget is Convert plus an explicit Target. A nil target leaves
-// the server's default (inbody).
-func (c *Client) ConvertWithTarget(ctx context.Context, sources []Source, opts *Options, target Target) (*ConvertResponse, error) {
-	if len(sources) == 0 {
+// ProcessFileRequest bundles the inputs to POST /v1/convert/file (multipart).
+// Files is required. TargetType defaults to inbody when empty; the file
+// endpoint only supports inbody or zip. ConvertOptions stays at server
+// defaults when left zero.
+type ProcessFileRequest struct {
+	Files          []File
+	TargetType     TargetType
+	ConvertOptions ConvertOptions
+}
+
+// ProcessURL sends a JSON request to /v1/convert/source. Use this when your
+// inputs are URLs or already base64-encoded files.
+func (c *Client) ProcessURL(ctx context.Context, req ProcessURLRequest) (*ConvertResponse, error) {
+	if len(req.Sources) == 0 {
 		return nil, fmt.Errorf("doclingclient: no sources provided")
 	}
-	body := convertRequest{Options: opts, Sources: sources, Target: target}
 	var out ConvertResponse
-	if err := c.postJSON(ctx, "/v1/convert/source", body, &out); err != nil {
+	if err := c.postJSON(ctx, "/v1/convert/source", req, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil
 }
 
-// ConvertURL is a convenience wrapper around Convert for a single HTTP source.
-func (c *Client) ConvertURL(ctx context.Context, url string, opts *Options) (*ConvertResponse, error) {
-	return c.Convert(ctx, []Source{NewHTTPSource(url)}, opts)
-}
-
-// FileUpload describes a single file to upload to /v1/convert/file.
-type FileUpload struct {
-	// Name is the filename reported to the server (e.g. "paper.pdf").
-	Name string
-	// Content is the file body. It is read once; the caller retains ownership.
-	Content io.Reader
-}
-
-// ConvertFile uploads files via multipart/form-data to /v1/convert/file.
-// Prefer this over Convert for large local files to avoid base64 overhead.
-// The server defaults to inbody delivery; use ConvertFileWithTarget to
-// request a zip response.
-func (c *Client) ConvertFile(ctx context.Context, files []FileUpload, opts *Options) (*ConvertResponse, error) {
-	return c.ConvertFileWithTarget(ctx, files, opts, "")
-}
-
-// ConvertFileWithTarget is ConvertFile plus an explicit target_type form
-// field. The /v1/convert/file endpoint only supports inbody and zip; passing
-// "" leaves the server's default (inbody).
-func (c *Client) ConvertFileWithTarget(ctx context.Context, files []FileUpload, opts *Options, target TargetType) (*ConvertResponse, error) {
-	if len(files) == 0 {
+// ProcessFile uploads files via multipart/form-data to /v1/convert/file.
+// Prefer this over ProcessURL for large local files to avoid base64 overhead.
+func (c *Client) ProcessFile(ctx context.Context, req ProcessFileRequest) (*ConvertResponse, error) {
+	if len(req.Files) == 0 {
 		return nil, fmt.Errorf("doclingclient: no files provided")
 	}
 
@@ -76,49 +65,60 @@ func (c *Client) ConvertFileWithTarget(ctx context.Context, files []FileUpload, 
 			_ = pw.CloseWithError(err)
 		}()
 
-		if opts != nil {
-			if err = encodeFormFields(mw, opts, ""); err != nil {
+		if err = encodeFormFields(mw, req.ConvertOptions, ""); err != nil {
+			return
+		}
+		if req.TargetType != "" {
+			if err = mw.WriteField("target_type", string(req.TargetType)); err != nil {
 				return
 			}
 		}
-		if target != "" {
-			if err = mw.WriteField("target_type", string(target)); err != nil {
-				return
-			}
-		}
-		for _, f := range files {
+		for _, f := range req.Files {
 			var part io.Writer
-			part, err = mw.CreateFormFile("files", f.Name)
+			part, err = mw.CreateFormFile("files", filepath.Base(f.Name()))
 			if err != nil {
 				return
 			}
-			if _, err = io.Copy(part, f.Content); err != nil {
+			if _, err = io.Copy(part, f); err != nil {
 				return
 			}
 		}
 	}()
 
-	req, err := c.newRequest(ctx, http.MethodPost, "/v1/convert/file", pr)
+	r, err := c.newRequest(ctx, http.MethodPost, "/v1/convert/file", pr)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", mw.FormDataContentType())
+	r.Header.Set("Content-Type", mw.FormDataContentType())
 
 	var out ConvertResponse
-	if err := c.doJSON(req, &out); err != nil {
+	if err := c.doJSON(r, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil
 }
 
-// ConvertReader is a convenience wrapper for converting a single file from an
-// io.Reader.
-func (c *Client) ConvertReader(ctx context.Context, r io.Reader, filename string, opts *Options) (*ConvertResponse, error) {
-	return c.ConvertFile(ctx, []FileUpload{{Name: filename, Content: r}}, opts)
+// ConvertURL is a convenience wrapper around ProcessURL for a single HTTP
+// source. Pass a zero ConvertOptions value to accept all server defaults.
+func (c *Client) ConvertURL(ctx context.Context, url string, opts ConvertOptions) (*ConvertResponse, error) {
+	return c.ProcessURL(ctx, ProcessURLRequest{
+		Sources:        []Source{NewHTTPSource(url)},
+		ConvertOptions: opts,
+	})
+}
+
+// ConvertReader is a convenience wrapper for converting a single file from
+// an io.Reader. The filename is reported to the server in the multipart
+// upload.
+func (c *Client) ConvertReader(ctx context.Context, r io.Reader, filename string, opts ConvertOptions) (*ConvertResponse, error) {
+	return c.ProcessFile(ctx, ProcessFileRequest{
+		Files:          []File{FileReader{Filename: filename, Reader: r}},
+		ConvertOptions: opts,
+	})
 }
 
 // ConvertPath opens a local file and uploads it via /v1/convert/file.
-func (c *Client) ConvertPath(ctx context.Context, path string, opts *Options) (*ConvertResponse, error) {
+func (c *Client) ConvertPath(ctx context.Context, path string, opts ConvertOptions) (*ConvertResponse, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,8 @@ func (c *Client) ConvertPath(ctx context.Context, path string, opts *Options) (*
 }
 
 // EncodeFile reads path and returns a base64-encoded FileSource suitable for
-// Convert. Most callers should prefer ConvertPath, which streams the upload.
+// ProcessURL. Most callers should prefer ConvertPath, which streams the
+// upload.
 func EncodeFile(path string) (FileSource, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -136,4 +137,3 @@ func EncodeFile(path string) (FileSource, error) {
 	}
 	return NewFileSource(filepath.Base(path), base64.StdEncoding.EncodeToString(b)), nil
 }
-

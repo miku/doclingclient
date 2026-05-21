@@ -157,7 +157,7 @@ func TestAuthAndTenantHeaders(t *testing.T) {
 	}
 }
 
-func TestConvert_JSONSource(t *testing.T) {
+func TestProcessURL_JSONSource(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/v1/convert/source" {
 			t.Errorf("path = %q", r.URL.Path)
@@ -167,7 +167,7 @@ func TestConvert_JSONSource(t *testing.T) {
 		}
 		var got struct {
 			Sources []map[string]any `json:"sources"`
-			Options *Options         `json:"options"`
+			Options *ConvertOptions  `json:"options"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
 			t.Fatal(err)
@@ -185,17 +185,17 @@ func TestConvert_JSONSource(t *testing.T) {
 	resp, err := New(srv.URL).ConvertURL(
 		context.Background(),
 		"https://example.org/x.pdf",
-		&Options{ToFormats: []OutputFormat{FormatMD}},
+		ConvertOptions{ToFormats: []OutputFormat{FormatMD}},
 	)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp.Document.MDContent != "# hi" {
-		t.Errorf("md = %q", resp.Document.MDContent)
+	if got := resp.Document.MarkdownContent(); got != "# hi" {
+		t.Errorf("md = %q", got)
 	}
 }
 
-func TestConvertWithTarget_PutTargetSerialized(t *testing.T) {
+func TestProcessURL_PutTargetSerialized(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var got struct {
 			Sources []map[string]any `json:"sources"`
@@ -214,18 +214,19 @@ func TestConvertWithTarget_PutTargetSerialized(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	_, err := New(srv.URL).ConvertWithTarget(
+	_, err := New(srv.URL).ProcessURL(
 		context.Background(),
-		[]Source{NewHTTPSource("https://example.org/x.pdf")},
-		nil,
-		PutTarget{URL: "https://sink.example/r"},
+		ProcessURLRequest{
+			Sources: []Source{NewHTTPSource("https://example.org/x.pdf")},
+			Target:  PutTarget{URL: "https://sink.example/r"},
+		},
 	)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func TestConvertFileWithTarget_ZipFormField(t *testing.T) {
+func TestProcessFile_ZipTargetFormField(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mr, err := r.MultipartReader()
 		if err != nil {
@@ -252,25 +253,26 @@ func TestConvertFileWithTarget_ZipFormField(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	_, err := New(srv.URL).ConvertFileWithTarget(
+	_, err := New(srv.URL).ProcessFile(
 		context.Background(),
-		[]FileUpload{{Name: "x.pdf", Content: bytes.NewReader([]byte("pdf"))}},
-		nil,
-		TargetTypeZip,
+		ProcessFileRequest{
+			Files:      []File{FileReader{Filename: "x.pdf", Reader: bytes.NewReader([]byte("pdf"))}},
+			TargetType: TargetTypeZip,
+		},
 	)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func TestConvert_NoSources(t *testing.T) {
+func TestProcessURL_NoSources(t *testing.T) {
 	c := New("http://does-not-matter")
-	if _, err := c.Convert(context.Background(), nil, nil); err == nil {
+	if _, err := c.ProcessURL(context.Background(), ProcessURLRequest{}); err == nil {
 		t.Error("expected error for empty sources")
 	}
 }
 
-func TestConvertFile_Multipart(t *testing.T) {
+func TestProcessFile_Multipart(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/v1/convert/file" {
 			t.Errorf("path = %q", r.URL.Path)
@@ -316,7 +318,7 @@ func TestConvertFile_Multipart(t *testing.T) {
 		context.Background(),
 		bytes.NewReader([]byte("fake-pdf-bytes")),
 		"paper.pdf",
-		&Options{ToFormats: []OutputFormat{FormatMD, FormatJSON}},
+		ConvertOptions{ToFormats: []OutputFormat{FormatMD, FormatJSON}},
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -326,9 +328,9 @@ func TestConvertFile_Multipart(t *testing.T) {
 	}
 }
 
-func TestConvertFile_NoFiles(t *testing.T) {
+func TestProcessFile_NoFiles(t *testing.T) {
 	c := New("http://does-not-matter")
-	if _, err := c.ConvertFile(context.Background(), nil, nil); err == nil {
+	if _, err := c.ProcessFile(context.Background(), ProcessFileRequest{}); err == nil {
 		t.Error("expected error for empty files")
 	}
 }
