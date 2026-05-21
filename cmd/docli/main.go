@@ -47,8 +47,8 @@ func newRootCmd() (*cobra.Command, *globalOpts) {
 		Use:   "docli",
 		Short: "Talk to a docling-serve instance",
 		Long: fmt.Sprintf(`docli is cli for docling-serve
-▗▄▄▄   ▗▄▖  ▗▄▄▖▗▖   ▗▄▄▄▖
-▐▌  █ ▐▌ ▐▌▐▌   ▐▌     █   %s %s
+▗▄▄▄   ▗▄▖  ▗▄▄▖▗▖   ▗▄▄▄▖ %s %s
+▐▌  █ ▐▌ ▐▌▐▌   ▐▌     █   https://github.com/miku/doclingclient
 ▐▌  █ ▐▌ ▐▌▐▌   ▐▌     █   https://github.com/docling-project/docling-serve
 ▐▙▄▄▀ ▝▚▄▞▘▝▚▄▄▖▐▙▄▄▖▗▄█▄▖ https://docling.ai
 		`, Version, Buildtime),
