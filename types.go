@@ -139,30 +139,88 @@ const (
 	StatusSkipped        ConversionStatus = "skipped"
 )
 
-// Source describes one input document. Use NewHTTPSource, NewFileSource or
-// build the struct manually.
-type Source struct {
-	// Kind is "http" or "file". (The server also accepts "s3" but this client
-	// has no helper for it yet.)
-	Kind string `json:"kind"`
+// SourceKind discriminates the concrete Source variants the server accepts.
+type SourceKind string
 
-	// http
-	URL     string            `json:"url,omitempty"`
+const (
+	SourceKindHTTP SourceKind = "http"
+	SourceKindFile SourceKind = "file"
+	SourceKindS3   SourceKind = "s3"
+)
+
+// Source describes one input document. Implementations are HTTPSource,
+// FileSource, and S3Source; each marshals itself with a "kind" discriminator
+// so the docling-serve schema's polymorphic input is preserved on the wire.
+type Source interface {
+	Kind() SourceKind
+}
+
+// HTTPSource fetches the document from a URL.
+type HTTPSource struct {
+	URL     string            `json:"url"`
 	Headers map[string]string `json:"headers,omitempty"`
-
-	// file (base64-encoded inline upload)
-	Base64String string `json:"base64_string,omitempty"`
-	Filename     string `json:"filename,omitempty"`
 }
 
-// NewHTTPSource builds a Source for a remote URL.
-func NewHTTPSource(url string) Source {
-	return Source{Kind: "http", URL: url}
+// Kind reports the source variant.
+func (s HTTPSource) Kind() SourceKind { return SourceKindHTTP }
+
+// MarshalJSON injects the "kind" discriminator alongside the type's fields.
+func (s HTTPSource) MarshalJSON() ([]byte, error) {
+	type Alias HTTPSource
+	return json.Marshal(struct {
+		Kind SourceKind `json:"kind"`
+		Alias
+	}{Kind: SourceKindHTTP, Alias: Alias(s)})
 }
 
-// NewFileSource builds a Source for an in-body base64 upload.
-func NewFileSource(filename, base64String string) Source {
-	return Source{Kind: "file", Filename: filename, Base64String: base64String}
+// FileSource carries a base64-encoded document body inline.
+type FileSource struct {
+	Base64String string `json:"base64_string"`
+	Filename     string `json:"filename"`
+}
+
+// Kind reports the source variant.
+func (s FileSource) Kind() SourceKind { return SourceKindFile }
+
+// MarshalJSON injects the "kind" discriminator alongside the type's fields.
+func (s FileSource) MarshalJSON() ([]byte, error) {
+	type Alias FileSource
+	return json.Marshal(struct {
+		Kind SourceKind `json:"kind"`
+		Alias
+	}{Kind: SourceKindFile, Alias: Alias(s)})
+}
+
+// S3Source points the server at an S3 bucket prefix.
+type S3Source struct {
+	Endpoint  string `json:"endpoint"`
+	AccessKey string `json:"access_key"`
+	SecretKey string `json:"secret_key"`
+	Bucket    string `json:"bucket"`
+	KeyPrefix string `json:"key_prefix,omitempty"`
+	VerifySSL *bool  `json:"verify_ssl,omitempty"`
+}
+
+// Kind reports the source variant.
+func (s S3Source) Kind() SourceKind { return SourceKindS3 }
+
+// MarshalJSON injects the "kind" discriminator alongside the type's fields.
+func (s S3Source) MarshalJSON() ([]byte, error) {
+	type Alias S3Source
+	return json.Marshal(struct {
+		Kind SourceKind `json:"kind"`
+		Alias
+	}{Kind: SourceKindS3, Alias: Alias(s)})
+}
+
+// NewHTTPSource builds an HTTPSource for a remote URL.
+func NewHTTPSource(url string) HTTPSource {
+	return HTTPSource{URL: url}
+}
+
+// NewFileSource builds a FileSource for an in-body base64 upload.
+func NewFileSource(filename, base64String string) FileSource {
+	return FileSource{Filename: filename, Base64String: base64String}
 }
 
 // Options is a subset of ConvertDocumentsOptions covering the parameters most
@@ -194,7 +252,99 @@ type Options struct {
 type convertRequest struct {
 	Options *Options `json:"options,omitempty"`
 	Sources []Source `json:"sources"`
+	Target  Target   `json:"target,omitempty"`
 }
+
+// TargetKind discriminates the concrete Target variants the server accepts on
+// the /v1/convert/source endpoint.
+type TargetKind string
+
+const (
+	TargetKindInBody TargetKind = "inbody"
+	TargetKindPut    TargetKind = "put"
+	TargetKindS3     TargetKind = "s3"
+	TargetKindZip    TargetKind = "zip"
+)
+
+// Target selects where the conversion result is delivered. Implementations:
+// InBodyTarget (default, document inline in response), ZipTarget (response is
+// a zip), PutTarget (server PUTs the result to a URL), and S3Target (server
+// uploads to S3). Each marshals itself with a "kind" discriminator.
+type Target interface {
+	Kind() TargetKind
+}
+
+// InBodyTarget asks the server to embed the converted document in the JSON
+// response body. This is the server's default.
+type InBodyTarget struct{}
+
+// Kind reports the target variant.
+func (t InBodyTarget) Kind() TargetKind { return TargetKindInBody }
+
+// MarshalJSON injects the "kind" discriminator.
+func (t InBodyTarget) MarshalJSON() ([]byte, error) {
+	return []byte(`{"kind":"inbody"}`), nil
+}
+
+// ZipTarget asks the server to return the converted document as a zip blob.
+type ZipTarget struct{}
+
+// Kind reports the target variant.
+func (t ZipTarget) Kind() TargetKind { return TargetKindZip }
+
+// MarshalJSON injects the "kind" discriminator.
+func (t ZipTarget) MarshalJSON() ([]byte, error) {
+	return []byte(`{"kind":"zip"}`), nil
+}
+
+// PutTarget asks the server to HTTP PUT the converted result to URL.
+type PutTarget struct {
+	URL string `json:"url"`
+}
+
+// Kind reports the target variant.
+func (t PutTarget) Kind() TargetKind { return TargetKindPut }
+
+// MarshalJSON injects the "kind" discriminator alongside the type's fields.
+func (t PutTarget) MarshalJSON() ([]byte, error) {
+	type Alias PutTarget
+	return json.Marshal(struct {
+		Kind TargetKind `json:"kind"`
+		Alias
+	}{Kind: TargetKindPut, Alias: Alias(t)})
+}
+
+// S3Target asks the server to upload the converted result to S3.
+type S3Target struct {
+	Endpoint  string `json:"endpoint"`
+	AccessKey string `json:"access_key"`
+	SecretKey string `json:"secret_key"`
+	Bucket    string `json:"bucket"`
+	KeyPrefix string `json:"key_prefix,omitempty"`
+	VerifySSL *bool  `json:"verify_ssl,omitempty"`
+}
+
+// Kind reports the target variant.
+func (t S3Target) Kind() TargetKind { return TargetKindS3 }
+
+// MarshalJSON injects the "kind" discriminator alongside the type's fields.
+func (t S3Target) MarshalJSON() ([]byte, error) {
+	type Alias S3Target
+	return json.Marshal(struct {
+		Kind TargetKind `json:"kind"`
+		Alias
+	}{Kind: TargetKindS3, Alias: Alias(t)})
+}
+
+// TargetType is the value the multipart /v1/convert/file endpoint accepts in
+// its "target_type" form field. The file endpoint does not support PutTarget
+// or S3Target — only inbody or zip.
+type TargetType string
+
+const (
+	TargetTypeInBody TargetType = "inbody"
+	TargetTypeZip    TargetType = "zip"
+)
 
 // ConvertResponse is the synchronous response from /v1/convert/{source,file}
 // when a single in-body document is requested.

@@ -180,6 +180,55 @@ func TestConvertResponse_Err(t *testing.T) {
 	}
 }
 
+func TestSourceMarshalJSON_WireFormat(t *testing.T) {
+	// Cache-key compatibility: the JSON byte output must match the field
+	// order produced by the pre-interface Source struct (kind first, then
+	// base64_string/filename for FileSource). Any drift here silently
+	// invalidates every entry in users' on-disk caches.
+	cases := []struct {
+		name string
+		src  Source
+		want string
+	}{
+		{"http", NewHTTPSource("https://example.org/x.pdf"), `{"kind":"http","url":"https://example.org/x.pdf"}`},
+		{"file", FileSource{Base64String: "sha256:abc", Filename: "doc.pdf"}, `{"kind":"file","base64_string":"sha256:abc","filename":"doc.pdf"}`},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			b, err := json.Marshal(tc.src)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if string(b) != tc.want {
+				t.Errorf("got  %s\nwant %s", string(b), tc.want)
+			}
+		})
+	}
+}
+
+func TestTargetMarshalJSON(t *testing.T) {
+	cases := []struct {
+		name string
+		tgt  Target
+		want string
+	}{
+		{"inbody", InBodyTarget{}, `{"kind":"inbody"}`},
+		{"zip", ZipTarget{}, `{"kind":"zip"}`},
+		{"put", PutTarget{URL: "https://example.org/sink"}, `{"kind":"put","url":"https://example.org/sink"}`},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			b, err := json.Marshal(tc.tgt)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if string(b) != tc.want {
+				t.Errorf("got  %s\nwant %s", string(b), tc.want)
+			}
+		})
+	}
+}
+
 func TestCastStrings(t *testing.T) {
 	in := []OutputFormat{FormatMD, FormatJSON, FormatHTML}
 	got := castStrings(in)

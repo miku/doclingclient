@@ -20,14 +20,14 @@ func TestChunkHybrid_JSONSource(t *testing.T) {
 			t.Errorf("content-type = %q", ct)
 		}
 		var got struct {
-			Sources         []Source              `json:"sources"`
+			Sources         []map[string]any      `json:"sources"`
 			ConvertOptions  *Options              `json:"convert_options"`
 			ChunkingOptions *HybridChunkerOptions `json:"chunking_options"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
 			t.Fatal(err)
 		}
-		if len(got.Sources) != 1 || got.Sources[0].URL != "https://example.org/x.pdf" {
+		if len(got.Sources) != 1 || got.Sources[0]["kind"] != "http" || got.Sources[0]["url"] != "https://example.org/x.pdf" {
 			t.Errorf("sources = %+v", got.Sources)
 		}
 		if got.ChunkingOptions == nil || got.ChunkingOptions.Tokenizer != "Qwen/Qwen3-Embedding-0.6B" {

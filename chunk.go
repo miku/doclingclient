@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 // Chunker identifies the chunking strategy. The two variants map to distinct
@@ -91,17 +90,13 @@ func (c *Client) ChunkHierarchical(ctx context.Context, sources []Source, conver
 // ChunkHybridFile uploads files via multipart/form-data to
 // /v1/chunk/hybrid/file.
 func (c *Client) ChunkHybridFile(ctx context.Context, files []FileUpload, convertOpts *Options, chunkOpts *HybridChunkerOptions) (*ChunkResponse, error) {
-	return chunkFile(ctx, c, "/v1/chunk/hybrid/file", files, convertOpts, func(mw *multipart.Writer) error {
-		return writeHybridChunkerOptionsForm(mw, chunkOpts)
-	})
+	return chunkFile(ctx, c, "/v1/chunk/hybrid/file", files, convertOpts, chunkOpts)
 }
 
 // ChunkHierarchicalFile uploads files via multipart/form-data to
 // /v1/chunk/hierarchical/file.
 func (c *Client) ChunkHierarchicalFile(ctx context.Context, files []FileUpload, convertOpts *Options, chunkOpts *HierarchicalChunkerOptions) (*ChunkResponse, error) {
-	return chunkFile(ctx, c, "/v1/chunk/hierarchical/file", files, convertOpts, func(mw *multipart.Writer) error {
-		return writeHierarchicalChunkerOptionsForm(mw, chunkOpts)
-	})
+	return chunkFile(ctx, c, "/v1/chunk/hierarchical/file", files, convertOpts, chunkOpts)
 }
 
 func chunkJSON[T any](ctx context.Context, c *Client, path string, sources []Source, convertOpts *Options, chunkOpts *T) (*ChunkResponse, error) {
@@ -120,7 +115,7 @@ func chunkJSON[T any](ctx context.Context, c *Client, path string, sources []Sou
 	return &out, nil
 }
 
-func chunkFile(ctx context.Context, c *Client, path string, files []FileUpload, convertOpts *Options, writeChunkOpts func(*multipart.Writer) error) (*ChunkResponse, error) {
+func chunkFile(ctx context.Context, c *Client, path string, files []FileUpload, convertOpts *Options, chunkOpts any) (*ChunkResponse, error) {
 	if len(files) == 0 {
 		return nil, fmt.Errorf("doclingclient: no files provided")
 	}
@@ -139,12 +134,14 @@ func chunkFile(ctx context.Context, c *Client, path string, files []FileUpload, 
 		}()
 
 		if convertOpts != nil {
-			if err = writeOptionsForm(mw, convertOpts, "convert_"); err != nil {
+			if err = encodeFormFields(mw, convertOpts, "convert_"); err != nil {
 				return
 			}
 		}
-		if err = writeChunkOpts(mw); err != nil {
-			return
+		if chunkOpts != nil {
+			if err = encodeFormFields(mw, chunkOpts, "chunking_"); err != nil {
+				return
+			}
 		}
 		for _, f := range files {
 			var part io.Writer
@@ -169,55 +166,6 @@ func chunkFile(ctx context.Context, c *Client, path string, files []FileUpload, 
 		return nil, err
 	}
 	return &out, nil
-}
-
-func writeHybridChunkerOptionsForm(mw *multipart.Writer, o *HybridChunkerOptions) error {
-	if o == nil {
-		return nil
-	}
-	if o.MaxTokens != nil {
-		if err := mw.WriteField("chunking_max_tokens", strconv.Itoa(*o.MaxTokens)); err != nil {
-			return err
-		}
-	}
-	if o.Tokenizer != "" {
-		if err := mw.WriteField("chunking_tokenizer", o.Tokenizer); err != nil {
-			return err
-		}
-	}
-	if o.MergePeers != nil {
-		if err := mw.WriteField("chunking_merge_peers", strconv.FormatBool(*o.MergePeers)); err != nil {
-			return err
-		}
-	}
-	if o.UseMarkdownTables != nil {
-		if err := mw.WriteField("chunking_use_markdown_tables", strconv.FormatBool(*o.UseMarkdownTables)); err != nil {
-			return err
-		}
-	}
-	if o.IncludeRawText != nil {
-		if err := mw.WriteField("chunking_include_raw_text", strconv.FormatBool(*o.IncludeRawText)); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func writeHierarchicalChunkerOptionsForm(mw *multipart.Writer, o *HierarchicalChunkerOptions) error {
-	if o == nil {
-		return nil
-	}
-	if o.UseMarkdownTables != nil {
-		if err := mw.WriteField("chunking_use_markdown_tables", strconv.FormatBool(*o.UseMarkdownTables)); err != nil {
-			return err
-		}
-	}
-	if o.IncludeRawText != nil {
-		if err := mw.WriteField("chunking_include_raw_text", strconv.FormatBool(*o.IncludeRawText)); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // ChunkHybridPath is a convenience wrapper around ChunkHybridFile for a single

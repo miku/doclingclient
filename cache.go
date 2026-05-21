@@ -55,16 +55,15 @@ func HashFile(path string) (string, error) {
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
-// SourceForFile builds a synthetic Source for a local file suitable for
+// SourceForFile builds a synthetic FileSource for a local file suitable for
 // CacheKey. It does NOT read the file contents into the Source — only its
 // hash. Use this when keying a cache; for actual upload, use ConvertPath.
-func SourceForFile(path string) (Source, error) {
+func SourceForFile(path string) (FileSource, error) {
 	h, err := HashFile(path)
 	if err != nil {
-		return Source{}, err
+		return FileSource{}, err
 	}
-	return Source{
-		Kind:         "file",
+	return FileSource{
 		Filename:     filepath.Base(path),
 		Base64String: "sha256:" + h,
 	}, nil

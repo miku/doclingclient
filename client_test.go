@@ -165,11 +165,14 @@ func TestConvert_JSONSource(t *testing.T) {
 		if r.Header.Get("Content-Type") != "application/json" {
 			t.Errorf("content-type = %q", r.Header.Get("Content-Type"))
 		}
-		var got convertRequest
+		var got struct {
+			Sources []map[string]any `json:"sources"`
+			Options *Options         `json:"options"`
+		}
 		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
 			t.Fatal(err)
 		}
-		if len(got.Sources) != 1 || got.Sources[0].URL != "https://example.org/x.pdf" {
+		if len(got.Sources) != 1 || got.Sources[0]["kind"] != "http" || got.Sources[0]["url"] != "https://example.org/x.pdf" {
 			t.Errorf("sources = %+v", got.Sources)
 		}
 		if got.Options == nil || got.Options.ToFormats[0] != FormatMD {
@@ -189,6 +192,74 @@ func TestConvert_JSONSource(t *testing.T) {
 	}
 	if resp.Document.MDContent != "# hi" {
 		t.Errorf("md = %q", resp.Document.MDContent)
+	}
+}
+
+func TestConvertWithTarget_PutTargetSerialized(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var got struct {
+			Sources []map[string]any `json:"sources"`
+			Target  map[string]any   `json:"target"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
+			t.Fatal(err)
+		}
+		if got.Target["kind"] != "put" {
+			t.Errorf("target.kind = %v, want put", got.Target["kind"])
+		}
+		if got.Target["url"] != "https://sink.example/r" {
+			t.Errorf("target.url = %v", got.Target["url"])
+		}
+		_, _ = w.Write([]byte(`{"status":"success","processing_time":0.1,"document":{"filename":"x.pdf"}}`))
+	}))
+	defer srv.Close()
+
+	_, err := New(srv.URL).ConvertWithTarget(
+		context.Background(),
+		[]Source{NewHTTPSource("https://example.org/x.pdf")},
+		nil,
+		PutTarget{URL: "https://sink.example/r"},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestConvertFileWithTarget_ZipFormField(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mr, err := r.MultipartReader()
+		if err != nil {
+			t.Fatal(err)
+		}
+		var targetType string
+		for {
+			part, err := mr.NextPart()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if part.FormName() == "target_type" {
+				b, _ := io.ReadAll(part)
+				targetType = string(b)
+			}
+		}
+		if targetType != "zip" {
+			t.Errorf("target_type = %q, want zip", targetType)
+		}
+		_, _ = w.Write([]byte(`{"status":"success","processing_time":0,"document":{"filename":"x.pdf"}}`))
+	}))
+	defer srv.Close()
+
+	_, err := New(srv.URL).ConvertFileWithTarget(
+		context.Background(),
+		[]FileUpload{{Name: "x.pdf", Content: bytes.NewReader([]byte("pdf"))}},
+		nil,
+		TargetTypeZip,
+	)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 

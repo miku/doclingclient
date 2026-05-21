@@ -83,8 +83,8 @@ func TestSourceForFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if s.Kind != "file" {
-		t.Errorf("Kind = %q, want file", s.Kind)
+	if s.Kind() != SourceKindFile {
+		t.Errorf("Kind = %q, want file", s.Kind())
 	}
 	if s.Filename != "doc.pdf" {
 		t.Errorf("Filename = %q, want doc.pdf", s.Filename)

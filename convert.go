@@ -9,16 +9,22 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 // Convert sends a JSON request to /v1/convert/source. Use this when your
-// inputs are URLs or already base64-encoded files.
+// inputs are URLs or already base64-encoded files. The server defaults to
+// inbody delivery; use ConvertWithTarget to request put/s3/zip.
 func (c *Client) Convert(ctx context.Context, sources []Source, opts *Options) (*ConvertResponse, error) {
+	return c.ConvertWithTarget(ctx, sources, opts, nil)
+}
+
+// ConvertWithTarget is Convert plus an explicit Target. A nil target leaves
+// the server's default (inbody).
+func (c *Client) ConvertWithTarget(ctx context.Context, sources []Source, opts *Options, target Target) (*ConvertResponse, error) {
 	if len(sources) == 0 {
 		return nil, fmt.Errorf("doclingclient: no sources provided")
 	}
-	body := convertRequest{Options: opts, Sources: sources}
+	body := convertRequest{Options: opts, Sources: sources, Target: target}
 	var out ConvertResponse
 	if err := c.postJSON(ctx, "/v1/convert/source", body, &out); err != nil {
 		return nil, err
@@ -41,7 +47,16 @@ type FileUpload struct {
 
 // ConvertFile uploads files via multipart/form-data to /v1/convert/file.
 // Prefer this over Convert for large local files to avoid base64 overhead.
+// The server defaults to inbody delivery; use ConvertFileWithTarget to
+// request a zip response.
 func (c *Client) ConvertFile(ctx context.Context, files []FileUpload, opts *Options) (*ConvertResponse, error) {
+	return c.ConvertFileWithTarget(ctx, files, opts, "")
+}
+
+// ConvertFileWithTarget is ConvertFile plus an explicit target_type form
+// field. The /v1/convert/file endpoint only supports inbody and zip; passing
+// "" leaves the server's default (inbody).
+func (c *Client) ConvertFileWithTarget(ctx context.Context, files []FileUpload, opts *Options, target TargetType) (*ConvertResponse, error) {
 	if len(files) == 0 {
 		return nil, fmt.Errorf("doclingclient: no files provided")
 	}
@@ -62,7 +77,12 @@ func (c *Client) ConvertFile(ctx context.Context, files []FileUpload, opts *Opti
 		}()
 
 		if opts != nil {
-			if err = writeOptionsForm(mw, opts, ""); err != nil {
+			if err = encodeFormFields(mw, opts, ""); err != nil {
+				return
+			}
+		}
+		if target != "" {
+			if err = mw.WriteField("target_type", string(target)); err != nil {
 				return
 			}
 		}
@@ -107,107 +127,13 @@ func (c *Client) ConvertPath(ctx context.Context, path string, opts *Options) (*
 	return c.ConvertReader(ctx, f, filepath.Base(path), opts)
 }
 
-// EncodeFile reads path and returns a base64-encoded Source suitable for
+// EncodeFile reads path and returns a base64-encoded FileSource suitable for
 // Convert. Most callers should prefer ConvertPath, which streams the upload.
-func EncodeFile(path string) (Source, error) {
+func EncodeFile(path string) (FileSource, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
-		return Source{}, err
+		return FileSource{}, err
 	}
 	return NewFileSource(filepath.Base(path), base64.StdEncoding.EncodeToString(b)), nil
 }
 
-// writeOptionsForm writes Options fields as multipart form fields. List-typed
-// fields are written as repeated values, matching what the FastAPI form
-// parser expects. The /v1/convert/file endpoint uses bare field names ("");
-// the /v1/chunk/{...}/file endpoints prefix them with "convert_".
-func writeOptionsForm(mw *multipart.Writer, o *Options, prefix string) error {
-	write := func(k, v string) error { return mw.WriteField(prefix+k, v) }
-	writeList := func(k string, vs []string) error {
-		for _, v := range vs {
-			if err := mw.WriteField(prefix+k, v); err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-	writeBool := func(k string, b *bool) error {
-		if b == nil {
-			return nil
-		}
-		return write(k, strconv.FormatBool(*b))
-	}
-	writeFloat := func(k string, f *float64) error {
-		if f == nil {
-			return nil
-		}
-		return write(k, strconv.FormatFloat(*f, 'f', -1, 64))
-	}
-
-	if err := writeList("from_formats", o.FromFormats); err != nil {
-		return err
-	}
-	if err := writeList("to_formats", castStrings(o.ToFormats)); err != nil {
-		return err
-	}
-	if o.ImageExportMode != "" {
-		if err := write("image_export_mode", string(o.ImageExportMode)); err != nil {
-			return err
-		}
-	}
-	if err := writeBool("do_ocr", o.DoOCR); err != nil {
-		return err
-	}
-	if err := writeBool("force_ocr", o.ForceOCR); err != nil {
-		return err
-	}
-	if o.OCREngine != "" {
-		if err := write("ocr_engine", o.OCREngine); err != nil {
-			return err
-		}
-	}
-	if err := writeList("ocr_lang", o.OCRLang); err != nil {
-		return err
-	}
-	if o.OCRPreset != "" {
-		if err := write("ocr_preset", o.OCRPreset); err != nil {
-			return err
-		}
-	}
-	if o.PDFBackend != "" {
-		if err := write("pdf_backend", string(o.PDFBackend)); err != nil {
-			return err
-		}
-	}
-	if o.TableMode != "" {
-		if err := write("table_mode", string(o.TableMode)); err != nil {
-			return err
-		}
-	}
-	if o.Pipeline != "" {
-		if err := write("pipeline", string(o.Pipeline)); err != nil {
-			return err
-		}
-	}
-	for _, p := range o.PageRange {
-		if err := write("page_range", strconv.Itoa(p)); err != nil {
-			return err
-		}
-	}
-	if err := writeBool("abort_on_error", o.AbortOnError); err != nil {
-		return err
-	}
-	if err := writeBool("do_table_structure", o.DoTableStructure); err != nil {
-		return err
-	}
-	if err := writeBool("include_images", o.IncludeImages); err != nil {
-		return err
-	}
-	if err := writeFloat("images_scale", o.ImagesScale); err != nil {
-		return err
-	}
-	if err := writeFloat("document_timeout", o.DocumentTimeout); err != nil {
-		return err
-	}
-	return nil
-}
