@@ -68,19 +68,11 @@ interacting with the docling service becomes easy to integrate into shell
 scripts or ad-hoc human (and maybe agentic) terminal use.
 
 **Status**: Library and CLI cover synchronous conversion
-(`/v1/convert/{source,file}`), synchronous chunking
-(`/v1/chunk/{hybrid,hierarchical}/{source,file}`), and the `/health`, `/ready`,
+`/v1/convert/{source,file}`, synchronous chunking
+`/v1/chunk/{hybrid,hierarchical}/{source,file}`, and the `/health`, `/ready`,
 and `/version` routes. Async conversion and async chunking are not yet wrapped.
 
-**Breaking changes since v0.1.3**: `Source` is now an interface; concrete
-implementations are `HTTPSource`, `FileSource`, and `S3Source`. The
-constructors `NewHTTPSource(url)` and `NewFileSource(name, b64)` keep their
-signatures, so call-sites that use them are unaffected. Struct literals like
-`Source{Kind: "http", URL: "..."}` no longer compile — switch to
-`HTTPSource{URL: "..."}` or the constructor.
-
 **Requirements**: Go 1.24+. A running `docling-serve` instance (defaults to `http://localhost:5001`).
-
 
 ## Library
 
@@ -129,8 +121,8 @@ deliberate subset — extend it as needed.
 Note on output formats: the docling-serve `OutputFormat` enum also defines
 `yaml`, `html_split_page`, and `vtt`, but the `ExportDocumentResponse` object
 does not carry corresponding content fields, so this library and CLI do not
-surface them. The five exposed formats (`md`, `json`, `html`, `text`,
-`doctags`) match what the server actually returns.
+surface them. The five exposed formats: `md`, `json`, `html`, `text`,
+`doctags` match what the server actually returns.
 
 ## CLI
 
