@@ -72,24 +72,6 @@ scripts or ad-hoc human (and maybe agentic) terminal use.
 `/v1/chunk/{hybrid,hierarchical}/{source,file}`, and the `/health`, `/ready`,
 and `/version` routes. Async conversion and async chunking are not yet wrapped.
 
-**Breaking changes in v0.2**: the request shape was reorganised to match the
-[iguanesolutions/go-docling](https://github.com/iguanesolutions/go-docling)
-style. `Convert` / `ConvertFile` / `ConvertWithTarget` / `ConvertFileWithTarget`
-were replaced by `ProcessURL(ctx, ProcessURLRequest)` and `ProcessFile(ctx,
-ProcessFileRequest)`; `Options` was renamed to `ConvertOptions` and is now
-passed by value (zero = all server defaults); `FileUpload` was replaced by the
-`File` interface (`Name() string + io.Reader`) and `FileReader` helper.
-`Document` exposes `MarkdownContent()` / `JSONContent()` / `HTMLContent()` /
-`TextContent()` / `DoctagsContent()` accessors instead of flat `MDContent`
-fields. Server-default-false bools (`ForceOCR`, `AbortOnError`) are now plain
-`bool`; only fields whose server default is `true` keep `*bool` for explicit
-override. The `ConvertURL` / `ConvertPath` / `ConvertReader` helpers are
-unchanged in spirit but take `ConvertOptions` by value. The on-disk cache
-namespace stays version-keyed, so an upstream `docling-serve` upgrade rolls
-into a fresh dir; existing v0.1 entries are not read by v0.2.
-
-**Requirements**: Go 1.24+. A running `docling-serve` instance (defaults to `http://localhost:5001`).
-
 ## Library
 
 ```go
